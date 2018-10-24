@@ -20,8 +20,8 @@ class VedjustVedSearch extends VedjustVed
     public function rules()
     {
         return [
-            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg'], 'integer'],
-            [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 'user_accepted_id', 'archive_unit_id'], 'safe'],
+            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target'], 'integer'],
+            [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 'user_accepted_id', 'archive_unit_id', 'comment'], 'safe'],
         ];
     }
 
@@ -43,97 +43,38 @@ class VedjustVedSearch extends VedjustVed
      */
     public function search($params)
     {
-        if(Yii::$app->user->can('editMfc')) {
-            if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
-                $query = VedjustVed::find()->distinct()->where(
-                            ['or',
-                                ['and', ['target' => 1], ['<>', 'status_id', 1]],
-                                ['and', ['target' => 1], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ['and', ['target' => 2], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ['and', ['target' => 3], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                            ]
-                         );
-            } else {
-                $query = VedjustVed::find()->distinct()->where(
-                            ['and',
-                                ['or',
-                                    ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
-                                    ['IS', 'date_reception', NULL],
-                                ],
-                                ['or',
-                                    ['and', ['target' => 1], ['<>', 'status_id', 1]],
-                                    ['and', ['target' => 1], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                    ['and', ['target' => 2], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                    ['and', ['target' => 3], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ],
-                            ]
-                         );
-            }
-        } elseif (Yii::$app->user->can('editRosreestr') || Yii::$app->user->can('confirmExtDocs')) {
-            if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
-                $query = VedjustVed::find()->distinct()->where(
-                            ['or', 
-                                ['and', ['target' => 3], ['<>', 'status_id', 1]], 
-                                ['and', ['target' => 1], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ['and', ['target' => 2], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ['and', ['target' => 3], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                            ]
-                         );
-            } else {
-                $query = VedjustVed::find()->distinct()->where(
-                            ['and',
-                                ['or',
-                                    ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
-                                    ['IS', 'date_reception', NULL],
-                                ],
-                                ['or', 
-                                    ['and', ['target' => 3], ['<>', 'status_id', 1]], 
-                                    ['and', ['target' => 1], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                    ['and', ['target' => 2], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                    ['and', ['target' => 3], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ],
-                            ]
-                         );
-            }
-        } elseif (Yii::$app->user->can('editZkp')) {
-            if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
-                $query = VedjustVed::find()->distinct()->where(
-                            ['or', 
-                                ['and', ['target' => 2], ['<>', 'status_id', 1]], 
-                                ['and', ['target' => 1], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ['and', ['target' => 2], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ['and', ['target' => 3], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                            ]
-                         );
-            } else {
-                $query = VedjustVed::find()->distinct()->where(
-                            ['and',
-                                ['or',
-                                    ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
-                                    ['IS', 'date_reception', NULL],
-                                ],
-                                ['or', 
-                                    ['and', ['target' => 2], ['<>', 'status_id', 1]], 
-                                    ['and', ['target' => 1], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                    ['and', ['target' => 2], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                    ['and', ['target' => 3], ['ved.user_created_id' => Yii::$app->user->identity->id]],
-                                ],
-                            ]
-                         );
-            }
-        } elseif (Yii::$app->user->can('addAudit')) {
-            if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
-                $query = VedjustVed::find()->distinct();
-            } else {
-                $query = VedjustVed::find()->distinct()->where(
-                            ['or',
-                                ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
-                                ['IS', 'date_reception', NULL],
-                            ]
-                         );
-            }
+        //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
+        $userSd = User::find()
+            ->alias('us')
+            ->select(['us.id'])
+            ->where(['=', 'us.subdivision_id', Yii::$app->user->identity->subdivision_id]);
+
+        if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
+            $query = VedjustVed::find()
+                ->alias('v')
+                ->distinct(['v.id'])
+                ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
+                ->where(
+                ['or',
+                    ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
+                    ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
+                ]);
         } else {
-            $query = VedjustVed::find();
+            $query = VedjustVed::find()
+                ->alias('v')
+                ->distinct(['v.id'])
+                ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
+                ->where(
+                    ['and',
+                        ['or',
+                            ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
+                            ['IS', 'date_reception', NULL],
+                        ],
+                        ['or',
+                            ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
+                            ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
+                        ],
+                    ]);
         }
 
         // add conditions that should always apply here
@@ -155,12 +96,12 @@ class VedjustVedSearch extends VedjustVed
         $query->joinWith('userCreated uc');
         $query->joinWith('userAccepted ua');
         $query->joinWith('archiveUnit au');
-        $query->orderBy(['ved.id' => SORT_DESC]);
+        $query->orderBy(['v.id' => SORT_DESC]);
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'ved.id' => $this->id,
-            'ved.date_create' => $this->date_create,
+            'v.id' => $this->id,
+            'v.date_create' => $this->date_create,
             'date_reception' => $this->date_reception,
             'date_formed' => $this->date_formed,
             'user_formed_id' => $this->user_formed_id,
@@ -170,12 +111,14 @@ class VedjustVedSearch extends VedjustVed
             'accepted_ip' => $this->accepted_ip,
             'ext_reg' => $this->ext_reg,
             'a.kuvd' => $this->kuvd_affairs,
+            'target' => $this->target,
         ]);
 
         $query->andFilterWhere(['like', 'num_ved', $this->num_ved])
             ->andFilterWhere(['like', 's.name', $this->status_id])
             ->andFilterWhere(['like', 'uc.email', $this->user_created_id])
             ->andFilterWhere(['like', 'au.name', $this->archive_unit_id])
+            ->andFilterWhere(['like', 'v.comment', $this->comment])
             ->andFilterWhere(['like', 'ua.email', $this->user_accepted_id]);
 
         return $dataProvider;

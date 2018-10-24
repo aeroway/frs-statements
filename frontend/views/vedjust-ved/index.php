@@ -21,29 +21,27 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?php
-            if (!Yii::$app->user->can('addAudit')) {
-                echo Html::button('Создать ведомость', ['value' => Url::to('index.php?r=vedjust-ved/create'), 'class' => 'btn btn-success', 'id' => 'modalVedCreate']);
-            }
-        ?>
-        <?php
-            if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
-                echo Html::a('Скрыть архивные', 'javascript:void(0);', ['class' => 'btn btn-warning', 'onclick' => 'setArchive(0);']);
-            }
+        <?php if (!Yii::$app->user->can('addAudit') && !Yii::$app->user->can('limitAudit')): ?>
+            <?= Html::button('Создать ведомость', ['value' => Url::to('index.php?r=vedjust-ved/create'), 'class' => 'btn btn-success', 'id' => 'modalVedCreate']); ?>
+        <?php endif; ?>
 
-            if(!Yii::$app->getRequest()->getCookies()->getValue('archive')) {
-                echo Html::a('Показать все', 'javascript:void(0);', ['class' => 'btn btn-info', 'onclick' => 'setArchive(1);']);
-            }
-        ?>
+        <?php if (Yii::$app->getRequest()->getCookies()->getValue('archive')): ?>
+            <?= Html::a('Скрыть архивные', 'javascript:void(0);', ['class' => 'btn btn-warning', 'onclick' => 'setArchive(0);']); ?>
+        <?php endif; ?>
+
+        <?php if(!Yii::$app->getRequest()->getCookies()->getValue('archive')): ?> 
+            <?= Html::a('Показать все', 'javascript:void(0);', ['class' => 'btn btn-info', 'onclick' => 'setArchive(1);']); ?>
+        <?php endif; ?>
 
         <?= Html::a('Сброс фильтров', ['reset'], ['class' => 'btn btn-warning']); ?>
-        <?php if(Yii::$app->user->can('confirmExtDocs') || Yii::$app->user->can('addAudit')): ?>
+
+        <?php if(Yii::$app->user->can('confirmExtDocs') || Yii::$app->user->can('addAudit') || Yii::$app->user->can('limitAudit')): ?>
             <?= Html::a('Экстер. документы', Url::to('index.php?r=vedjust-ved/view-ext-doc'), ['class' => 'btn btn-info']); ?>
         <?php endif; ?>
     </p>
 
     <?php
-    if (Yii::$app->user->can('addAudit')) {
+    if (Yii::$app->user->can('addAudit') || Yii::$app->user->can('limitAudit')) {
         $buttons =
         [
             'class' => 'yii\grid\ActionColumn',
@@ -103,6 +101,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $data->userCreated->username;
             },
         ],
+        //[
+//            'attribute' => 'user_created_id',
+//            //'value' => 'userAccepted.username',
+//            'content'=>function($model){
+//                return $model->user_created_id;
+//            }
+//        ],
         [
             'attribute' => 'user_accepted_id',
             'value' => 'userAccepted.username',
@@ -126,7 +131,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
     Modal::begin([
-        'header' => 'Ведомость',
+        'options' => [
+            'tabindex' => false
+        ],
+        'header' => 'Создать ведомость',
         'id' => 'modalVed',
         'size' => 'modal-sm',
     ]);
@@ -145,12 +153,20 @@ $this->params['breadcrumbs'][] = $this->title;
             if ($model->status_id != 1 && $model->userCreated->username == Yii::$app->user->identity->username) return ['class' => 'warning'];
         },
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            //['class' => 'yii\grid\SerialColumn'],
 
             //'id',
             //'num_ved',
             [
+                //'attribute' => 'archive_unit_id',
+                'label' => 'Тип',
+                'format' => 'html',
+                'value' => 'iconUnit',
+                'contentOptions' => ['style' => 'text-align: center; width: 40px;'],
+            ],
+            [
                 'attribute' => 'id',
+                'label' => '№ ведомости',
                 'value' => function($data) {
                     return Html::a(Html::encode($data->id), ['vedjust-affairs/index', 'id' => $data['id']]);
                 },
@@ -158,7 +174,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'date_create',
-                'format' =>  ['date', 'php:d M Y h:i:s'],
+                'label' => 'Создано',
+                'format' =>  ['date', 'php:d M Y'],
             ],
             [
                 'attribute' => 'status_id',
@@ -169,17 +186,34 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'user_created_id',
-                'value' => function($data) {
-                    return Html::a(Html::encode($data->userCreated->username), ['vedjust-affairs/index', 'id' => $data['id']]);
-                },
-                'format' => 'html',
+                'label' => 'Источник',
+                'content' => function($model) {
+                    return $model->userCreated->AgencyName . ' ( ' . $model->userCreated->SubdivisionName . ')';
+                }
             ],
+            // [
+            //     'attribute' => 'user_created_id',
+            //     'value' => function($data) {
+            //      return Html::a(Html::encode($data->userCreated->username), ['vedjust-affairs/index', 'id' => $data['id']]);
+            //     },
+            //     'format' => 'html',
+            // ],
             [
-                'attribute' => 'user_accepted_id',
-                'value' => 'userAccepted.username',
+                'attribute' => 'target',
+                'label' => 'Получатель',
+                'value' => 'targetRecipient',
+                'filter' => ['1' => 'МФЦ', '2' => 'ФКП', '3' => 'Росреестр'],
             ],
+            // [
+            //     'attribute' => 'user_accepted_id',
+            //     'content'=>function($model) {
+            //         return (!empty($model->userAccepted)) ? 
+            //             $model->userAccepted->AgencyName . ' ( ' . $model->userAccepted->SubdivisionName . ')' : '';
+            //     }
+            // ],
             [
                 'attribute' => 'date_reception',
+                'label' => 'Подтверждено',
                 'format' =>  ['date', 'php:d M Y'],
             ],
             [
@@ -190,33 +224,27 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => ['style' => 'text-align: center; width: 80px;'],
                 'filter' => ['1' => '✔ - Экстерриториальная регистрация', '0' => '✖ - Обычная регистрация'],
             ],
-            [
-                //'attribute' => 'archive_unit_id',
-                'label' => 'Тип',
-                'format' => 'html',
-                'value' => 'iconUnit',
-                'contentOptions' => ['style' => 'text-align: center; width: 40px;'],
-            ],
-            /*[
-                'attribute' => 'kuvd_affairs',
-                'value' => function($data) {
-                    $output = '';
-                    for ($i=0; $i < count($data->affairs); $i++) { 
-                        $output .= $data->affairs[$i]["kuvd"] . '<br>';
-                    }
+            // [
+            //     'attribute' => 'kuvd_affairs',
+            //     'value' => function($data) {
+            //         $output = '';
+            //         for ($i = 0; $i < count($data->affairs); $i++) { 
+            //             $output .= $data->affairs[$i]["kuvd"] . '<br>';
+            //         }
 
-                    return $output;
-                },
-                'format' => 'html',
-            ],*/
+            //         return $output;
+            //     },
+            //     'format' => 'html',
+            // ],
             // 'verified',
-            [
-                'attribute' => 'IconStatus',
-                'label' => 'Статус',
-                'format' => 'html',
-                'value' => 'IconStatus',
-                'contentOptions' => ['style'=>'text-align: center; width: 65px;'],
-            ],
+            // [
+            //     'attribute' => 'IconStatus',
+            //     'label' => 'Статус',
+            //     'format' => 'html',
+            //     'value' => 'IconStatus',
+            //     'contentOptions' => ['style'=>'text-align: center; width: 65px;'],
+            // ],
+            'comment',
 
             $buttons,
         ],

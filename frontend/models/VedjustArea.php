@@ -45,11 +45,4 @@ class VedjustArea extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSubdivisions()
-    {
-        return $this->hasMany(VedjustSubdivision::className(), ['area_id' => 'id']);
-    }
 }

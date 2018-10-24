@@ -4,6 +4,7 @@ namespace frontend\models;
 use common\models\User;
 use frontend\models\VedjustAgency;
 use frontend\models\VedjustSubject;
+use frontend\models\VedjustSubdivision;
 use yii\base\Model;
 use Yii;
 
@@ -20,7 +21,7 @@ class SignupForm extends Model
     public $phone;
     public $agency_id;
     public $subject_id;
-    public $municipality;
+    public $subdivision_id;
 
     /**
      * @inheritdoc
@@ -31,7 +32,7 @@ class SignupForm extends Model
             ['username', 'filter', 'filter' => 'trim'],
             //['username', 'required'],
             ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
-            [['username', 'full_name', 'position', 'municipality'], 'string', 'min' => 2, 'max' => 255],
+            [['username', 'full_name', 'position'], 'string', 'min' => 2, 'max' => 255],
             ['phone', 'string', 'min' => 2, 'max' => 100],
 
             ['email', 'filter', 'filter' => 'trim'],
@@ -42,11 +43,13 @@ class SignupForm extends Model
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
 
-            [['full_name', 'position', 'phone', 'agency_id', 'subject_id', 'municipality'], 'required'],
+            [['full_name', 'position', 'phone', 'agency_id', 'subject_id', 'subdivision_id'], 'required'],
             [['agency_id', 'subject_id'], 'integer'],
+            //['subdivision_id', 'string'],
 
             [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubject::className(), 'targetAttribute' => ['subject_id' => 'id']],
+            [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
         ];
     }
 
@@ -63,7 +66,7 @@ class SignupForm extends Model
             'phone' => 'Телефон',
             'agency_id' => 'Орган',
             'subject_id' => 'Субъект РФ',
-            'municipality' => 'Муниципальное образование',
+            'subdivision_id' => 'Муниципальное образование (отдел)',
         ];
     }
 
@@ -74,6 +77,15 @@ class SignupForm extends Model
      */
     public function signup()
     {
+        if (($model = VedjustSubdivision::findOne((int)$this->subdivision_id)) === null) {
+            $model = new VedjustSubdivision();
+            $model->name = $this->subdivision_id;
+            $model->subject_id = $this->subject_id;
+            $model->agency_id = $this->agency_id;
+            $model->save();
+            $this->subdivision_id = $model->id;
+        }
+
         if ($this->validate()) {
             $user = new User();
             $user->username = $this->email;
@@ -83,7 +95,7 @@ class SignupForm extends Model
             $user->phone = $this->phone;
             $user->agency_id = $this->agency_id;
             $user->subject_id = $this->subject_id;
-            $user->municipality = $this->municipality;
+            $user->subdivision_id = $this->subdivision_id;
             $user->setPassword($this->password);
             $user->generateAuthKey();
             if ($user->save()) {
@@ -108,6 +120,14 @@ class SignupForm extends Model
     public function getSubject()
     {
         return $this->hasOne(VedjustSubject::className(), ['id' => 'subject_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubdivision()
+    {
+        return $this->hasOne(VedjustSubdivision::className(), ['id' => 'subdivision_id']);
     }
 
 }

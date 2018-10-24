@@ -39,7 +39,7 @@ class VedjustSubject extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Субъект РФ',
         ];
     }
 
@@ -49,5 +49,13 @@ class VedjustSubject extends \yii\db\ActiveRecord
     public function getUsers()
     {
         return $this->hasMany(User::className(), ['subject_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubdivision()
+    {
+        return $this->hasMany(VedjustSubdivision::className(), ['subject_id' => 'id']);
     }
 }

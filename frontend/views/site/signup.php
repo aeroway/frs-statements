@@ -27,34 +27,39 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'full_name') ?>
                 <?= $form->field($model, 'position') ?>
                 <?= $form->field($model, 'phone') ?>
+
                 <?= $form->field($model, 'agency_id')->widget(Select2::classname(), [
                     'data' => ArrayHelper::map(VedjustAgency::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
                     'language' => 'ru',
-                    'options' => ['placeholder' => 'Выберите орган'],
+                    'options' => ['placeholder' => 'Выберите орган', 'onchange' => 'changeStatusAgency(this.value);'],
                     'pluginOptions' => [
-                        'allowClear' => true
+                        'allowClear' => true,
                     ],
                 ]);
                 ?>
+
                 <?= $form->field($model, 'subject_id')->widget(Select2::classname(), [
                     'data' => ArrayHelper::map(VedjustSubject::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
                     'language' => 'ru',
-                    'options' => ['placeholder' => 'Выберите субъект РФ'],
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                ]);
-                ?>
-                <?= $form->field($model, 'municipality')->widget(Select2::classname(), [
-                    'data' => ArrayHelper::map(User::find()->select('municipality')->distinct()->orderBy(['municipality' => SORT_ASC])->all(),'municipality','municipality'),
-                    'language' => 'ru',
-                    'options' => ['placeholder' => 'Выберите название'],
+                    'options' => ['placeholder' => 'Выберите субъект РФ', 'onchange' => 'changeStatusSubject(this.value);'],
                     'pluginOptions' => [
                         'allowClear' => true,
-                        'tags' => true
+                        'disabled' => true,
                     ],
                 ]);
                 ?>
+
+                <?= $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
+                    'language' => 'ru',
+                    'options' => ['placeholder' => 'Выберите или введите название'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'tags' => true,
+                        'disabled' => true,
+                    ],
+                ]);
+                ?>
+
                 <div class="form-group">
                     <?= Html::submitButton('Регистрация', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
                 </div>
@@ -62,3 +67,20 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<script>
+function changeStatusAgency(value) {
+    if (value) {
+        document.getElementById('signupform-subject_id').disabled = false;
+    } else {
+        document.getElementById('signupform-subject_id').disabled = true;
+    }
+}
+
+function changeStatusSubject(value) {
+    if (value) {
+        document.getElementById('signupform-subdivision_id').disabled = false;
+    } else {
+        document.getElementById('signupform-subdivision_id').disabled = true;
+    }
+}
+</script>

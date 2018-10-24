@@ -39,7 +39,7 @@ class VedjustAgency extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Орган',
         ];
     }
 
@@ -49,5 +49,10 @@ class VedjustAgency extends \yii\db\ActiveRecord
     public function getUsers()
     {
         return $this->hasMany(User::className(), ['agency_id' => 'id']);
+    }
+
+    public function getSubdivision()
+    {
+        return $this->hasMany(Subdivision::className(), ['agency_id' => 'id']);
     }
 }

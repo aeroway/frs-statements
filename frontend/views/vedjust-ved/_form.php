@@ -5,6 +5,7 @@ use yii\jui\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use frontend\models\VedjustStatus;
+use frontend\models\VedjustAgency;
 use frontend\models\VedjustArchiveUnit;
 use frontend\models\User;
 use yii\bootstrap\ActiveForm;
@@ -26,8 +27,16 @@ use yii\bootstrap\ActiveForm;
         echo $form->field($model, 'status_id')->hiddenInput(['value' => 1])->label(false);
         echo $form->field($model, 'user_created_id')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false);
         echo $form->field($model, 'create_ip')->hiddenInput(['value' => ip2long(Yii::$app->request->userIP)])->label(false);
-        $model->isNewRecord == 1 ? $model->target = 3 : $model->target;
-        echo $form->field($model, 'target')->inline(false)->radioList(['1' => 'МФЦ', '2' => 'ЗКП', '3' => 'Росреестр']);
+        echo $form->field($model, 'comment')->textArea();
+        echo $form->field($model, 'target')->inline(false)->radioList(ArrayHelper::map(VedjustAgency::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'), ['onchange' => "changeVals()"]);
+        echo $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
+            'language' => 'ru',
+            'options' => ['placeholder' => 'Выберите отдел'],
+            'pluginOptions' => [
+                'allowClear' => false,
+                'tags' => false,
+            ],
+        ]);
         echo $form->field($model, 'archive_unit_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map(VedjustArchiveUnit::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
             'language' => 'ru',
@@ -64,3 +73,30 @@ use yii\bootstrap\ActiveForm;
     <?php ActiveForm::end(); ?>
 
 </div>
+<script>
+function changeVals() {
+
+    $.ajax(
+    {
+        type: 'GET',
+        url: 'index.php?r=site/municipality',
+        data: 'subject_id=1' + '&agency_id=' + $("input[name='VedjustVed[target]']:checked").val(),
+        success: function(data)
+        {
+            if (data == 0)
+            {
+                //alert('Данные отсутствуют.');
+                $("#vedjustved-subdivision_id").empty();
+                $("#vedjustved-subdivision_id").append( $('<option value="">Нет данных</option>'));
+            }
+            else
+            {
+                //alert('Данные получены.');
+                $("#vedjustved-subdivision_id").empty();
+                $("#vedjustved-subdivision_id").append($(data));
+            }
+        }
+    });
+
+}
+</script>

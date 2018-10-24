@@ -12,6 +12,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use frontend\models\VedjustSubdivision;
 
 /**
  * Site controller
@@ -26,15 +27,15 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'index', 'about', 'contact'],
+                'only' => ['logout', 'signup', 'index', 'about', 'contact', 'municipality'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        'actions' => ['signup', 'municipality'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index', 'municipality'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -100,6 +101,29 @@ class SiteController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    public function actionMunicipality($subject_id, $agency_id)
+    {
+        $result = '';
+
+        if ($subject_id && $agency_id)
+        {
+            $subdivision = VedjustSubdivision::find()
+                ->select(['id', 'name'])
+                ->where(['and', ['subject_id' => $subject_id], ['agency_id'=> $agency_id]])
+                ->orderBy(['name' => SORT_ASC])
+                ->asArray()
+                ->all();
+
+            foreach ($subdivision as $value) {
+                $result .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
+            }
+
+            return $result;
+        }
+
+        return 0;
     }
 
     /**

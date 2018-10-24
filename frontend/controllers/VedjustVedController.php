@@ -34,12 +34,13 @@ class VedjustVedController extends Controller
                         [
                             'index', 'delete', 'create', // standard actions
                             'changestatus', // formed docs
+                            'changestatusreturn', // return status step back
                             'changeverified', // accepted docs
                             'createvedpdf', // create pdf
                             'setarchive', // show archive docs
                             'reset', // reset filters
                         ],
-                        'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs'],
+                        'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
                     [
                         'allow' => true,
@@ -52,7 +53,7 @@ class VedjustVedController extends Controller
                             'view-ext-doc-detailed', // detail view
                             'reset'
                         ],
-                        'roles' => ['addAudit'],
+                        'roles' => ['addAudit', 'limitAudit'],
                     ],
                     [
                         'allow' => true,
@@ -221,47 +222,34 @@ class VedjustVedController extends Controller
         return $this->redirect(['index']);
     }
 
-    // Action buttons 'Принято', 'Частично принято'
-    public function actionChangeverified($id, $button)
+    // Action buttons 'Принято'
+    public function actionChangeverified($id)
     {
         $model = $this->findModel($id);
 
-        $target = 0;
+        $count0 = VedjustAffairs::find()
+                    ->where(['and', ['ved_id' => $id], ['status' => 0]])
+                    ->count();
 
-        if (Yii::$app->user->can('editMfc') === true)
-            $target = 1;
-        if (Yii::$app->user->can('editZkp') === true)
-            $target = 2;
-        if (Yii::$app->user->can('editRosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
-            $target = 3;
+        $count1 = VedjustAffairs::find()
+                    ->where(['and', ['ved_id' => $id], ['status' => 1]])
+                    ->count();
 
-        if ($model->status_id === 2 && $model->target === $target) {
+        if($count0 == 0) {
+            $model->status_id = 3;
+        } elseif(($count0 > 0) && ($count1 > 0)) {
+            $model->status_id = 4;
+        } else {
+            return 0;
+        }
 
-            if($button == 1) {
-                $count = VedjustAffairs::find()
-                            ->where(['and', ['ved_id' => $id], ['status' => 0]])
-                            ->count();
+        $model->verified = 1;
+        $model->date_reception = date('Y-m-d H:i:s');
+        $model->accepted_ip = ip2long(Yii::$app->request->userIP);
+        $model->user_accepted_id = Yii::$app->user->identity->id;
 
-                if($count > 0) {
-                    return 0;
-                }
-
-                $model->status_id = 3;
-            } else {
-                $model->status_id = 4;
-            }
-
-            $model->verified = 1;
-            $model->date_reception = date('Y-m-d H:i:s');
-            $model->accepted_ip = ip2long(Yii::$app->request->userIP);
-            $model->user_accepted_id = Yii::$app->user->identity->id;
-
-            if ($model->update() !== false) {
-                return 1;
-            } else {
-                return 0;
-            }
-
+        if ($model->update() !== false) {
+            return 1;
         } else {
             return 0;
         }
@@ -278,6 +266,28 @@ class VedjustVedController extends Controller
             $model->date_formed = date('Y-m-d H:i:s');
             $model->formed_ip = ip2long(Yii::$app->request->userIP);
             $model->user_formed_id = Yii::$app->user->identity->id;
+
+            if ($model->update() !== false) {
+                return 1;
+            } else {
+                return 0;
+            }
+
+        }
+        else
+        {
+           return 0; 
+        }
+    }
+
+    // Button action "Откатить"
+    public function actionChangestatusreturn($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->status_id === 2 && $model->user_created_id === Yii::$app->user->identity->id)
+        {
+            $model->status_id = 1;
 
             if ($model->update() !== false) {
                 return 1;

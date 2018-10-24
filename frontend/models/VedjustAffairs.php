@@ -37,6 +37,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['kuvd'], 'required'],
             [['comment', 'kuvd'], 'string'],
             [['date_create', 'date_status'], 'safe'],
             [['ved_id', 'status', 'user_created_id', 'user_accepted_id', 'create_ip', 'accepted_ip'], 'integer'],
@@ -64,6 +65,18 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             'create_ip' => 'IP создания',
             'accepted_ip' => 'IP подтверждения',
         ];
+    }
+
+    // location of docs in storage
+    public function getStoragePath($id)
+    {
+        $modelStorage = VedjustStorage::find()
+        ->select(['hall', 'rack', 'locker', 'shelf', 'position'])
+        ->where(['=', 'ved_id', $id])
+        ->asArray()
+        ->one();
+
+        return $modelStorage;
     }
 
     /**

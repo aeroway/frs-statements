@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="vedjust-ved-create">
 
-    <h2><?= Html::encode($this->title) ?></h2>
+    <h2><?php /* echo Html::encode($this->title) */ ?></h2>
 
     <?= $this->render('_form', [
         'model' => $model,

@@ -11,6 +11,7 @@ use kartik\mpdf\Pdf;
  * @property int $id
  * @property string $date_create
  * @property string $num_ved
+ * @property string $comment
  * @property int $status_id
  * @property string $date_reception
  * @property string $date_formed
@@ -23,6 +24,7 @@ use kartik\mpdf\Pdf;
  * @property int $formed_ip
  * @property int $accepted_ip
  * @property int $archive_unit_id
+ * @property int $subdivision_id
  * @property int $ext_reg
  * @property int $ext_reg_created
  *
@@ -49,13 +51,14 @@ class VedjustVed extends \yii\db\ActiveRecord
         return [
             [['target'], 'required'],
             [['date_create', 'date_reception', 'date_formed'], 'safe'],
-            [['num_ved'], 'string'],
-            [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'ext_reg', 'ext_reg_created'], 'integer'],
+            [['num_ved', 'comment'], 'string'],
+            [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'ext_reg', 'ext_reg_created'], 'integer'],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustStatus::className(), 'targetAttribute' => ['status_id' => 'id']],
             [['user_accepted_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_accepted_id' => 'id']],
             [['user_created_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_created_id' => 'id']],
             [['user_formed_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_formed_id' => 'id']],
             [['archive_unit_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustArchiveUnit::className(), 'targetAttribute' => ['archive_unit_id' => 'id']],
+            [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
         ];
     }
 
@@ -68,6 +71,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             'id' => 'Номер ведомости',
             'date_create' => 'Дата создания',
             'num_ved' => 'Номер ведомости',
+            'comment' => 'Комментарий',
             'status_id' => 'Состояние',
             'date_reception' => 'Дата подтверждения',
             'date_formed' => 'Дата формирования',
@@ -81,6 +85,8 @@ class VedjustVed extends \yii\db\ActiveRecord
             'accepted_ip' => 'IP подтверждения',
             'kuvd_affairs' => 'КУВД дела',
             'archive_unit_id' => 'Ед. арх. хранения',
+            'subdivision_id' => 'Отдел',
+            'storage_id' => 'Архивохранилище',
             'ext_reg' => 'Экстерриториальная регистрация',
             'ext_reg_created' => 'Перемещено в таблицу экстер. документов',
         ];
@@ -109,6 +115,27 @@ class VedjustVed extends \yii\db\ActiveRecord
             default:
                 return '<span class="glyphicon glyphicon-minus" title="Обычная регистрация"> </span>';
         }
+    }
+
+    public function getTargetRecipient()
+    {
+        $target = '';
+
+        switch ($this->target) {
+            case 1:
+                $target = 'МФЦ';
+                break;
+            case 2:
+                $target = 'ФКП';
+                break;
+            case 3:
+                $target = 'Росреестр';
+                break;
+            default:
+                return 'Куда-то';
+        }
+
+        return $target . ' ( ' . $this->subdivision->name . ')';
     }
 
     public function getVedPdf()
@@ -186,7 +213,7 @@ class VedjustVed extends \yii\db\ActiveRecord
                 return '<span class="glyphicon glyphicon-folder-open" title="Выходные документы"> </span>';
                 break;
             case 4:
-                return '<span class="glyphicon glyphicon-floppy-disk" title="Скан образ"> </span>';
+                return '<span class="glyphicon glyphicon-floppy-disk" title="Невостребованные документы"> </span>';
                 break;
             default:
                 return $this->archive_unit_id;
@@ -217,6 +244,9 @@ class VedjustVed extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'user_accepted_id']);
     }
 
+
+    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -239,5 +269,21 @@ class VedjustVed extends \yii\db\ActiveRecord
     public function getArchiveUnit()
     {
         return $this->hasOne(VedjustArchiveUnit::className(), ['id' => 'archive_unit_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubdivision()
+    {
+        return $this->hasOne(VedjustSubdivision::className(), ['id' => 'subdivision_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStorage()
+    {
+        return $this->hasMany(VedjustStorage::className(), ['ved_id' => 'id']);
     }
 }

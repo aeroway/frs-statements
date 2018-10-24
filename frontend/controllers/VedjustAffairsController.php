@@ -29,12 +29,12 @@ class VedjustAffairsController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['index', 'create', 'delete', 'update', 'changestatus'],
-                        'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs'],
+                        'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
                     [
                         'allow' => true,
                         'actions' => ['index', 'view'],
-                        'roles' => ['addAudit'],
+                        'roles' => ['addAudit', 'limitAudit'],
                     ],
                 ],
             ],
@@ -56,10 +56,12 @@ class VedjustAffairsController extends Controller
     {
         $searchModel = new VedjustAffairsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $modelAffairs = new VedjustAffairs();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'modelAffairs' => $modelAffairs,
         ]);
     }
 

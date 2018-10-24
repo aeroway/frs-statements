@@ -9,11 +9,11 @@ use Yii;
  *
  * @property int $id
  * @property string $name
- * @property int $area_id
- * @property int $authority_id
+ * @property int $subject_id
+ * @property int $agency_id
  *
- * @property Area $area
- * @property Authority $authority
+ * @property Subject $subject
+ * @property Agency $agency
  * @property User[] $users
  */
 class VedjustSubdivision extends \yii\db\ActiveRecord
@@ -33,9 +33,9 @@ class VedjustSubdivision extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'string'],
-            [['area_id', 'authority_id'], 'integer'],
-            [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustArea::className(), 'targetAttribute' => ['area_id' => 'id']],
-            [['authority_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAuthority::className(), 'targetAttribute' => ['authority_id' => 'id']],
+            [['subject_id', 'agency_id'], 'integer'],
+            [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubject::className(), 'targetAttribute' => ['subject_id' => 'id']],
+            [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],
         ];
     }
 
@@ -47,25 +47,25 @@ class VedjustSubdivision extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
-            'area_id' => 'Area ID',
-            'authority_id' => 'Authority ID',
+            'subject_id' => 'Subject ID',
+            'agency_id' => 'Agency ID',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getArea()
+    public function getSubject()
     {
-        return $this->hasOne(VedjustArea::className(), ['id' => 'area_id']);
+        return $this->hasOne(VedjustSubject::className(), ['id' => 'subject_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthority()
+    public function getAgency()
     {
-        return $this->hasOne(VedjustAuthority::className(), ['id' => 'authority_id']);
+        return $this->hasOne(VedjustAgency::className(), ['id' => 'agency_id']);
     }
 
     /**

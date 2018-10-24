@@ -54,7 +54,7 @@ class User extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'username' => 'Имя пользователя',
+            'username' => 'Сотрудник',
             'auth_key' => 'Auth Key',
             'password_hash' => 'Password Hash',
             'password_reset_token' => 'Password Reset Token',
@@ -75,9 +75,19 @@ class User extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    //отдел
     public function getSubdivision()
     {
         return $this->hasOne(VedjustSubdivision::className(), ['id' => 'subdivision_id']);
+    }
+    
+    public function getSubdivisionName()
+    {
+        if ($this->subdivision != null) {
+            return $this->subdivision->name;
+        } else {
+            return 'не указан';
+        }
     }
     /**
      * @return \yii\db\ActiveQuery
@@ -86,6 +96,18 @@ class User extends \yii\db\ActiveRecord
     {
         return $this->hasOne(VedjustAgency::className(), ['id' => 'agency_id']);
     }
+
+
+        public function getAgencyName()
+    {
+        if (!empty($this->agency) ) {
+            return $this->agency->name;
+        } else {
+            return 'не указан';
+        }
+    }
+
+
     /**
      * @return \yii\db\ActiveQuery
      */

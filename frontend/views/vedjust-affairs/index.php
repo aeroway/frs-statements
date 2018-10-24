@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\grid\GridView;
 use frontend\models\VedjustVed;
+use frontend\models\VedjustStorage;
 use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
@@ -19,54 +20,88 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
+    <?php if (Yii::$app->user->can('editArchive')): ?>
+        <?php $storage = $modelAffairs->getStoragePath(Yii::$app->request->get('id')); ?>
+        <?php if ($storage): ?>
+        <div class="row">
+            <div class="col-md-3 col-sm-4 col-xs-6">
+                <div class="dummy"></div>
+                <div class="thumbnail purple">
+                    <?= '<b>Зал:</b>' . $storage["hall"] . '<br>'; ?>
+                    <?= '<b>Стеллаж:</b>' . $storage["rack"] . '<br>'; ?>
+                    <?= '<b>Шкаф:</b>' . $storage["locker"] . '<br>'; ?>
+                    <?= '<b>Полка:</b>' . $storage["shelf"] . '<br>'; ?>
+                    <?= '<b>Позиция:</b>' . $storage["position"]; ?>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+    <?php endif; ?>
+
     <p>
-        <?php
-        if (($modelVed = VedjustVed::findOne(Yii::$app->request->get('id'))) !== null) {
-            if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id)
-            {
-                echo Html::a('Добавить дело ', ['create', 'id' => !empty(Yii::$app->request->get('id')) ? Yii::$app->request->get('id') : '',], ['class' => 'btn btn-success']) . ' ';
-                echo Html::a('Сформировать', 'javascript:void(0);', 
-                        [
-                            'class' => 'btn btn-success',
-                            'onclick' => 'changeStatusVed(' . Yii::$app->request->get('id') . ');'
-                        ]) . ' ';
-            }
-
-            $target = 0;
-
-            if (Yii::$app->user->can('editMfc') === true)
-                $target = 1;
-            if (Yii::$app->user->can('editZkp') === true)
-                $target = 2;
-            if (Yii::$app->user->can('editRosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
-                $target = 3;
-
-            if ($modelVed->status_id === 2 && $modelVed->target === $target) {
-                echo $modelVed->verified ? '' : Html::a('Принято', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . Yii::$app->request->get('id') . ', 1);']) . ' ';
-
-                echo $modelVed->verified ? '' : Html::a('Частично принято', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . Yii::$app->request->get('id') . ', 2);']);
-            }
-        }
-        ?>
-        <?= Html::a('Экспорт в PDF', ['vedjust-ved/createvedpdf', 'id' => !empty(Yii::$app->request->get('id')) ? Yii::$app->request->get('id') : '',], ['class' => 'btn btn-info']) . ' '; ?>
-        <?php
-            if (
-                    $modelVed->verified === 1 && 
-                    $modelVed->target === 3 && 
-                    $modelVed->ext_reg === 1 && 
-                    $modelVed->ext_reg_created !== 1 && 
-                    Yii::$app->user->can('confirmExtDocs')
-                )
-            {
-                echo Html::button('Переместить в ...',
+    <?php
+    if (($modelVed = VedjustVed::findOne(Yii::$app->request->get('id'))) !== null) {
+        if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id)
+        {
+            echo Html::a('Добавить дело ', ['create', 'id' => !empty(Yii::$app->request->get('id')) ? Yii::$app->request->get('id') : '',], ['class' => 'btn btn-success']) . ' ';
+            echo Html::a('Сформировать', 'javascript:void(0);', 
                     [
-                        'value' => Url::to('index.php?r=vedjust-ved/send-ext-docs&id=' . Yii::$app->request->get('id')),
                         'class' => 'btn btn-success',
-                        'id' => 'modalVedExtDocCreate'
-                    ]
-                );
-            }
+                        'onclick' => 'changeStatusVed(' . Yii::$app->request->get('id') . ');'
+                    ]) . ' ';
+        }
+
+        if ($modelVed->status_id === 2 && $modelVed->user_created_id === Yii::$app->user->identity->id)
+        {
+            echo Html::a('Откатить', 'javascript:void(0);', 
+                    [
+                        'class' => 'btn btn-danger',
+                        'onclick' => 'changeStatusVedReturn(' . Yii::$app->request->get('id') . ');'
+                    ]) . ' ';
+        }
+
+        $target = 0;
+
+        if (Yii::$app->user->can('editMfc') === true)
+            $target = 1;
+        if (Yii::$app->user->can('editZkp') === true)
+            $target = 2;
+        if (Yii::$app->user->can('editRosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
+            $target = 3;
+
+        if ($modelVed->status_id === 2 && $modelVed->target === $target) {
+            echo $modelVed->verified ? '' : Html::a('Принято', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . Yii::$app->request->get('id') . ');']);
+        }
+    }
+    ?>
+    <?= Html::a('Экспорт в PDF', ['vedjust-ved/createvedpdf', 'id' => !empty(Yii::$app->request->get('id')) ? Yii::$app->request->get('id') : '',], ['class' => 'btn btn-info']) . ' '; ?>
+    <?php
+        if (
+                $modelVed->verified === 1 && 
+                $modelVed->target === 3 && 
+                $modelVed->ext_reg === 1 && 
+                $modelVed->ext_reg_created !== 1 && 
+                Yii::$app->user->can('confirmExtDocs')
+            )
+        {
+            echo Html::button('Переместить в ...',
+                [
+                    'value' => Url::to('index.php?r=vedjust-ved/send-ext-docs&id=' . Yii::$app->request->get('id')),
+                    'class' => 'btn btn-success',
+                    'id' => 'modalVedExtDocCreate'
+                ]
+            );
+        }
+    ?>
+
+    <?php // one ved record in storage
+    if (Yii::$app->user->can('editArchive') && 
+        empty(VedjustStorage::find()->where(['ved_id' => Yii::$app->request->get('id')])->one()->ved_id)):
+    ?>
+        <?= Html::a('Поместить в архив', 
+            Url::to('index.php?r=vedjust-storage/create&ved=' . Yii::$app->request->get('id')), ['class' => 'btn btn-success']); 
         ?>
+    <?php endif; ?>
     </p>
 
     <?php
@@ -170,7 +205,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'id' => 'status' . $key,
                                 'value' => $key,
                                 'onclick' => 'changeStatusAffairs(this.value);',
-                                'disabled' => isset($model->ved->verified) && !($model->ved->verified === 0) ? true : false,
+                                'disabled' => (isset($model->ved->verified) && !($model->ved->verified === 0)) || ($model->ved->user_created_id == Yii::$app->user->identity->id) ? true : false,
                             ]
                         );
                     }
@@ -232,6 +267,21 @@ function changeStatusVed(value) {
     {
         type: 'GET',
         url: 'index.php?r=vedjust-ved/changestatus',
+        data: 'id=' + value,
+        success: function(data) { 
+            if (data == 0) {
+                alert('Ошибка обработки.');
+            }
+            location.reload();
+        }
+    });
+}
+
+function changeStatusVedReturn(value) {
+    $.ajax(
+    {
+        type: 'GET',
+        url: 'index.php?r=vedjust-ved/changestatusreturn',
         data: 'id=' + value,
         success: function(data) { 
             if (data == 0) {

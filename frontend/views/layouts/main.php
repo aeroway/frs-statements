@@ -37,9 +37,17 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Главная', 'url' => ['/site/index']],
+        ['label' => 'Ведомости', 'url' => ['/vedjust-ved/index']],
         //['label' => 'О нас', 'url' => ['/site/about']],
         //['label' => 'Контакты', 'url' => ['/site/contact']],
     ];
+
+    if (Yii::$app->user->can('editArchive')) {
+        $menuItems = [
+           ['label' => 'Архивохранилище', 'url' => ['/vedjust-archive/index']],
+        ];
+    }
+
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Регистрация', 'url' => ['/site/signup']];
         $menuItems[] = ['label' => 'Войти', 'url' => ['/site/login']];

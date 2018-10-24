@@ -6,6 +6,9 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use frontend\models\VedjustAgency;
+use frontend\models\VedjustSubject;
+use frontend\models\VedjustSubdivision;
 
 /**
  * User model
@@ -185,5 +188,20 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public function getAgency()
+    {
+        return $this->hasOne(VedjustAgency::className(), ['id' => 'agency_id']);
+    }
+
+    public function getSubject()
+    {
+        return $this->hasOne(VedjustSubject::className(), ['id' => 'subject_id']);
+    }
+
+    public function getSubdivision()
+    {
+        return $this->hasOne(VedjustSubdivision::className(), ['id' => 'subdivision_id']);
     }
 }
