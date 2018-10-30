@@ -16,6 +16,7 @@ use Yii;
  * @property int $ved_id
  * @property int $create_ip
  * @property int $accepted_ip
+ * @property int $p_count
  * @property int $user_created_id
  * @property int $user_accepted_id
  *
@@ -23,6 +24,8 @@ use Yii;
  */
 class VedjustAffairs extends \yii\db\ActiveRecord
 {
+    public static $numIssuance;
+
     /**
      * @inheritdoc
      */
@@ -37,10 +40,10 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['kuvd'], 'required'],
+            [['kuvd', 'p_count'], 'required'],
             [['comment', 'kuvd'], 'string'],
             [['date_create', 'date_status'], 'safe'],
-            [['ved_id', 'status', 'user_created_id', 'user_accepted_id', 'create_ip', 'accepted_ip'], 'integer'],
+            [['ved_id', 'status', 'user_created_id', 'user_accepted_id', 'create_ip', 'accepted_ip', 'p_count'], 'integer'],
             [['ved_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustVed::className(), 'targetAttribute' => ['ved_id' => 'id']],
             [['user_accepted_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_accepted_id' => 'id']],
             [['user_created_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_created_id' => 'id']],
@@ -64,6 +67,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             'user_accepted_id' => 'Принял',
             'create_ip' => 'IP создания',
             'accepted_ip' => 'IP подтверждения',
+            'p_count' => 'Число получателей',
         ];
     }
 
@@ -77,6 +81,29 @@ class VedjustAffairs extends \yii\db\ActiveRecord
         ->one();
 
         return $modelStorage;
+    }
+
+    public function getCheckAffairsIssuance($id)
+    {
+        $modelVed = VedjustVed::find()
+        ->select(['count(*) ct'])
+        ->innerJoin('storage', 'ved.id = storage.ved_id')
+        ->innerJoin('archive', 'storage.archive_id = archive.id')
+        ->where(['and', ['ved.id' => $id], 
+            ['archive.agency_id' => Yii::$app->user->identity->agency_id], 
+            ['archive.subject_id' => Yii::$app->user->identity->subject_id], 
+            ['archive.subdivision_id' => Yii::$app->user->identity->subdivision_id]])
+        ->asArray()
+        ->one();
+
+        return $modelVed["ct"];
+    }
+
+    public function getCountIssuance()
+    {
+        $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $this->id])->asArray()->one()["num"];
+
+        return $numIssuance . ' из ' . $this->p_count;
     }
 
     /**
@@ -101,6 +128,14 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function getUserCreated()
     {
         return $this->hasOne(User::className(), ['id' => 'user_created_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIssuance()
+    {
+        return $this->hasMany(VedjustIssuance::className(), ['affairs_id' => 'id']);
     }
 
 }

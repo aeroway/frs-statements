@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use frontend\models\VedjustAgency;
 use frontend\models\VedjustSubject;
+use frontend\models\VedjustSubdivision;
 use frontend\models\User;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -41,7 +42,8 @@ use yii\helpers\ArrayHelper;
         echo '<div class="form-group"><b>Субъект РФ</b>: ' . VedjustSubject::find()->where(['id' => Yii::$app->user->identity->subject_id])->one()->name . '<div class="help-block"></div></div>';
         echo $form->field($model, 'subject_id')->hiddenInput(['value' => Yii::$app->user->identity->subject_id])->label(false);
 
-        echo '<div class="form-group"><b>Отдел</b>: ' . Yii::$app->user->identity->municipality . '<div class="help-block"></div></div>';
+        echo '<div class="form-group"><b>Отдел</b>: ' . VedjustSubdivision::find()->where(['id' => Yii::$app->user->identity->subdivision_id])->one()->name . '<div class="help-block"></div></div>';
+        echo $form->field($model, 'subdivision_id')->hiddenInput(['value' => Yii::$app->user->identity->subdivision_id])->label(false);
     }
     ?>
 

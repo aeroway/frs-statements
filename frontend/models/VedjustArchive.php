@@ -17,6 +17,7 @@ use Yii;
  * @property int $user_created_id
  * @property int $agency_id
  * @property int $subject_id
+ * @property int $subdivision_id
  * @property string $municipality
  *
  * @property Storage[] $storages
@@ -39,10 +40,11 @@ class VedjustArchive extends \yii\db\ActiveRecord
         return [
             [['name', 'hall_max', 'rack_max', 'locker_max', 'shelf_max', 'position_max'], 'required'],
             [['name', 'municipality'], 'string'],
-            [['user_created_id', 'agency_id', 'subject_id', 'hall_max', 'rack_max', 'locker_max', 'shelf_max', 'position_max'], 'integer'],
+            [['user_created_id', 'agency_id', 'subject_id', 'subdivision_id', 'hall_max', 'rack_max', 'locker_max', 'shelf_max', 'position_max'], 'integer'],
             [['user_created_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_created_id' => 'id']],
             [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubject::className(), 'targetAttribute' => ['subject_id' => 'id']],
+            [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
         ];
     }
 
@@ -62,6 +64,7 @@ class VedjustArchive extends \yii\db\ActiveRecord
             'user_created_id' => 'Сотрудник',
             'agency_id' => 'Орган',
             'subject_id' => 'Субъект РФ',
+            'subdivision_id' => 'Отдел',
             'municipality' => 'Отдел',
         ];
     }
@@ -101,5 +104,13 @@ class VedjustArchive extends \yii\db\ActiveRecord
     public function getSubject()
     {
         return $this->hasOne(VedjustSubject::className(), ['id' => 'subject_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubdivision()
+    {
+        return $this->hasOne(VedjustSubdivision::className(), ['id' => 'subdivision_id']);
     }
 }

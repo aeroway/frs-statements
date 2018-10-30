@@ -4,7 +4,9 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\grid\GridView;
 use frontend\models\VedjustVed;
+use frontend\models\VedjustAffairs;
 use frontend\models\VedjustStorage;
+use frontend\models\VedjustIssuance;
 use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
@@ -21,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?php if (Yii::$app->user->can('editArchive')): ?>
-        <?php $storage = $modelAffairs->getStoragePath(Yii::$app->request->get('id')); ?>
+        <?php //$storage = $modelAffairs->getStoragePath(Yii::$app->request->get('id')); ?>
         <?php if ($storage): ?>
         <div class="row">
             <div class="col-md-3 col-sm-4 col-xs-6">
@@ -147,8 +149,30 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ]);
                     }
                 },
+                'issuance' => function($url, $model, $key)
+                {
+                    $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $model->id])->asArray()->one()["num"];
+
+                    if($model->ved->status_id === 5
+                        && $model->status === 1
+                        && $numIssuance !== $model->p_count
+                        && $model->getCheckAffairsIssuance($model->ved_id)
+                        && Yii::$app->user->can('editIssuance'))
+                    {
+                        $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/issuance', 'id' => $model['id']]);
+
+                        return Html::a('<span class="glyphicon glyphicon-user"></span>', 'javascript:void(0);', 
+                                [
+                                    'title' => Yii::t('yii', 'Выдать дело'),
+                                    'aria-label' => Yii::t('yii', 'Выдать дело'),
+                                    'data-pjax' => '1',
+                                    'onclick' => 'modalAffairIssuanceCreate(this);',
+                                    'value' => $customurl,
+                                ]);
+                    }
+                },
             ],
-            'template' => '{update} {delete}',
+            'template' => '{update} {delete} {issuance}',
         ];
     }
     ?>
@@ -164,6 +188,22 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
 
     echo "<div id='modalVedExtDocContent'></div>";
+
+    Modal::end();
+
+    ?>
+
+    <?php
+    Modal::begin([
+        'options' => [
+            'tabindex' => false
+        ],
+        'header' => 'Выдать дело',
+        'id' => 'modalAffairIssuance',
+        'size' => 'modal-sm',
+    ]);
+
+    echo "<div id='modalAffairIssuanceContent'></div>";
 
     Modal::end();
 
@@ -187,6 +227,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'comment',
             // 'status',
+            [
+                'label' => 'Выдано',
+                'value' => 'countIssuance',
+            ],
             [
                 // 'header' => Html::checkbox('selection_all', false,
                 //     [
@@ -292,4 +336,9 @@ function changeStatusVedReturn(value) {
     });
 }
 
+function modalAffairIssuanceCreate(value) {
+    $('#modalAffairIssuance').modal('show')
+        .find('#modalAffairIssuanceContent')
+        .load($(value).attr('value'));
+}
 </script>

@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use frontend\models\VedjustVed;
 use frontend\models\VedjustAffairs;
+use frontend\models\VedjustIssuance;
 use frontend\models\VedjustAffairsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -28,7 +29,7 @@ class VedjustAffairsController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus'],
+                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'issuance'],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
                     [
@@ -52,16 +53,16 @@ class VedjustAffairsController extends Controller
      * Lists all VedjustAffairs models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($id)
     {
         $searchModel = new VedjustAffairsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $modelAffairs = new VedjustAffairs();
+        $model = new VedjustAffairs();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'modelAffairs' => $modelAffairs,
+            'storage' => $model->getStoragePath($id),
         ]);
     }
 
@@ -127,6 +128,30 @@ class VedjustAffairsController extends Controller
         ]);
     }
 
+    public function actionIssuance($id)
+    {
+        $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $id])->asArray()->one()["num"];
+        ($numIssuance > 0) ? $nameIssuance = VedjustIssuance::find()->select(['name'])->where(['affairs_id' => $id])->asArray()->all() : $nameIssuance = [];
+        $model = $this->findModel($id);
+        $modelIssuance = new VedjustIssuance();
+
+        if ($model->ved->status_id === 5 && $model->status === 1 && $numIssuance !== $model->p_count && $model->getCheckAffairsIssuance($model->ved_id) && Yii::$app->user->can('editIssuance')) {
+            if ($modelIssuance->load(Yii::$app->request->post()) && $modelIssuance->save()) {
+                return $this->redirect(['index', 'id' => $model->ved_id]);
+            }
+
+            return $this->renderAjax('createIssuance', [
+                'modelIssuance' => $modelIssuance,
+                'idVed' => $id,
+                'numIssuance' => $numIssuance,
+                'p_count' => $model->p_count,
+                'nameIssuance' => $nameIssuance,
+            ]);
+        }
+
+        return $this->redirect(['index', 'id' => $model->ved_id]);
+    }
+
     /**
      * Deletes an existing VedjustAffairs model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -185,4 +210,5 @@ class VedjustAffairsController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
 }
