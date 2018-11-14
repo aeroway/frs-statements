@@ -232,12 +232,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'countIssuance',
             ],
             [
-                // 'header' => Html::checkbox('selection_all', false,
-                //     [
-                //         'class' => 'select-on-check-all',
-                //         'value' => 1,
-                //         'onclick' => '$(".kv-row-checkbox").prop("checked", $(this).is(":checked"));'
-                //     ]),
+                'header' => (function($model) { return ($model->ved->status_id) === 2 ? true : false; } && !Yii::$app->user->can('addAudit')) ?
+                    Html::checkbox('selection_all', false,
+                    [
+                        'class' => 'select-on-check-all',
+                        'value' => 1,
+                        'onclick' => '$(".kv-row-checkbox").prop("checked", $(this).is(":checked")); selectionAll();',
+                    ]) : '',
                 'contentOptions' => ['class' => 'kv-row-select'],
                 'content' => function($model, $key) {
                     if ($model->ved->status_id === 2 && !Yii::$app->user->can('addAudit'))
@@ -276,6 +277,16 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <script>
+function selectionAll() {
+    var elements = document.querySelectorAll('input.kv-row-checkbox');
+
+    for (var i = 0; i < elements.length; i++) {
+        if (!elements[i].disabled) {
+            changeStatusAffairs(elements[i].value);
+        }
+    }
+}
+
 function changeStatusAffairs(value) {
     var checkStatus = document.getElementById("status" + value).checked;
 

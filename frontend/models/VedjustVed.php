@@ -79,7 +79,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             'user_accepted_id' => 'Подтвердил',
             'user_formed_id' => 'Сформировал',
             'verified' => 'Проверено',
-            'target' => 'Назначение',
+            'target' => 'Получатель',
             'create_ip' => 'IP создания',
             'formed_ip' => 'IP формирования',
             'accepted_ip' => 'IP подтверждения',
@@ -135,7 +135,7 @@ class VedjustVed extends \yii\db\ActiveRecord
                 return 'Куда-то';
         }
 
-        return $target . ' ( ' . $this->subdivision->name . ')';
+        return $target . ' (' . $this->subdivision->name . ')';
     }
 
     public function getVedPdf()

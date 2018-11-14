@@ -188,7 +188,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'user_created_id',
                 'label' => 'Источник',
                 'content' => function($model) {
-                    return $model->userCreated->AgencyName . ' ( ' . $model->userCreated->SubdivisionName . ')';
+                    return $model->userCreated->AgencyName . ' (' . $model->userCreated->SubdivisionName . ')';
                 }
             ],
             // [

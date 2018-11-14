@@ -67,7 +67,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             'user_accepted_id' => 'Принял',
             'create_ip' => 'IP создания',
             'accepted_ip' => 'IP подтверждения',
-            'p_count' => 'Число получателей',
+            'p_count' => 'Число заявителей',
         ];
     }
 

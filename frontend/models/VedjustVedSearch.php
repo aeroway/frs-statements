@@ -110,12 +110,13 @@ class VedjustVedSearch extends VedjustVed
             'formed_ip' => $this->formed_ip,
             'accepted_ip' => $this->accepted_ip,
             'ext_reg' => $this->ext_reg,
-            'a.kuvd' => $this->kuvd_affairs,
+            //'a.kuvd' => $this->kuvd_affairs,
             'target' => $this->target,
         ]);
 
         $query->andFilterWhere(['like', 'num_ved', $this->num_ved])
             ->andFilterWhere(['like', 's.name', $this->status_id])
+            ->andFilterWhere(['like', 'a.kuvd', $this->kuvd_affairs])
             ->andFilterWhere(['like', 'uc.email', $this->user_created_id])
             ->andFilterWhere(['like', 'au.name', $this->archive_unit_id])
             ->andFilterWhere(['like', 'v.comment', $this->comment])
