@@ -14,7 +14,7 @@ use yii\bootstrap\Modal;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->params['breadcrumbs'][] = ['label' => 'Ведомости', 'url' => ['vedjust-ved/index']];
-$this->title = 'Ведомость №' . Yii::$app->request->get('id');
+$this->title = 'Ведомость №' . $idVed;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="vedjust-affairs-index">
@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?php if (Yii::$app->user->can('editArchive')): ?>
-        <?php //$storage = $modelAffairs->getStoragePath(Yii::$app->request->get('id')); ?>
+        <?php //$storage = $modelAffairs->getStoragePath($idVed); ?>
         <?php if ($storage): ?>
         <div class="row">
             <div class="col-md-3 col-sm-4 col-xs-6">
@@ -42,14 +42,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
     <?php
-    if (($modelVed = VedjustVed::findOne(Yii::$app->request->get('id'))) !== null) {
+    if (($modelVed = VedjustVed::findOne($idVed)) !== null) {
         if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id)
         {
-            echo Html::a('Добавить дело ', ['create', 'id' => !empty(Yii::$app->request->get('id')) ? Yii::$app->request->get('id') : '',], ['class' => 'btn btn-success']) . ' ';
+            echo Html::a('Добавить дело ', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']) . ' ';
             echo Html::a('Сформировать', 'javascript:void(0);', 
                     [
                         'class' => 'btn btn-success',
-                        'onclick' => 'changeStatusVed(' . Yii::$app->request->get('id') . ');'
+                        'onclick' => 'changeStatusVed(' . $modelVed->id . ');'
                     ]) . ' ';
         }
 
@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
             echo Html::a('Откатить', 'javascript:void(0);', 
                     [
                         'class' => 'btn btn-danger',
-                        'onclick' => 'changeStatusVedReturn(' . Yii::$app->request->get('id') . ');'
+                        'onclick' => 'changeStatusVedReturn(' . $modelVed->id . ');'
                     ]) . ' ';
         }
 
@@ -66,42 +66,49 @@ $this->params['breadcrumbs'][] = $this->title;
 
         if (Yii::$app->user->can('editMfc') === true)
             $target = 1;
+
         if (Yii::$app->user->can('editZkp') === true)
             $target = 2;
+
         if (Yii::$app->user->can('editRosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
             $target = 3;
 
         if ($modelVed->status_id === 2 && $modelVed->target === $target) {
-            echo $modelVed->verified ? '' : Html::a('Принято', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . Yii::$app->request->get('id') . ');']);
+            echo $modelVed->verified ? '' : 
+                Html::a('Принято', 'javascript:void(0);', 
+                    ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . $modelVed->id . ');']
+                );
         }
     }
     ?>
-    <?= Html::a('Экспорт в PDF', ['vedjust-ved/createvedpdf', 'id' => !empty(Yii::$app->request->get('id')) ? Yii::$app->request->get('id') : '',], ['class' => 'btn btn-info']) . ' '; ?>
+
+    <?= Html::a('Экспорт в PDF', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => 'btn btn-info']) . ' '; ?>
+
     <?php
-        if (
-                $modelVed->verified === 1 && 
-                $modelVed->target === 3 && 
-                $modelVed->ext_reg === 1 && 
-                $modelVed->ext_reg_created !== 1 && 
-                Yii::$app->user->can('confirmExtDocs')
-            )
-        {
-            echo Html::button('Переместить в ...',
-                [
-                    'value' => Url::to('index.php?r=vedjust-ved/send-ext-docs&id=' . Yii::$app->request->get('id')),
-                    'class' => 'btn btn-success',
-                    'id' => 'modalVedExtDocCreate'
-                ]
-            );
-        }
+    if (
+            $modelVed->verified === 1 && 
+            $modelVed->target === 3 && 
+            $modelVed->ext_reg === 1 && 
+            $modelVed->ext_reg_created !== 1 && 
+            Yii::$app->user->can('confirmExtDocs')
+        )
+    {
+        echo Html::button('Переместить в ...',
+            [
+                'value' => Url::to('index.php?r=vedjust-ved/send-ext-docs&id=' . $modelVed->id),
+                'class' => 'btn btn-success',
+                'id' => 'modalVedExtDocCreate'
+            ]
+        );
+    }
     ?>
 
     <?php // one ved record in storage
     if (Yii::$app->user->can('editArchive') && 
-        empty(VedjustStorage::find()->where(['ved_id' => Yii::$app->request->get('id')])->one()->ved_id)):
+        empty(VedjustStorage::find()->where(['ved_id' => $modelVed->id])->one()->ved_id)):
     ?>
         <?= Html::a('Поместить в архив', 
-            Url::to('index.php?r=vedjust-storage/create&ved=' . Yii::$app->request->get('id')), ['class' => 'btn btn-success']); 
+            Url::to('index.php?r=vedjust-storage/create&ved=' . $modelVed->id), ['class' => 'btn btn-success']); 
         ?>
     <?php endif; ?>
     </p>
@@ -137,7 +144,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'update' => function($url, $model, $key)
                 {
-                    if($model->ved->status_id === 1)
+                    //редактировать - статус "создаётся" или статус "принято" и тот, кто принял
+                    if ($model->ved->status_id === 1 || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id))
                     {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/update','id' => $model['id']]);
 
@@ -190,7 +198,6 @@ $this->params['breadcrumbs'][] = $this->title;
     echo "<div id='modalVedExtDocContent'></div>";
 
     Modal::end();
-
     ?>
 
     <?php
@@ -206,7 +213,6 @@ $this->params['breadcrumbs'][] = $this->title;
     echo "<div id='modalAffairIssuanceContent'></div>";
 
     Modal::end();
-
     ?>
 
     <?= GridView::widget([
@@ -250,7 +256,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'id' => 'status' . $key,
                                 'value' => $key,
                                 'onclick' => 'changeStatusAffairs(this.value);',
-                                'disabled' => (isset($model->ved->verified) && !($model->ved->verified === 0)) || ($model->ved->user_created_id == Yii::$app->user->identity->id) ? true : false,
+                                'disabled' => (isset($model->ved->verified) && !($model->ved->verified === 0)) || 
+                                    ($model->ved->user_created_id == Yii::$app->user->identity->id) ? true : false,
                             ]
                         );
                     }
@@ -273,7 +280,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
             $buttons,
         ],
-    ]); ?>
+    ]);
+    ?>
 </div>
 
 <script>

@@ -44,10 +44,18 @@ class VedjustVedSearch extends VedjustVed
     public function search($params)
     {
         //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
-        $userSd = User::find()
-            ->alias('us')
-            ->select(['us.id'])
-            ->where(['=', 'us.subdivision_id', Yii::$app->user->identity->subdivision_id]);
+        //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
+        if (Yii::$app->user->identity->agency_id == 2) {
+            $userSd = User::find()
+                ->alias('us')
+                ->select(['us.id'])
+                ->where(['=', 'us.agency_id', Yii::$app->user->identity->agency_id]);
+        } else {
+            $userSd = User::find()
+                ->alias('us')
+                ->select(['us.id'])
+                ->where(['=', 'us.subdivision_id', Yii::$app->user->identity->subdivision_id]);
+        }
 
         if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
             $query = VedjustVed::find()

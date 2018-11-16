@@ -24,7 +24,16 @@ use frontend\models\VedjustVed;
     }
     ?>
 
-    <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus']) ?>
+    <?php if(strpos(Yii::$app->request->get("r"), 'update')) : ?>
+        <?php if ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id) : ?>
+        <?php else : ?>
+            <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus']); ?>
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if(strpos(Yii::$app->request->get("r"), 'create')) : ?>
+        <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus']) ?>
+    <?php endif; ?>
 
     <?= $form->field($model, 'comment')->textArea() ?>
 

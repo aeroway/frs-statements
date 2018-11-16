@@ -166,7 +166,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'id',
-                'label' => '№ ведомости',
+                'label' => '№ вед.',
                 'value' => function($data) {
                     return Html::a(Html::encode($data->id), ['vedjust-affairs/index', 'id' => $data['id']]);
                 },
