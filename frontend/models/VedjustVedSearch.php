@@ -109,8 +109,8 @@ class VedjustVedSearch extends VedjustVed
         // grid filtering conditions
         $query->andFilterWhere([
             'v.id' => $this->id,
-            'v.date_create' => $this->date_create,
-            'date_reception' => $this->date_reception,
+            'v.date_create' => $this->date_create ? date('Y-m-d', strtotime($this->date_create)) : $this->date_create,
+            'date_reception' => $this->date_reception ? date('Y-m-d', strtotime($this->date_reception)) : $this->date_reception,
             'date_formed' => $this->date_formed,
             'user_formed_id' => $this->user_formed_id,
             'verified' => $this->verified,

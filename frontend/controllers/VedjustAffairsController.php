@@ -115,7 +115,7 @@ class VedjustAffairsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->ved->status_id === 1 || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id)) {
+        if (($model->ved->status_id === 1 || $model->ved->status_id === 3) && $model->user_created_id === Yii::$app->user->identity->id) {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 return $this->redirect(['index', 'id' => $model->ved_id]);
             }
@@ -163,7 +163,7 @@ class VedjustAffairsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->ved->status_id !== 1)
+        if ($model->ved->status_id !== 1 || $model->user_created_id !== Yii::$app->user->identity->id)
         {
             throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
         }

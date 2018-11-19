@@ -17,14 +17,16 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
+        <?php if ($model->subdivision_id === Yii::$app->user->identity->subdivision_id) : ?>
+            <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?php endif; ?>
+        <?php /*echo Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ])*/ ?>
     </p>
 
     <?= DetailView::widget([
@@ -40,10 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'userCreated.username',
             'agency.name',
             'subject.name',
-            [
-                'label' => 'Муниципальное образование',
-                'attribute' => 'municipality'
-            ],
+            'subdivision.name',
         ],
     ]) ?>
 

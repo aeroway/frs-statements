@@ -29,10 +29,11 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
+        'innerContainerOptions' => ['class' => 'container-fluid'],
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
+            'class' => 'navbar-inverse',
         ],
     ]);
     $menuItems = [
@@ -68,7 +69,7 @@ AppAsset::register($this);
     NavBar::end();
     ?>
 
-    <div class="container">
+    <div class="container-fluid">
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
@@ -78,7 +79,7 @@ AppAsset::register($this);
 </div>
 
 <footer class="footer">
-    <div class="container">
+    <div class="container-fluid">
         <p class="pull-left">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>

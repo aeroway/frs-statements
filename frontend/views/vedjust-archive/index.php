@@ -23,6 +23,32 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Создать запись', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
+    <?php
+    $buttons =
+    [
+        'class' => 'yii\grid\ActionColumn',
+        'buttons' =>
+        [
+            'update' => function($url, $model, $key)
+            {
+                // редактировать может тот, кто принял
+                if ($model->subdivision_id === Yii::$app->user->identity->subdivision_id)
+                {
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-archive/update','id' => $model['id']]);
+
+                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $customurl, 
+                            [
+                                'title' => Yii::t('yii', 'Update'),
+                                'aria-label' => Yii::t('yii', 'Update'),
+                                'data-pjax' => '0',
+                            ]);
+                }
+            },
+        ],
+        'template' => '{view} {update}',
+    ];
+    ?>
+
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -32,8 +58,12 @@ $this->params['breadcrumbs'][] = $this->title;
             //'id',
             'name',
             [
-                'attribute' => 'user_created_id',
+                'label' => 'e-mail',
                 'value' => 'userCreated.username',
+            ],
+            [
+                'attribute' => 'user_created_id',
+                'value' => 'userCreated.full_name',
             ],
             [
                 'attribute' => 'agency_id',
@@ -43,9 +73,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'subject_id',
                 'value' => 'subject.name',
             ],
-            'municipality',
+            [
+                'attribute' => 'subdivision_id',
+                'value' => 'subdivision.name',
+            ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            $buttons,
         ],
     ]); ?>
     <?php //Pjax::end(); ?>

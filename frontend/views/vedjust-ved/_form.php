@@ -43,6 +43,7 @@ use yii\bootstrap\ActiveForm;
             'options' => [
                 'placeholder' => 'Выберите единицу архивного хранения',
                 'value' => 1,
+                'onchange' => 'changeExtReg(this.value);'
             ],
             'pluginOptions' => [
                 'allowClear' => true
@@ -97,6 +98,16 @@ function changeVals() {
             }
         }
     });
+
+}
+
+function changeExtReg(value) {
+
+    if (value == 4) {
+        document.getElementById('vedjustved-ext_reg').disabled = true;
+    } else {
+        document.getElementById('vedjustved-ext_reg').disabled = false;
+    }
 
 }
 </script>

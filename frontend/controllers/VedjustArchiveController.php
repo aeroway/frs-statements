@@ -105,13 +105,19 @@ class VedjustArchiveController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        if ($model->subdivision_id === Yii::$app->user->identity->subdivision_id) {
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            return $this->render('update', [
+                'model' => $model,
+            ]);
+
+        } else {
+            throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
+        }
     }
 
     /**

@@ -217,6 +217,11 @@ class VedjustVedController extends Controller
             throw new ForbiddenHttpException('Вы не можете удалить сформированную заявку.');
         }
 
+        if ($model->user_created_id !== Yii::$app->user->identity->id)
+        {
+            throw new ForbiddenHttpException('Вы не можете удалить чужую заявку.');
+        }
+
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

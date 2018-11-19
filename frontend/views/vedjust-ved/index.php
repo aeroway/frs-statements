@@ -7,6 +7,8 @@ use kartik\export\ExportMenu;
 use yii\widgets\Pjax;
 use yii\bootstrap\Modal;
 use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
+use frontend\models\VedjustAgency;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\VedjustVedSearch */
@@ -55,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'delete' => function($url, $model, $key)
                 {
-                    if($model->status_id === 1) 
+                    if($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
                     {
                         return Html::a('<span class="glyphicon glyphicon-trash"></span>', 
                                 ['vedjust-ved/delete','id' => $model['id']], 
@@ -101,13 +103,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $data->userCreated->username;
             },
         ],
-        //[
-//            'attribute' => 'user_created_id',
-//            //'value' => 'userAccepted.username',
-//            'content'=>function($model){
-//                return $model->user_created_id;
-//            }
-//        ],
+        // [
+        //     'attribute' => 'user_created_id',
+        //     'value' => 'userAccepted.username',
+        //     'content'=>function($model){
+        //         return $model->user_created_id;
+        //     }
+        // ],
         [
             'attribute' => 'user_accepted_id',
             'value' => 'userAccepted.username',
@@ -175,7 +177,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'date_create',
                 'label' => 'Создано',
-                'format' =>  ['date', 'php:d M Y'],
+                'format' =>  ['date', 'php:d.m.Y'],
             ],
             [
                 'attribute' => 'status_id',
@@ -185,7 +187,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'html',
             ],
             [
-                'attribute' => 'user_created_id',
+                // 'attribute' => 'user_created_id',
                 'label' => 'Источник',
                 'content' => function($model) {
                     return $model->userCreated->AgencyName . ' (' . $model->userCreated->SubdivisionName . ')';
@@ -202,19 +204,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'target',
                 'label' => 'Получатель',
                 'value' => 'targetRecipient',
-                'filter' => ['1' => 'МФЦ', '2' => 'ФКП', '3' => 'Росреестр'],
+                'filter' => ArrayHelper::map(VedjustAgency::find()->asArray()->all(), 'id', 'name'),
             ],
             // [
             //     'attribute' => 'user_accepted_id',
             //     'content'=>function($model) {
             //         return (!empty($model->userAccepted)) ? 
-            //             $model->userAccepted->AgencyName . ' ( ' . $model->userAccepted->SubdivisionName . ')' : '';
+            //             $model->userAccepted->AgencyName . ' (' . $model->userAccepted->SubdivisionName . ')' : '';
             //     }
             // ],
             [
                 'attribute' => 'date_reception',
-                'label' => 'Подтверждено',
-                'format' =>  ['date', 'php:d M Y'],
+                'label' => 'Принято',
+                'format' =>  ['date', 'php:d.m.Y'],
             ],
             [
                 'attribute' => 'ext_reg',

@@ -46,7 +46,7 @@ class VedjustSubdivision extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Отдел',
             'subject_id' => 'Subject ID',
             'agency_id' => 'Agency ID',
         ];

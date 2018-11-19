@@ -18,7 +18,6 @@ use Yii;
  * @property int $agency_id
  * @property int $subject_id
  * @property int $subdivision_id
- * @property string $municipality
  *
  * @property Storage[] $storages
  */
@@ -39,7 +38,7 @@ class VedjustArchive extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'hall_max', 'rack_max', 'locker_max', 'shelf_max', 'position_max'], 'required'],
-            [['name', 'municipality'], 'string'],
+            [['name'], 'string'],
             [['user_created_id', 'agency_id', 'subject_id', 'subdivision_id', 'hall_max', 'rack_max', 'locker_max', 'shelf_max', 'position_max'], 'integer'],
             [['user_created_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_created_id' => 'id']],
             [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],
@@ -65,7 +64,6 @@ class VedjustArchive extends \yii\db\ActiveRecord
             'agency_id' => 'Орган',
             'subject_id' => 'Субъект РФ',
             'subdivision_id' => 'Отдел',
-            'municipality' => 'Отдел',
         ];
     }
 

@@ -63,8 +63,8 @@ class VedjustAffairsSearch extends VedjustAffairs
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'date_create' => $this->date_create,
-            'date_status' => $this->date_status,
+            'date_create' => $this->date_create ? date('Y-m-d', strtotime($this->date_create)) : $this->date_create,
+            'date_status' => $this->date_status ? date('Y-m-d', strtotime($this->date_status)) : $this->date_status,
             'user_created_id' => $this->user_created_id,
             'user_accepted_id' => $this->user_accepted_id,
             'create_ip' => $this->create_ip,

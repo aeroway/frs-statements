@@ -62,6 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]) . ' ';
         }
 
+        // принять может тот, кому было отправлено
         $target = 0;
 
         if (Yii::$app->user->can('editMfc') === true)
@@ -128,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'delete' => function($url, $model, $key)
                 {
-                    if($model->ved->status_id === 1)
+                    if($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
                     {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/delete','id' => $model['id']]);
 
@@ -145,7 +146,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'update' => function($url, $model, $key)
                 {
                     //редактировать - статус "создаётся" или статус "принято" и тот, кто принял
-                    if ($model->ved->status_id === 1 || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id))
+                    if (($model->ved->status_id === 1 || $model->ved->status_id === 3) && $model->user_created_id === Yii::$app->user->identity->id)
                     {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/update','id' => $model['id']]);
 
@@ -224,12 +225,14 @@ $this->params['breadcrumbs'][] = $this->title;
             //'id',
             'kuvd',
             [
+                'label' => 'Создано',
                 'attribute' => 'date_create',
-                'format' =>  ['date', 'php:d M Y h:i:s'],
+                'format' =>  ['date', 'php:d.m.Y'],
             ],
             [
+                'label' => 'Подтверждено',
                 'attribute' => 'date_status',
-                'format' =>  ['date', 'php:d M Y h:i:s'],
+                'format' =>  ['date', 'php:d.m.Y'],
             ],
             'comment',
             // 'status',
@@ -238,13 +241,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'countIssuance',
             ],
             [
-                'header' => (function($model) { return ($model->ved->status_id) === 2 ? true : false; } && !Yii::$app->user->can('addAudit')) ?
+                'header' =>
                     Html::checkbox('selection_all', false,
                     [
                         'class' => 'select-on-check-all',
                         'value' => 1,
                         'onclick' => '$(".kv-row-checkbox").prop("checked", $(this).is(":checked")); selectionAll();',
-                    ]) : '',
+                    ]),
                 'contentOptions' => ['class' => 'kv-row-select'],
                 'content' => function($model, $key) {
                     if ($model->ved->status_id === 2 && !Yii::$app->user->can('addAudit'))
@@ -285,6 +288,13 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <script>
+// удалить "выбрать все", если отсутствуют чекбокс на каждом деле
+if (document.getElementsByClassName("kv-row-checkbox").length === 0) {
+    var element = document.getElementsByClassName("select-on-check-all");
+    element[0].parentNode.removeChild(element[0]);
+}
+
+// выбрать все записи
 function selectionAll() {
     var elements = document.querySelectorAll('input.kv-row-checkbox');
 

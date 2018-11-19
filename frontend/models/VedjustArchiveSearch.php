@@ -19,7 +19,7 @@ class VedjustArchiveSearch extends VedjustArchive
     {
         return [
             [['id'], 'integer'],
-            [['name', 'municipality', 'user_created_id', 'agency_id', 'subject_id'], 'safe'],
+            [['name', 'subdivision_id', 'user_created_id', 'agency_id', 'subject_id'], 'safe'],
         ];
     }
 
@@ -60,17 +60,18 @@ class VedjustArchiveSearch extends VedjustArchive
         $query->innerJoinWith('userCreated', false);
         $query->innerJoinWith('agency', false);
         $query->innerJoinWith('subject', false);
+        $query->innerJoinWith('subdivision', false);
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'user.username' => $this->user_created_id,
-            'agency.name' => $this->agency_id,
-            'subject.name' => $this->subject_id,
         ]);
 
         $query->andFilterWhere(['like', 'archive.name', $this->name])
-            ->andFilterWhere(['like', 'archive.municipality', $this->municipality]);
+            ->andFilterWhere(['like', 'user.full_name', $this->user_created_id])
+            ->andFilterWhere(['like', 'agency.name', $this->agency_id])
+            ->andFilterWhere(['like', 'subject.name', $this->subject_id])
+            ->andFilterWhere(['like', 'subdivision.name', $this->subdivision_id]);
 
         return $dataProvider;
     }
