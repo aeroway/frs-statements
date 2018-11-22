@@ -51,7 +51,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?= $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
                     'language' => 'ru',
-                    'options' => ['placeholder' => 'Выберите или введите название'],
+                    'options' => ['placeholder' => 'Выберите или введите название', 'onchange' => 'changeStatusAddress(this.value);'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'tags' => true,
+                        'disabled' => true,
+                    ],
+                ]);
+                ?>
+
+                <?= $form->field($model, 'address_id')->widget(Select2::classname(), [
+                    'language' => 'ru',
+                    'options' => ['placeholder' => 'Выберите адрес'],
                     'pluginOptions' => [
                         'allowClear' => true,
                         'tags' => true,
@@ -81,6 +92,14 @@ function changeStatusSubject(value) {
         document.getElementById('signupform-subdivision_id').disabled = false;
     } else {
         document.getElementById('signupform-subdivision_id').disabled = true;
+    }
+}
+
+function changeStatusAddress(value) {
+    if (value) {
+        document.getElementById('signupform-address_id').disabled = false;
+    } else {
+        document.getElementById('signupform-address_id').disabled = true;
     }
 }
 </script>

@@ -33,6 +33,8 @@
                     {
                         //alert('Данные получены.');
                         $("#signupform-subdivision_id").empty();
+                        $("#signupform-address_id").empty();
+                        $("#signupform-subdivision_id").append("<option disabled selected>Выберите или введите название</option>");
                         $("#signupform-subdivision_id").append($(data));
                     }
                 }
@@ -40,13 +42,44 @@
         }
     }
 
-    $( "#signupform-subject_id" ).change(function()
-    {
+    /* Список адресов */
+    function changeAddress() {
+        if($("select#signupform-subdivision_id").val() != null) {
+            $.ajax(
+            {
+                type: 'GET',
+                url: 'index.php?r=site/address',
+                data: 'subdivision_id=' + $("select#signupform-subdivision_id").val(),
+                success: function(data)
+                {
+                    if (data == 0)
+                    {
+                        //alert('Данные отсутствуют.');
+                        $("#signupform-address_id").empty();
+                        $("#signupform-address_id").append( $('<option value="">Нет данных</option>'));
+                    }
+                    else
+                    {
+                        //alert('Данные получены.');
+                        $("#signupform-address_id").empty();
+                        $("#signupform-address_id").append("<option disabled selected>Выберите адрес</option>");
+                        $("#signupform-address_id").append($(data));
+                    }
+                }
+            });
+        }
+    }
+
+    $( "#signupform-subject_id" ).change(function() {
         changeValues();
     });
 
-    $( "#signupform-agency_id" ).change(function()
-    {
+    $( "#signupform-agency_id" ).change(function() {
         changeValues();
     });
+
+    $( "#signupform-subdivision_id" ).change(function() {
+        changeAddress();
+    });
+
 });

@@ -9,6 +9,7 @@ use yii\web\IdentityInterface;
 use frontend\models\VedjustAgency;
 use frontend\models\VedjustSubject;
 use frontend\models\VedjustSubdivision;
+use frontend\models\VedjustAddress;
 
 /**
  * User model
@@ -203,5 +204,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function getSubdivision()
     {
         return $this->hasOne(VedjustSubdivision::className(), ['id' => 'subdivision_id']);
+    }
+
+    public function getAddress()
+    {
+        return $this->hasOne(VedjustAddress::className(), ['id' => 'address_id']);
     }
 }

@@ -25,6 +25,7 @@ use kartik\mpdf\Pdf;
  * @property int $accepted_ip
  * @property int $archive_unit_id
  * @property int $subdivision_id
+ * @property int $address_id
  * @property int $ext_reg
  * @property int $ext_reg_created
  *
@@ -49,16 +50,17 @@ class VedjustVed extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['target'], 'required'],
+            [['target', 'subdivision_id'], 'required'],
             [['date_create', 'date_reception', 'date_formed'], 'safe'],
             [['num_ved', 'comment'], 'string'],
-            [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'ext_reg', 'ext_reg_created'], 'integer'],
+            [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'address_id', 'ext_reg', 'ext_reg_created'], 'integer'],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustStatus::className(), 'targetAttribute' => ['status_id' => 'id']],
             [['user_accepted_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_accepted_id' => 'id']],
             [['user_created_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_created_id' => 'id']],
             [['user_formed_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_formed_id' => 'id']],
             [['archive_unit_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustArchiveUnit::className(), 'targetAttribute' => ['archive_unit_id' => 'id']],
             [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
+            [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAddress::className(), 'targetAttribute' => ['address_id' => 'id']],
         ];
     }
 
@@ -86,6 +88,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             'kuvd_affairs' => 'КУВД дела',
             'archive_unit_id' => 'Ед. арх. хранения',
             'subdivision_id' => 'Отдел',
+            'address_id' => 'Адрес',
             'storage_id' => 'Архивохранилище',
             'ext_reg' => 'Экстерриториальная регистрация',
             'ext_reg_created' => 'Перемещено в таблицу экстер. документов',
@@ -148,9 +151,10 @@ class VedjustVed extends \yii\db\ActiveRecord
             ->all();
 
         $modelVed = VedjustVed::find()
-            ->select("archive_unit.name_rp")
+            ->select("archive_unit.name_rp, address.name, ved.user_created_id, ved.user_accepted_id")
             ->asArray()
             ->leftJoin('archive_unit', 'archive_unit.id = ved.archive_unit_id')
+            ->leftJoin('address', 'address.id = ved.address_id')
             ->where(["ved.id" => $this->id])
             ->one();
 
@@ -161,6 +165,7 @@ class VedjustVed extends \yii\db\ActiveRecord
         <div style='text-align: center;'>
             <h1>Ведомость " . $modelVed['name_rp'] . " №$this->id</h1>
             <h2>от $dateCreate</h2>
+            <h3>" . $modelVed['name'] . "</h3>
         </div>
         <div>
         <table border='1' cellpadding='3' width='100%' cellspacing='0'>
@@ -169,6 +174,7 @@ class VedjustVed extends \yii\db\ActiveRecord
                 <td>КУВД</td>
                 <td>Комментарий</td>
             </tr>";
+
         $i = 0;
         foreach ($modelAffairs as $value) {
             $i++;
@@ -182,12 +188,15 @@ class VedjustVed extends \yii\db\ActiveRecord
             ";
         }
 
+        $usCrName = User::find()->select(['full_name'])->where(['id' => $modelVed['user_created_id']])->one();
+        $usAcName = User::find()->select(['full_name'])->where(['id' => $modelVed['user_accepted_id']])->one();
+
         $content .=
         "</table>
         </div>
         <div>
-        <p>ФИО передал __________________________</p>
-        <p>ФИО принял ___________________________</p>
+        <p>ФИО передал: <u>" . (empty($usCrName) ? '' : $usCrName->full_name) . "</u></p>
+        <p>ФИО принял: <u>" . (empty($usAcName) ? '' : $usAcName->full_name) . "</u></p>
         </div>
         ";
 
@@ -274,6 +283,14 @@ class VedjustVed extends \yii\db\ActiveRecord
     public function getSubdivision()
     {
         return $this->hasOne(VedjustSubdivision::className(), ['id' => 'subdivision_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAddress()
+    {
+        return $this->hasOne(VedjustAddress::className(), ['id' => 'address_id']);
     }
 
     /**

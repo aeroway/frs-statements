@@ -246,6 +246,10 @@ $this->params['breadcrumbs'][] = $this->title;
             //     'value' => 'IconStatus',
             //     'contentOptions' => ['style'=>'text-align: center; width: 65px;'],
             // ],
+            [
+                'attribute' => 'address_id',
+                'value' => 'address.name',
+            ],
             'comment',
 
             $buttons,

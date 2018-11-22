@@ -21,7 +21,7 @@ class VedjustVedSearch extends VedjustVed
     {
         return [
             [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target'], 'integer'],
-            [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 'user_accepted_id', 'archive_unit_id', 'comment'], 'safe'],
+            [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 'user_accepted_id', 'archive_unit_id', 'comment', 'address_id'], 'safe'],
         ];
     }
 
@@ -104,6 +104,7 @@ class VedjustVedSearch extends VedjustVed
         $query->joinWith('userCreated uc');
         $query->joinWith('userAccepted ua');
         $query->joinWith('archiveUnit au');
+        $query->joinWith('address adr');
         $query->orderBy(['v.id' => SORT_DESC]);
 
         // grid filtering conditions
@@ -128,6 +129,7 @@ class VedjustVedSearch extends VedjustVed
             ->andFilterWhere(['like', 'uc.email', $this->user_created_id])
             ->andFilterWhere(['like', 'au.name', $this->archive_unit_id])
             ->andFilterWhere(['like', 'v.comment', $this->comment])
+            ->andFilterWhere(['like', 'adr.name', $this->address_id])
             ->andFilterWhere(['like', 'ua.email', $this->user_accepted_id]);
 
         return $dataProvider;

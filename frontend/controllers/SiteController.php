@@ -13,6 +13,7 @@ use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use frontend\models\VedjustSubdivision;
+use frontend\models\VedjustAddress;
 
 /**
  * Site controller
@@ -27,15 +28,15 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'index', 'about', 'contact', 'municipality'],
+                'only' => ['logout', 'signup', 'index', 'about', 'contact', 'municipality', 'address'],
                 'rules' => [
                     [
-                        'actions' => ['signup', 'municipality'],
+                        'actions' => ['signup', 'municipality', 'address'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout', 'index', 'municipality'],
+                        'actions' => ['logout', 'index', 'municipality', 'address'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -117,6 +118,29 @@ class SiteController extends Controller
                 ->all();
 
             foreach ($subdivision as $value) {
+                $result .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
+            }
+
+            return $result;
+        }
+
+        return 0;
+    }
+
+    public function actionAddress($subdivision_id)
+    {
+        $result = '';
+
+        if ($subdivision_id)
+        {
+            $address = VedjustAddress::find()
+                ->select(['id', 'name'])
+                ->where(['subdivision_id' => $subdivision_id])
+                ->orderBy(['name' => SORT_ASC])
+                ->asArray()
+                ->all();
+
+            foreach ($address as $value) {
                 $result .= '<option value="' . $value['id'] . '">' . $value['name'] . '</option>';
             }
 

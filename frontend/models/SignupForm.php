@@ -5,6 +5,7 @@ use common\models\User;
 use frontend\models\VedjustAgency;
 use frontend\models\VedjustSubject;
 use frontend\models\VedjustSubdivision;
+use frontend\models\VedjustAddress;
 use yii\base\Model;
 use Yii;
 
@@ -22,6 +23,7 @@ class SignupForm extends Model
     public $agency_id;
     public $subject_id;
     public $subdivision_id;
+    public $address_id;
 
     /**
      * @inheritdoc
@@ -44,12 +46,12 @@ class SignupForm extends Model
             ['password', 'string', 'min' => 6],
 
             [['full_name', 'position', 'phone', 'agency_id', 'subject_id', 'subdivision_id'], 'required'],
-            [['agency_id', 'subject_id'], 'integer'],
-            //['subdivision_id', 'string'],
+            [['agency_id', 'subject_id', 'subdivision_id', 'address_id'], 'integer'],
 
             [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubject::className(), 'targetAttribute' => ['subject_id' => 'id']],
             [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
+            [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAddress::className(), 'targetAttribute' => ['address_id' => 'id']],
         ];
     }
 
@@ -67,6 +69,7 @@ class SignupForm extends Model
             'agency_id' => 'Орган',
             'subject_id' => 'Субъект РФ',
             'subdivision_id' => 'Муниципальное образование (отдел)',
+            'address_id' => 'Адрес',
         ];
     }
 
@@ -96,6 +99,7 @@ class SignupForm extends Model
             $user->agency_id = $this->agency_id;
             $user->subject_id = $this->subject_id;
             $user->subdivision_id = $this->subdivision_id;
+            $user->address_id = $this->address_id;
             $user->setPassword($this->password);
             $user->generateAuthKey();
             if ($user->save()) {
@@ -130,4 +134,11 @@ class SignupForm extends Model
         return $this->hasOne(VedjustSubdivision::className(), ['id' => 'subdivision_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAddress()
+    {
+        return $this->hasOne(VedjustAddress::className(), ['id' => 'address_id']);
+    }
 }

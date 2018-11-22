@@ -31,12 +31,22 @@ use yii\bootstrap\ActiveForm;
         echo $form->field($model, 'target')->inline(false)->radioList(ArrayHelper::map(VedjustAgency::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'), ['onchange' => "changeVals()"]);
         echo $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
             'language' => 'ru',
-            'options' => ['placeholder' => 'Выберите отдел'],
+            'options' => ['placeholder' => 'Выберите отдел', 'onchange' => 'fillAddress()'],
             'pluginOptions' => [
                 'allowClear' => false,
                 'tags' => false,
             ],
         ]);
+
+        echo $form->field($model, 'address_id')->widget(Select2::classname(), [
+            'language' => 'ru',
+            'options' => ['placeholder' => 'Выберите адрес'],
+            'pluginOptions' => [
+                'allowClear' => false,
+                'tags' => false,
+            ],
+        ]);
+
         echo $form->field($model, 'archive_unit_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map(VedjustArchiveUnit::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
             'language' => 'ru',
@@ -94,7 +104,35 @@ function changeVals() {
             {
                 //alert('Данные получены.');
                 $("#vedjustved-subdivision_id").empty();
+                $("#vedjustved-subdivision_id").append("<option disabled selected>Выберите отдел</option>");
                 $("#vedjustved-subdivision_id").append($(data));
+            }
+        }
+    });
+
+}
+
+function fillAddress() {
+
+    $.ajax(
+    {
+        type: 'GET',
+        url: 'index.php?r=site/address',
+        data: 'subdivision_id=' + $("select[name='VedjustVed[subdivision_id]']").val(),
+        success: function(data)
+        {
+            if (data == 0)
+            {
+                //alert('Данные отсутствуют.');
+                $("#vedjustved-address_id").empty();
+                $("#vedjustved-address_id").append( $('<option value="">Нет данных</option>'));
+            }
+            else
+            {
+                //alert('Данные получены.');
+                $("#vedjustved-address_id").empty();
+                $("#vedjustved-address_id").append("<option disabled selected>Выберите адрес</option>");
+                $("#vedjustved-address_id").append($(data));
             }
         }
     });
