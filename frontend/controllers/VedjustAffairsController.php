@@ -115,7 +115,8 @@ class VedjustAffairsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if (($model->ved->status_id === 1 || $model->ved->status_id === 3) && $model->user_created_id === Yii::$app->user->identity->id) {
+        if (($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) 
+            || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id)) {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 return $this->redirect(['index', 'id' => $model->ved_id]);
             }

@@ -250,7 +250,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'address_id',
                 'value' => 'address.name',
             ],
-            'comment',
+            [
+                'class' => 'kartik\grid\DataColumn',
+                'attribute' => 'comment',
+                'format' => 'html',
+                'contentOptions' => [
+                    'style' => 'max-width:150px; overflow: auto; white-space: normal; word-wrap: break-word;'
+                ],
+                /*'value' => function($model) {
+                    return "<span style='max-width:150px; min-height: 100px; overflow: auto; word-wrap: break-word;'>"
+                        . $model->comment . "</span>";
+                },*/
+            ],
 
             $buttons,
         ],

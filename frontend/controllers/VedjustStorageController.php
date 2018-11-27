@@ -87,21 +87,28 @@ class VedjustStorageController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($ved)
     {
-        $model = new VedjustStorage();
+        $ved ? $modelVed = VedjustVed::findOne($ved) : $modelVed = NULL;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $modelVed = VedjustVed::findOne($model->ved_id);
-            $modelVed->status_id = 5;
-            $modelVed->save();
+        if ($modelVed && ($modelVed->status_id === 3 || $modelVed->status_id === 4)) {
 
-            return $this->redirect(['vedjust-ved/index']);
+            $model = new VedjustStorage();
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $modelVed->status_id = 5;
+                $modelVed->save();
+
+                return $this->redirect(['vedjust-ved/index']);
+            }
+
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
     }
 
     /**

@@ -105,8 +105,9 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php // one ved record in storage
-    if (Yii::$app->user->can('editArchive') && 
-        empty(VedjustStorage::find()->where(['ved_id' => $modelVed->id])->one()->ved_id)):
+    if (Yii::$app->user->can('editArchive')
+        && empty(VedjustStorage::find()->where(['ved_id' => $modelVed->id])->one()->ved_id)
+        && ($modelVed->status_id === 3 || $modelVed->status_id === 4)):
     ?>
         <?= Html::a('Поместить в архив', 
             Url::to('index.php?r=vedjust-storage/create&ved=' . $modelVed->id), ['class' => 'btn btn-success']); 
@@ -146,7 +147,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'update' => function($url, $model, $key)
                 {
                     //редактировать - статус "создаётся" или статус "принято" и тот, кто принял
-                    if (($model->ved->status_id === 1 || $model->ved->status_id === 3) && $model->user_created_id === Yii::$app->user->identity->id)
+                    if (($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) 
+                        || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id))
                     {
                         $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/update','id' => $model['id']]);
 
