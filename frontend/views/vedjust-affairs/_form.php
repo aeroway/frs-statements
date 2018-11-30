@@ -33,6 +33,7 @@ use frontend\models\VedjustVed;
 
     <?php if(strpos(Yii::$app->request->get("r"), 'create')) : ?>
         <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus']) ?>
+        <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus']) ?>
     <?php endif; ?>
 
     <?= $form->field($model, 'comment')->textArea() ?>

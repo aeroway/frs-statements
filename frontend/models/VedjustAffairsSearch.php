@@ -19,7 +19,7 @@ class VedjustAffairsSearch extends VedjustAffairs
     {
         return [
             [['id', 'user_created_id', 'user_accepted_id', 'create_ip', 'accepted_ip'], 'integer'],
-            [['status', 'date_create', 'date_status', 'comment', 'kuvd', 'ved_id'], 'safe'],
+            [['status', 'date_create', 'date_status', 'comment', 'kuvd', 'ref_num', 'ved_id'], 'safe'],
         ];
     }
 
@@ -73,6 +73,7 @@ class VedjustAffairsSearch extends VedjustAffairs
 
         $query->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'comment', $this->comment])
+            ->andFilterWhere(['like', 'ref_num', $this->ref_num])
             ->andFilterWhere(['like', 'kuvd', $this->kuvd]);
 
         return $dataProvider;

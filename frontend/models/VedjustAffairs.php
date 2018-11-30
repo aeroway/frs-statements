@@ -13,6 +13,7 @@ use Yii;
  * @property string $date_status
  * @property string $comment
  * @property string $kuvd
+ * @property string $ref_num
  * @property int $ved_id
  * @property int $create_ip
  * @property int $accepted_ip
@@ -40,8 +41,8 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['kuvd', 'p_count'], 'required'],
-            [['comment', 'kuvd'], 'string'],
+            [['kuvd', 'p_count', 'ref_num'], 'required'],
+            [['comment', 'kuvd', 'ref_num'], 'string'],
             [['date_create', 'date_status'], 'safe'],
             [['ved_id', 'status', 'user_created_id', 'user_accepted_id', 'create_ip', 'accepted_ip', 'p_count'], 'integer'],
             [['ved_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustVed::className(), 'targetAttribute' => ['ved_id' => 'id']],
@@ -62,6 +63,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             'date_status' => 'Дата подтверждения',
             'comment' => 'Комментарий',
             'kuvd' => 'КУВД',
+            'ref_num' => 'Номер обращения',
             'ved_id' => 'Ведомость',
             'user_created_id' => 'Создал',
             'user_accepted_id' => 'Принял',

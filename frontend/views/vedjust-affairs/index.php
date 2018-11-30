@@ -226,6 +226,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             //'id',
             'kuvd',
+            'ref_num',
             [
                 'label' => 'Создано',
                 'attribute' => 'date_create',
