@@ -43,4 +43,3 @@ init.bat
 requirements.php
 vagrant/
 yii.bat
-composer.lock

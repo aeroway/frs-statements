@@ -29,11 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-md-3 col-sm-4 col-xs-6">
                 <div class="dummy"></div>
                 <div class="thumbnail purple">
-                    <?= '<b>Зал:</b>' . $storage["hall"] . '<br>'; ?>
-                    <?= '<b>Стеллаж:</b>' . $storage["rack"] . '<br>'; ?>
-                    <?= '<b>Шкаф:</b>' . $storage["locker"] . '<br>'; ?>
-                    <?= '<b>Полка:</b>' . $storage["shelf"] . '<br>'; ?>
-                    <?= '<b>Позиция:</b>' . $storage["position"]; ?>
+                    <?= '<b>Размещено:</b> ' . $storage["comment"]; ?>
                 </div>
             </div>
         </div>

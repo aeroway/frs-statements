@@ -86,6 +86,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             'formed_ip' => 'IP формирования',
             'accepted_ip' => 'IP подтверждения',
             'kuvd_affairs' => 'КУВД дела',
+            'ref_num_affairs' => '№ обращения',
             'archive_unit_id' => 'Ед. арх. хранения',
             'subdivision_id' => 'Отдел',
             'address_id' => 'Адрес',

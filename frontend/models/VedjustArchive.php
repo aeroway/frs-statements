@@ -8,11 +8,6 @@ use Yii;
  * This is the model class for table "archive".
  *
  * @property int $id
- * @property int $hall_max
- * @property int $rack_max
- * @property int $locker_max
- * @property int $shelf_max
- * @property int $position_max
  * @property string $name
  * @property int $user_created_id
  * @property int $agency_id
@@ -37,9 +32,9 @@ class VedjustArchive extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'hall_max', 'rack_max', 'locker_max', 'shelf_max', 'position_max'], 'required'],
+            [['name'], 'required'],
             [['name'], 'string'],
-            [['user_created_id', 'agency_id', 'subject_id', 'subdivision_id', 'hall_max', 'rack_max', 'locker_max', 'shelf_max', 'position_max'], 'integer'],
+            [['user_created_id', 'agency_id', 'subject_id', 'subdivision_id'], 'integer'],
             [['user_created_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_created_id' => 'id']],
             [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubject::className(), 'targetAttribute' => ['subject_id' => 'id']],
@@ -54,22 +49,12 @@ class VedjustArchive extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'hall_max' => 'Максимальное количество залов в хранилище',
-            'rack_max' => 'Максимальное количество стеллажей в зале',
-            'locker_max' => 'Максимальное количество шкафов в стеллаже',
-            'shelf_max' => 'Максимальное количество полок в шкафу',
-            'position_max' => 'Максимальное количество позиций на полке',
             'name' => 'Название хранилища',
             'user_created_id' => 'Сотрудник',
             'agency_id' => 'Орган',
             'subject_id' => 'Субъект РФ',
             'subdivision_id' => 'Отдел',
         ];
-    }
-
-    public function getMaxSizeArchive($id, $name)
-    {
-        return VedjustArchive::find()->select([$name])->where(['id' => $id])->one()->$name;
     }
 
     /**

@@ -18,7 +18,8 @@ class VedjustStorageSearch extends VedjustStorage
     public function rules()
     {
         return [
-            [['id', 'hall', 'rack', 'locker', 'shelf', 'position', 'ved_id', 'archive_id'], 'integer'],
+            [['id', 'ved_id', 'archive_id'], 'integer'],
+            [['comment'], 'safe'],
         ];
     }
 
@@ -59,12 +60,8 @@ class VedjustStorageSearch extends VedjustStorage
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'hall' => $this->hall,
-            'rack' => $this->rack,
-            'locker' => $this->locker,
-            'shelf' => $this->shelf,
-            'position' => $this->position,
             'ved_id' => $this->ved_id,
+            'comment' => $this->comment,
             'archive_id' => $this->archive_id,
         ]);
 

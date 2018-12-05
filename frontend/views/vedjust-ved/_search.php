@@ -15,13 +15,16 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
+    <?= $form->field($model, 'ref_num_affairs', [
+            'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn"></span></div>',
+        ])->textInput(['placeholder' => '№ обращения']);
+    ?>
+
     <?= $form->field($model, 'kuvd_affairs', [
             'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn">' .
             Html::submitButton('Поиск', ['class' => 'btn btn-default']) . '</span></div>',
         ])->textInput(['placeholder' => 'КУВД']);
     ?>
-
-    <?php // $form->field($model, 'id') ?>
 
     <?php // $form->field($model, 'date_create') ?>
 

@@ -77,7 +77,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function getStoragePath($id)
     {
         $modelStorage = VedjustStorage::find()
-        ->select(['hall', 'rack', 'locker', 'shelf', 'position'])
+        ->select(['comment'])
         ->where(['=', 'ved_id', $id])
         ->asArray()
         ->one();

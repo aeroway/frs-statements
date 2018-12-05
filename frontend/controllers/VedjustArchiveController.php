@@ -30,7 +30,6 @@ class VedjustArchiveController extends Controller
                         'actions' =>
                         [
                             'index', 'create', 'update', 'view', // standard actions
-                            'max-size-archive', // size for archive
                         ],
                         'roles' => ['editArchive'],
                     ],
@@ -132,11 +131,6 @@ class VedjustArchiveController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }
-
-    public function actionMaxSizeArchive($id, $name)
-    {
-        return VedjustArchive::getMaxSizeArchive($id, $name);
     }
 
     /**

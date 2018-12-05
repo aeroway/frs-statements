@@ -31,7 +31,6 @@ class VedjustStorageController extends Controller
                         'actions' =>
                         [
                             'create', // standard actions
-                            'last-value-archive',
                         ],
                         'roles' => ['editArchive'],
                     ],
@@ -47,11 +46,6 @@ class VedjustStorageController extends Controller
                 ],
             ],
         ];
-    }
-
-    public function actionLastValueArchive($id, $name)
-    {
-        return VedjustStorage::getLastValueArchive($id, $name);
     }
 
     /**
