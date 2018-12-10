@@ -54,20 +54,22 @@ class User extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'username' => 'Сотрудник',
+            'username' => 'Логин',
             'auth_key' => 'Auth Key',
             'password_hash' => 'Password Hash',
             'password_reset_token' => 'Password Reset Token',
             'email' => 'Email',
             'status' => 'Status',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => 'Создано',
+            'updated_at' => 'Отредактировано',
             'subdivision_id' => 'Subdivision ID',
             'full_name' => 'ФИО',
             'position' => 'Должность',
             'phone' => 'Телефон',
             'agency_id' => 'Орган',
             'subject_id' => 'Субъект РФ',
+            'address_id' => 'Адрес',
+            'subdivision_id' => 'Подразделение',
             'municipality' => 'Муниципальное образование',
         ];
     }

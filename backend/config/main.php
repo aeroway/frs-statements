@@ -8,6 +8,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-backend',
+    'name' => 'Управление Росреестра по Краснодарскому краю',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
@@ -37,6 +38,16 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'defaultTimeZone' => 'Europe/Moscow',
+            'nullDisplay' => '',
+            'dateFormat' => 'dd.MM.yyyy',
+            'datetimeFormat' => 'd-M-Y H:i:s',
+            'decimalSeparator' => '.',
+            'thousandSeparator' => '',
+            'currencyCode' => 'RUR',
+        ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -47,4 +58,5 @@ return [
         */
     ],
     'params' => $params,
+    'language' => 'ru-RU',
 ];

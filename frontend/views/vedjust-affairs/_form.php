@@ -32,7 +32,7 @@ use frontend\models\VedjustVed;
     <?php endif; ?>
 
     <?php if(strpos(Yii::$app->request->get("r"), 'create')) : ?>
-        <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus']) ?>
+        <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus', 'onChange' => 'changeKuvdValue();']) ?>
         <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus']) ?>
     <?php endif; ?>
 
@@ -65,3 +65,8 @@ use frontend\models\VedjustVed;
     <?php ActiveForm::end(); ?>
 
 </div>
+<script>
+function changeKuvdValue() {
+    document.getElementById("vedjustaffairs-kuvd").value = document.getElementById("vedjustaffairs-kuvd").value.replace(/\./g, "/");
+}
+</script>

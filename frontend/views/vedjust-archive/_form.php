@@ -20,16 +20,6 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'name')->textInput() ?>
 
-    <?= $form->field($model, 'hall_max')->textInput(['type' => 'number']) ?>
-
-    <?= $form->field($model, 'rack_max')->textInput(['type' => 'number']) ?>
-
-    <?= $form->field($model, 'locker_max')->textInput(['type' => 'number']) ?>
-
-    <?= $form->field($model, 'shelf_max')->textInput(['type' => 'number']) ?>
-
-    <?= $form->field($model, 'position_max')->textInput(['type' => 'number']) ?>
-
     <?php
     if(strpos(Yii::$app->request->get("r"), 'create'))
     {
