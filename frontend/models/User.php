@@ -39,7 +39,7 @@ class User extends \yii\db\ActiveRecord
     {
         return [
             [['username', 'auth_key', 'password_hash', 'email', 'full_name', 'position', 'created_at', 'updated_at'], 'required'],
-            [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'full_name', 'position', 'phone', 'municipality'], 'string'],
+            [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'full_name', 'position', 'phone'], 'string'],
             [['status', 'created_at', 'updated_at', 'subdivision_id', 'agency_id', 'subject_id'], 'integer'],
             [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
             [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],
@@ -70,7 +70,6 @@ class User extends \yii\db\ActiveRecord
             'subject_id' => 'Субъект РФ',
             'address_id' => 'Адрес',
             'subdivision_id' => 'Подразделение',
-            'municipality' => 'Муниципальное образование',
         ];
     }
 
@@ -121,6 +120,14 @@ class User extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getAddress()
+    {
+        return $this->hasOne(VedjustAddress::className(), ['id' => 'address_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getVeds()
     {
         return $this->hasMany(VedjustVed::className(), ['user_accepted_id' => 'id']);
@@ -132,5 +139,13 @@ class User extends \yii\db\ActiveRecord
     public function getVeds0()
     {
         return $this->hasMany(VedjustVed::className(), ['user_created_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAuthAssignment()
+    {
+        return $this->hasMany(AuthAssignment::className(), ['user_id' => 'id']);
     }
 }

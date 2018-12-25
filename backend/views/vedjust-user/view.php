@@ -37,13 +37,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'status',
             'created_at:date',
             'updated_at:date',
-            'subdivision_id',
+            'subdivision.name',
             'full_name',
             'position',
             'phone',
             'agency.name',
             'subject.name',
-            'address_id',
+            'address.name',
         ],
     ]) ?>
 
