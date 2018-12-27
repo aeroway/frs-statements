@@ -34,11 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             //'id',
             'name',
-            'hall_max',
-            'rack_max',
-            'locker_max',
-            'shelf_max',
-            'position_max',
             'userCreated.username',
             'agency.name',
             'subject.name',

@@ -24,17 +24,12 @@ $this->title = 'Ведомости';
                 <p class=""><?= !Yii::$app->user->isGuest ?  'Орган: ' . Yii::$app->user->identity->agency->name : '.'; ?></p>
                 <p class=""><?= !Yii::$app->user->isGuest ?  'Отдел: ' . Yii::$app->user->identity->subdivision->name : '.'; ?></p>
             </div>
-            <!--
             <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
+                <h4>Инструкция</h4>
+                <p><a href="doc/instruction-ved.docx">Скачать руководство</a>.</p>
+                <p>После регистрации необходимо отправить список пользователей с необходимыми полномочиями на почту, указанную в руководстве.</p>
             </div>
+            <!--
             <div class="col-lg-4">
                 <h2>Heading</h2>
 

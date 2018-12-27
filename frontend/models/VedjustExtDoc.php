@@ -83,7 +83,7 @@ class VedjustExtDoc extends \yii\db\ActiveRecord
         ->innerJoinWith('affairs', false)
         ->innerJoinWith('affairs.ved', false)
         ->innerJoinWith('affairs.ved.archiveUnit', false)
-        ->where(['=', 'ext_doc.user_accepted_id', NULL])
+        ->where(['IS', 'ext_doc.user_accepted_id', NULL])
         ->groupBy('area.name, archive_unit.name')
         ->asArray()
         ->all();
@@ -94,7 +94,7 @@ class VedjustExtDoc extends \yii\db\ActiveRecord
     public function getExtDocsPdf($loc)
     {
         $modelVedjustExtDoc = VedjustExtDoc::find()
-            ->select('ext_doc.id, kuvd, comment, archive_unit.name')
+            ->select('ext_doc.id, kuvd, affairs.comment, archive_unit.name')
             ->asArray()
             ->innerJoinWith('area', false)
             ->innerJoinWith('affairs', false)
@@ -132,12 +132,15 @@ class VedjustExtDoc extends \yii\db\ActiveRecord
             $idExtDoc[] = $value['id'];
         }
 
+        $usCrName = User::find()->select(['full_name'])->where(['id' => $modelVed['user_created_id']])->one();
+        $usAcName = User::find()->select(['full_name'])->where(['id' => $modelVed['user_accepted_id']])->one();
+
         $content .=
         "</table>
         </div>
         <div>
-        <p>ФИО передал __________________________</p>
-        <p>ФИО принял ___________________________</p>
+        <p>ФИО передал: <u>" . (empty($usCrName) ? '' : $usCrName->full_name) . "</u></p>
+        <p>ФИО принял: <u>" . (empty($usAcName) ? '' : $usAcName->full_name) . "</u></p>
         </div>
         ";
 
@@ -156,7 +159,7 @@ class VedjustExtDoc extends \yii\db\ActiveRecord
             ->select('ext_doc.id')
             ->asArray()
             ->innerJoinWith('area', false)
-            ->where(['and', ['area.name' => $loc], ['=', 'ext_doc.user_accepted_id', NULL]])
+            ->where(['and', ['area.name' => $loc], ['IS', 'ext_doc.user_accepted_id', NULL]])
             ->all();
 
         return $modelVedjustExtDoc;

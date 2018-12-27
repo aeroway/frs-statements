@@ -42,7 +42,7 @@ class VedjustExtDocSearch extends VedjustExtDoc
     public function search($params)
     {
         if(!empty(Yii::$app->request->get('loc')))
-            $query = VedjustExtDoc::find()->where(['and', ['area.name' => Yii::$app->request->get('loc')], ['=', 'ext_doc.user_accepted_id', NULL]]);
+            $query = VedjustExtDoc::find()->where(['and', ['area.name' => Yii::$app->request->get('loc')], ['IS', 'ext_doc.user_accepted_id', NULL]]);
         else
             $query = VedjustExtDoc::find();
 
