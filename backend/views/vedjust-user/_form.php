@@ -6,6 +6,7 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use frontend\models\VedjustSubdivision;
 use frontend\models\AuthAssignment;
+use frontend\models\AuthItem;
 use wbraganca\dynamicform\DynamicFormWidget;
 
 /* @var $this yii\web\View */
@@ -88,7 +89,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             }
                         ?>
                         <?= $form->field($modelAuthAssignment, "[{$i}]item_name")->dropDownList(
-                            ArrayHelper::map(AuthAssignment::find()->orderBy(['item_name' => SORT_ASC])->all(), 'item_name', 'item_name'));
+                            ArrayHelper::map(AuthItem::find()->orderBy(['name' => SORT_ASC])->all(), 'name', 'name'));
                         ?>
                         <div class="row">
                             <div class="col-sm-6">

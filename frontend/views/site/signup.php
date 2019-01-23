@@ -3,6 +3,8 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use frontend\models\VedjustAgency;
 use frontend\models\VedjustSubject;
+use frontend\models\VedjustSubdivision;
+use frontend\models\VedjustAddress;
 use frontend\models\User;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -50,6 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
 
                 <?= $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
+                    'data' => ArrayHelper::map(VedjustSubdivision::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
                     'language' => 'ru',
                     'options' => ['placeholder' => 'Выберите или введите название', 'onchange' => 'changeStatusAddress(this.value);'],
                     'pluginOptions' => [
@@ -61,6 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
 
                 <?= $form->field($model, 'address_id')->widget(Select2::classname(), [
+                    'data' => ArrayHelper::map(VedjustAddress::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
                     'language' => 'ru',
                     'options' => ['placeholder' => 'Выберите адрес'],
                     'pluginOptions' => [
