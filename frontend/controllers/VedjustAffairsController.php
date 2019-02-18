@@ -29,7 +29,7 @@ class VedjustAffairsController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'issuance'],
+                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'issuance', 'view'],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
                     [

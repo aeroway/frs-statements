@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'options' => ['placeholder' => 'Выберите или введите название', 'onchange' => 'changeStatusAddress(this.value);'],
                     'pluginOptions' => [
                         'allowClear' => true,
-                        'tags' => true,
+                        //'tags' => true,
                         'disabled' => true,
                     ],
                 ]);
@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'options' => ['placeholder' => 'Выберите адрес'],
                     'pluginOptions' => [
                         'allowClear' => true,
-                        'tags' => true,
+                        //'tags' => true,
                         'disabled' => true,
                     ],
                 ]);
