@@ -19,7 +19,7 @@
             $.ajax(
             {
                 type: 'GET',
-                url: 'index.php?r=site/municipality',
+                url: '/site/municipality',
                 data: 'subject_id=' + $("select#signupform-subject_id").val() + '&agency_id=' + $("select#signupform-agency_id").val(),
                 success: function(data)
                 {
@@ -48,7 +48,7 @@
             $.ajax(
             {
                 type: 'GET',
-                url: 'index.php?r=site/address',
+                url: '/site/address',
                 data: 'subdivision_id=' + $("select#signupform-subdivision_id").val(),
                 success: function(data)
                 {

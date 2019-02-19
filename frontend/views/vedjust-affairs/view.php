@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            //'id',
+
             //'status',
             'kuvd',
             'ref_num',
@@ -30,12 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'userCreated.username',
                 'label' => 'Создал',
             ],
-            [
-                'attribute' => 'create_ip',
-                'value' => function ($model) {
-                    return $model->create_ip ? long2ip($model->create_ip) : '';
-                },
-            ],
+            // [
+            //     'attribute' => 'create_ip',
+            //     'value' => function ($model) {
+            //         return $model->create_ip ? long2ip($model->create_ip) : '';
+            //     },
+            // ],
             [
                 'attribute' => 'date_status',
                 'format' =>  ['date', 'php:d M Y h:i:s'],
@@ -44,13 +44,26 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'userAccepted.username',
                 'label' => 'Принял',
             ],
+            // [
+            //     'attribute' => 'accepted_ip',
+            //     'value' => function ($model) {
+            //         return $model->accepted_ip ? long2ip($model->accepted_ip) : '';
+            //     },
+            // ],
+            'comment',
             [
-                'attribute' => 'accepted_ip',
+                'label' => 'Выдано',
+                'format' => 'html',
                 'value' => function ($model) {
-                    return $model->accepted_ip ? long2ip($model->accepted_ip) : '';
+                    $listIssuance = '';
+
+                    foreach($model->issuance as $value) {
+                        $listIssuance .= '<b>Заявитель:</b> ' . $value->name . '. <b>Регистратор:</b> ' . $value->userCreated->full_name . '<br>';
+                    }
+
+                    return $listIssuance;
                 },
             ],
-            'comment',
         ],
     ]) ?>
 

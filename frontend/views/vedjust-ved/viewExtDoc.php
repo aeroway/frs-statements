@@ -43,7 +43,7 @@ a.thumbnail {
         <?php foreach ($associativeArea as $k1 => $v1): ?>
         <div class="col-md-3 col-sm-4 col-xs-6">
             <div class="dummy"></div>
-            <a href="index.php?r=vedjust-ved/index-ext-doc-detailed&loc=<?= $k1 ?>" class="thumbnail purple"><b><?= $k1; ?></b><br><?php foreach ($v1 as $k2 => $v2): ?> <?= $v2 . ' ' . $k2 . '<br>'; ?><?php endforeach; ?></a>
+            <a href="/vedjust-ved/index-ext-doc-detailed&loc=<?= $k1 ?>" class="thumbnail purple"><b><?= $k1; ?></b><br><?php foreach ($v1 as $k2 => $v2): ?> <?= $v2 . ' ' . $k2 . '<br>'; ?><?php endforeach; ?></a>
         </div>
         <?php endforeach; ?>
     </div>

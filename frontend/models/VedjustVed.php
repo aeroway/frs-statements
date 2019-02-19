@@ -147,7 +147,7 @@ class VedjustVed extends \yii\db\ActiveRecord
         $modelAffairs = VedjustAffairs::find()
             ->select('kuvd, comment')
             ->asArray()
-            ->where(['and', ["ved_id" => $this->id], ["status" => 1]])
+            ->where(["ved_id" => $this->id])
             ->all();
 
         $modelVed = VedjustVed::find()

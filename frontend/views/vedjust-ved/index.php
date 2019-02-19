@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php if (!Yii::$app->user->can('addAudit') && !Yii::$app->user->can('limitAudit')): ?>
-            <?= Html::button('Создать ведомость', ['value' => Url::to('index.php?r=vedjust-ved/create'), 'class' => 'btn btn-success', 'id' => 'modalVedCreate']); ?>
+            <?= Html::button('Создать ведомость', ['value' => Url::to('/vedjust-ved/create'), 'class' => 'btn btn-success', 'id' => 'modalVedCreate']); ?>
         <?php endif; ?>
 
         <?php if (Yii::$app->getRequest()->getCookies()->getValue('archive')): ?>
@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Сброс фильтров', ['reset'], ['class' => 'btn btn-warning']); ?>
 
         <?php if(Yii::$app->user->can('confirmExtDocs') || Yii::$app->user->can('addAudit') || Yii::$app->user->can('limitAudit')): ?>
-            <?= Html::a('Экстер. документы', Url::to('index.php?r=vedjust-ved/view-ext-doc'), ['class' => 'btn btn-info']); ?>
+            <?= Html::a('Экстер. документы', Url::to('/vedjust-ved/view-ext-doc'), ['class' => 'btn btn-info']); ?>
         <?php endif; ?>
     </p>
 
@@ -274,7 +274,7 @@ function setArchive(btn) {
     $.ajax(
     {
         type: 'GET',
-        url: 'index.php?r=vedjust-ved/setarchive',
+        url: '/vedjust-ved/setarchive',
         data: 'status=' + btn,
         success: function(data) { 
             if (data == 0) 

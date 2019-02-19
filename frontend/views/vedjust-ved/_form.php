@@ -21,7 +21,7 @@ use yii\bootstrap\ActiveForm;
     <?php $form = ActiveForm::begin(); ?>
 
     <?php
-    if(strpos(Yii::$app->request->get("r"), 'create'))
+    if(strpos(Yii::$app->request->pathInfo, 'create'))
     {
         echo $form->field($model, 'date_create')->hiddenInput(['value' => date('Y-m-d H:i:s')])->label(false);
         echo $form->field($model, 'status_id')->hiddenInput(['value' => 1])->label(false);
@@ -90,7 +90,7 @@ function changeVals() {
     $.ajax(
     {
         type: 'GET',
-        url: 'index.php?r=site/municipality',
+        url: '/site/municipality',
         data: 'subject_id=1' + '&agency_id=' + $("input[name='VedjustVed[target]']:checked").val(),
         success: function(data)
         {
@@ -117,7 +117,7 @@ function fillAddress() {
     $.ajax(
     {
         type: 'GET',
-        url: 'index.php?r=site/address',
+        url: '/site/address',
         data: 'subdivision_id=' + $("select[name='VedjustVed[subdivision_id]']").val(),
         success: function(data)
         {

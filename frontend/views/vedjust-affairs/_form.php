@@ -16,7 +16,7 @@ use frontend\models\VedjustVed;
     <?php $form = ActiveForm::begin(); ?>
 
     <?php
-    if(strpos(Yii::$app->request->get("r"), 'create'))
+    if(strpos(Yii::$app->request->pathInfo, 'create'))
     {
         echo $form->field($model, 'date_create')->hiddenInput(['value' => date('Y-m-d H:i:s')])->label(false);
         echo $form->field($model, 'user_created_id')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false);
@@ -24,14 +24,14 @@ use frontend\models\VedjustVed;
     }
     ?>
 
-    <?php if(strpos(Yii::$app->request->get("r"), 'update')) : ?>
+    <?php if(strpos(Yii::$app->request->pathInfo, 'update')) : ?>
         <?php if ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id) : ?>
         <?php else : ?>
             <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus']); ?>
         <?php endif; ?>
     <?php endif; ?>
 
-    <?php if(strpos(Yii::$app->request->get("r"), 'create')) : ?>
+    <?php if(strpos(Yii::$app->request->pathInfo, 'create')) : ?>
         <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus', 'onChange' => 'changeKuvdValue();']) ?>
         <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus']) ?>
     <?php endif; ?>
@@ -39,7 +39,7 @@ use frontend\models\VedjustVed;
     <?= $form->field($model, 'comment')->textArea() ?>
 
     <?php
-    if(strpos(Yii::$app->request->get("r"), 'create')) {
+    if(strpos(Yii::$app->request->pathInfo, 'create')) {
         if (!empty(Yii::$app->request->get('id'))) {
             echo $form->field($model, 'ved_id')->hiddenInput(['value' => Yii::$app->request->get('id')])->label(false);
         } else {

@@ -15,7 +15,7 @@ use yii\bootstrap\Modal;
 
 $this->params['breadcrumbs'][] = ['label' => 'Ведомости', 'url' => ['vedjust-ved/index']];
 $this->title = 'Ведомость №' . $idVed;
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = 'Дела';
 ?>
 <div class="vedjust-affairs-index">
 
@@ -92,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
     {
         echo Html::button('Переместить в ...',
             [
-                'value' => Url::to('index.php?r=vedjust-ved/send-ext-docs&id=' . $modelVed->id),
+                'value' => Url::to('/vedjust-ved/send-ext-docs&id=' . $modelVed->id),
                 'class' => 'btn btn-success',
                 'id' => 'modalVedExtDocCreate'
             ]
@@ -106,82 +106,74 @@ $this->params['breadcrumbs'][] = $this->title;
         && ($modelVed->status_id === 3 || $modelVed->status_id === 4)):
     ?>
         <?= Html::a('Поместить в архив', 
-            Url::to('index.php?r=vedjust-storage/create&ved=' . $modelVed->id), ['class' => 'btn btn-success']); 
+            Url::to('/vedjust-storage/create&ved=' . $modelVed->id), ['class' => 'btn btn-success']); 
         ?>
     <?php endif; ?>
     </p>
 
     <?php
-    if (Yii::$app->user->can('addAudit')) {
-        $buttons =
+    $buttons =
+    [
+        'class' => 'yii\grid\ActionColumn',
+        'buttons' =>
         [
-            'class' => 'yii\grid\ActionColumn',
-            'template' => '{view}',
-        ];
-    } else {
-        $buttons =
-        [
-            'class' => 'yii\grid\ActionColumn',
-            'buttons' =>
-            [
-                'delete' => function($url, $model, $key)
+            'delete' => function($url, $model, $key)
+            {
+                if($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
                 {
-                    if($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
-                    {
-                        $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/delete','id' => $model['id']]);
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/delete','id' => $model['id']]);
 
-                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', $customurl, 
-                                [
-                                    'title' => Yii::t('yii', 'Delete'),
-                                    'aria-label' => Yii::t('yii', 'Delete'),
-                                    'data-pjax' => '0',
-                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                    'data-method' => 'post',
-                                ]);
-                    }
-                },
-                'update' => function($url, $model, $key)
+                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', $customurl, 
+                            [
+                                'title' => Yii::t('yii', 'Delete'),
+                                'aria-label' => Yii::t('yii', 'Delete'),
+                                'data-pjax' => '0',
+                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                'data-method' => 'post',
+                            ]);
+                }
+            },
+            'update' => function($url, $model, $key)
+            {
+                //редактировать - статус "создаётся" или статус "принято" и тот, кто принял
+                if (($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) 
+                    || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id))
                 {
-                    //редактировать - статус "создаётся" или статус "принято" и тот, кто принял
-                    if (($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) 
-                        || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id))
-                    {
-                        $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/update','id' => $model['id']]);
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/update','id' => $model['id']]);
 
-                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $customurl, 
-                                [
-                                    'title' => Yii::t('yii', 'Update'),
-                                    'aria-label' => Yii::t('yii', 'Update'),
-                                    'data-pjax' => '0',
-                                ]);
-                    }
-                },
-                'issuance' => function($url, $model, $key)
+                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $customurl, 
+                            [
+                                'title' => Yii::t('yii', 'Update'),
+                                'aria-label' => Yii::t('yii', 'Update'),
+                                'data-pjax' => '0',
+                            ]);
+                }
+            },
+            'issuance' => function($url, $model, $key)
+            {
+                $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $model->id])->asArray()->one()["num"];
+
+                if($model->ved->status_id === 5
+                    && $model->status === 1
+                    && $numIssuance !== $model->p_count
+                    && $model->getCheckAffairsIssuance($model->ved_id)
+                    && Yii::$app->user->can('editIssuance'))
                 {
-                    $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $model->id])->asArray()->one()["num"];
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/issuance', 'id' => $model['id']]);
 
-                    if($model->ved->status_id === 5
-                        && $model->status === 1
-                        && $numIssuance !== $model->p_count
-                        && $model->getCheckAffairsIssuance($model->ved_id)
-                        && Yii::$app->user->can('editIssuance'))
-                    {
-                        $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/issuance', 'id' => $model['id']]);
-
-                        return Html::a('<span class="glyphicon glyphicon-user"></span>', 'javascript:void(0);', 
-                                [
-                                    'title' => Yii::t('yii', 'Выдать дело'),
-                                    'aria-label' => Yii::t('yii', 'Выдать дело'),
-                                    'data-pjax' => '1',
-                                    'onclick' => 'modalAffairIssuanceCreate(this);',
-                                    'value' => $customurl,
-                                ]);
-                    }
-                },
-            ],
-            'template' => '{update} {delete} {issuance}',
-        ];
-    }
+                    return Html::a('<span class="glyphicon glyphicon-user"></span>', 'javascript:void(0);', 
+                            [
+                                'title' => Yii::t('yii', 'Выдать дело'),
+                                'aria-label' => Yii::t('yii', 'Выдать дело'),
+                                'data-pjax' => '1',
+                                'onclick' => 'modalAffairIssuanceCreate(this);',
+                                'value' => $customurl,
+                            ]);
+                }
+            },
+        ],
+        'template' => '{update} {delete} {issuance} {view}',
+    ];
     ?>
 
     <?php
@@ -314,7 +306,7 @@ function changeStatusAffairs(value) {
     $.ajax(
     {
         type: 'GET',
-        url: 'index.php?r=vedjust-affairs/changestatus',
+        url: '/vedjust-affairs/changestatus',
         data: 'id=' + value + '&status=' + +checkStatus,
         success: function(data) { 
             if (data == 0) alert('Ошибка обработки.');
@@ -327,7 +319,7 @@ function changeVerified(value, btn) {
     $.ajax(
     {
         type: 'GET',
-        url: 'index.php?r=vedjust-ved/changeverified',
+        url: '/vedjust-ved/changeverified',
         data: 'id=' + value + '&button=' + btn,
         success: function(data) { 
             if (data == 0) {
@@ -342,7 +334,7 @@ function changeStatusVed(value) {
     $.ajax(
     {
         type: 'GET',
-        url: 'index.php?r=vedjust-ved/changestatus',
+        url: '/vedjust-ved/changestatus',
         data: 'id=' + value,
         success: function(data) { 
             if (data == 0) {
@@ -357,7 +349,7 @@ function changeStatusVedReturn(value) {
     $.ajax(
     {
         type: 'GET',
-        url: 'index.php?r=vedjust-ved/changestatusreturn',
+        url: '/vedjust-ved/changestatusreturn',
         data: 'id=' + value,
         success: function(data) { 
             if (data == 0) {

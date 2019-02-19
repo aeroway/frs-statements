@@ -11,7 +11,7 @@ $this->title = 'Ведомости';
 
         <p class="lead">Начните обрабатывать ведомости правоустанавливающих документов.</p>
 
-        <p><a class="btn btn-lg btn-success" href="/index.php?r=vedjust-ved">Приступить к обработке</a></p>
+        <p><a class="btn btn-lg btn-success" href="/vedjust-ved/index">Приступить к обработке</a></p>
     </div>
 
     <div class="body-content">

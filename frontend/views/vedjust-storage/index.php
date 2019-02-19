@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php //echo Html::a('Создать', ['create'], ['class' => 'btn btn-success']); ?>
-        <?= Html::a('Справочник архивохранилища', Url::to('index.php?r=vedjust-archive/index'), ['class' => 'btn btn-info']); ?>
+        <?= Html::a('Справочник архивохранилища', Url::to('/vedjust-archive/index'), ['class' => 'btn btn-info']); ?>
     </p>
 
     <?= GridView::widget([

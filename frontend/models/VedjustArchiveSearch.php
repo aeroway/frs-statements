@@ -41,7 +41,7 @@ class VedjustArchiveSearch extends VedjustArchive
      */
     public function search($params)
     {
-        $query = VedjustArchive::find();
+        $query = VedjustArchive::find()->where(['archive.subdivision_id' => Yii::$app->user->identity->subdivision_id]);
 
         // add conditions that should always apply here
 

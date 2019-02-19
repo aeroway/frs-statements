@@ -57,14 +57,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
             //'id',
             'name',
+            /*
             [
                 'label' => 'e-mail',
                 'value' => 'userCreated.username',
             ],
+            */
             [
+                'label' => 'Создал',
                 'attribute' => 'user_created_id',
                 'value' => 'userCreated.full_name',
             ],
+            /*
             [
                 'attribute' => 'agency_id',
                 'value' => 'agency.name',
@@ -73,10 +77,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'subject_id',
                 'value' => 'subject.name',
             ],
+            /*
             [
                 'attribute' => 'subdivision_id',
                 'value' => 'subdivision.name',
             ],
+            */
 
             $buttons,
         ],

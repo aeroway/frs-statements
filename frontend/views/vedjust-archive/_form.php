@@ -21,7 +21,7 @@ use yii\helpers\ArrayHelper;
     <?= $form->field($model, 'name')->textInput() ?>
 
     <?php
-    if(strpos(Yii::$app->request->get("r"), 'create'))
+    if(strpos(Yii::$app->request->pathInfo, 'create'))
     {
         echo '<div class="form-group"><b>Пользователь</b>: ' . User::find()->where(['id' => Yii::$app->user->identity->id])->one()->username . '<div class="help-block"></div></div>';
         echo $form->field($model, 'user_created_id')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false);
