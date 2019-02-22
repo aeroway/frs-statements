@@ -26,6 +26,7 @@ use kartik\mpdf\Pdf;
  * @property int $archive_unit_id
  * @property int $subdivision_id
  * @property int $address_id
+ * @property int $area_id
  * @property int $ext_reg
  * @property int $ext_reg_created
  *
@@ -53,7 +54,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             [['target', 'subdivision_id'], 'required'],
             [['date_create', 'date_reception', 'date_formed'], 'safe'],
             [['num_ved', 'comment'], 'string'],
-            [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'address_id', 'ext_reg', 'ext_reg_created'], 'integer'],
+            [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'address_id', 'ext_reg', 'ext_reg_created', 'area_id'], 'integer'],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustStatus::className(), 'targetAttribute' => ['status_id' => 'id']],
             [['user_accepted_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_accepted_id' => 'id']],
             [['user_created_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_created_id' => 'id']],
@@ -61,6 +62,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             [['archive_unit_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustArchiveUnit::className(), 'targetAttribute' => ['archive_unit_id' => 'id']],
             [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
             [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAddress::className(), 'targetAttribute' => ['address_id' => 'id']],
+            [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustArea::className(), 'targetAttribute' => ['area_id' => 'id']],
         ];
     }
 
@@ -93,6 +95,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             'storage_id' => 'Архивохранилище',
             'ext_reg' => 'Экстерриториальная регистрация',
             'ext_reg_created' => 'Перемещено в таблицу экстер. документов',
+            'area_id' => 'Район',
         ];
     }
 
@@ -291,6 +294,14 @@ class VedjustVed extends \yii\db\ActiveRecord
     public function getAddress()
     {
         return $this->hasOne(VedjustAddress::className(), ['id' => 'address_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getArea()
+    {
+        return $this->hasOne(VedjustAddress::className(), ['id' => 'area_id']);
     }
 
     /**

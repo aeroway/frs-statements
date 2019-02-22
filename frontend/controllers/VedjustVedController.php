@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use frontend\models\VedjustVed;
+use frontend\models\VedjustArea;
 use frontend\models\VedjustVedSearch;
 use frontend\models\VedjustExtDocSearch;
 use frontend\models\VedjustAffairs;
@@ -39,6 +40,7 @@ class VedjustVedController extends Controller
                             'createvedpdf', // create pdf
                             'setarchive', // show archive docs
                             'reset', // reset filters
+                            'fill-area', // get list of districts
                         ],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
@@ -277,7 +279,6 @@ class VedjustVedController extends Controller
             } else {
                 return 0;
             }
-
         }
         else
         {
@@ -290,20 +291,35 @@ class VedjustVedController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->status_id === 2 && $model->user_created_id === Yii::$app->user->identity->id)
+        if ($model->user_formed_id === Yii::$app->user->identity->id && $model->status_id == 2)
         {
             $model->status_id = 1;
 
-            if ($model->update() !== false) {
-                return 1;
-            } else {
-                return 0;
+            foreach ($model->affairs as $affairs)
+            {
+                $affairs->status = 0;
+                $affairs->date_status = NULL;
+                $affairs->accepted_ip = NULL;
+                $affairs->user_accepted_id = NULL;
+                $affairs->update();
             }
 
-        }
-        else
-        {
-           return 0; 
+            return $this->updateModel($model);
+
+        } elseif ($model->user_accepted_id == Yii::$app->user->identity->id && ($model->status_id == 3 || $model->status_id == 4)) {
+
+            $model->status_id = 2;
+            $model->verified = NULL;
+            $model->user_accepted_id = NULL;
+            $model->date_reception = NULL;
+            $model->accepted_ip = NULL;
+
+            return $this->updateModel($model);
+
+        } else {
+
+           return 0;
+
         }
     }
 
@@ -395,6 +411,18 @@ class VedjustVedController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionFillArea()
+    {
+        $listArea = VedjustArea::find()->select(['id', 'name'])->all();
+        $area = '';
+
+        foreach ($listArea as $value) {
+            $area .= "<option value='$value->id'>$value->name</option>";
+        }
+
+        return $area;
+    }
+
     /**
      * Finds the VedjustVed model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -425,5 +453,14 @@ class VedjustVedController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function updateModel($model)
+    {
+        if ($model->update() !== false) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

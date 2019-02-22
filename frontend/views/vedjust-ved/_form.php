@@ -40,7 +40,16 @@ use yii\bootstrap\ActiveForm;
 
         echo $form->field($model, 'address_id')->widget(Select2::classname(), [
             'language' => 'ru',
-            'options' => ['placeholder' => 'Выберите адрес'],
+            'options' => ['placeholder' => 'Выберите адрес', 'onchange' => 'fillArea(this.value)'],
+            'pluginOptions' => [
+                'allowClear' => false,
+                'tags' => false,
+            ],
+        ]);
+
+        echo $form->field($model, 'area_id')->widget(Select2::classname(), [
+            'language' => 'ru',
+            'options' => ['placeholder' => 'Выберите район'],
             'pluginOptions' => [
                 'allowClear' => false,
                 'tags' => false,
@@ -85,6 +94,7 @@ use yii\bootstrap\ActiveForm;
 
 </div>
 <script>
+$(".field-vedjustved-area_id").hide();
 function changeVals() {
 
     $.ajax(
@@ -113,22 +123,16 @@ function changeVals() {
 }
 
 function fillAddress() {
-
-    $.ajax(
-    {
+    $.ajax({
         type: 'GET',
         url: '/site/address',
         data: 'subdivision_id=' + $("select[name='VedjustVed[subdivision_id]']").val(),
-        success: function(data)
-        {
-            if (data == 0)
-            {
+        success: function(data) {
+            if (data == 0) {
                 //alert('Данные отсутствуют.');
                 $("#vedjustved-address_id").empty();
                 $("#vedjustved-address_id").append( $('<option value="">Нет данных</option>'));
-            }
-            else
-            {
+            } else {
                 //alert('Данные получены.');
                 $("#vedjustved-address_id").empty();
                 $("#vedjustved-address_id").append("<option disabled selected>Выберите адрес</option>");
@@ -136,16 +140,39 @@ function fillAddress() {
             }
         }
     });
+}
 
+function fillArea(value) {
+    if (value == 393) {
+        $(".field-vedjustved-area_id").show();
+        $.ajax({
+            type: 'GET',
+            url: '/vedjust-ved/fill-area',
+            //data: 'subdivision_id=' + $("select[name='VedjustVed[subdivision_id]']").val(),
+            success: function(data) {
+                if (data == 0) {
+                    //alert('Данные отсутствуют.');
+                    $("#vedjustved-area_id").empty();
+                    $("#vedjustved-area_id").append( $('<option value="">Нет данных</option>'));
+                } else {
+                    //alert('Данные получены.');
+                    $("#vedjustved-area_id").empty();
+                    $("#vedjustved-area_id").append("<option disabled selected>Выберите район</option>");
+                    $("#vedjustved-area_id").append($(data));
+                }
+            }
+        });
+    } else {
+        $(".field-vedjustved-area_id").hide();
+        $("#vedjustved-area_id").empty();
+    }
 }
 
 function changeExtReg(value) {
-
     if (value == 4) {
         document.getElementById('vedjustved-ext_reg').disabled = true;
     } else {
         document.getElementById('vedjustved-ext_reg').disabled = false;
     }
-
 }
 </script>

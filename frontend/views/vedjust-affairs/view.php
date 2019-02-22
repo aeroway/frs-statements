@@ -24,10 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'ref_num',
             [
                 'attribute' => 'date_create',
-                'format' =>  ['date', 'php:d M Y h:i:s'],
+                'format' =>  ['date', 'php:d M Y'],
             ],
             [
-                'attribute' => 'userCreated.username',
+                'attribute' => 'userCreated.full_name',
                 'label' => 'Создал',
             ],
             // [
@@ -38,11 +38,11 @@ $this->params['breadcrumbs'][] = $this->title;
             // ],
             [
                 'attribute' => 'date_status',
-                'format' =>  ['date', 'php:d M Y h:i:s'],
+                'format' =>  ['date', 'php:d M Y'],
             ],
             [
-                'attribute' => 'userAccepted.username',
-                'label' => 'Принял',
+                'attribute' => 'userAccepted.full_name',
+                'label' => 'Подтвердил',
             ],
             // [
             //     'attribute' => 'accepted_ip',
@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // ],
             'comment',
             [
-                'label' => 'Выдано',
+                'label' => 'Выдал',
                 'format' => 'html',
                 'value' => function ($model) {
                     $listIssuance = '';

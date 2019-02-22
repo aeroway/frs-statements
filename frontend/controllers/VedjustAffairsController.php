@@ -181,10 +181,17 @@ class VedjustAffairsController extends Controller
 
         if ($model->ved->status_id === 2) {
 
-            $model->status = (int)$status;
-            $model->date_status = date('Y-m-d H:i:s');
-            $model->accepted_ip = ip2long(Yii::$app->request->userIP);
-            $model->user_accepted_id = Yii::$app->user->identity->id;
+            if (!$model->status) {
+                $model->status = (int)$status;
+                $model->date_status = date('Y-m-d H:i:s');
+                $model->accepted_ip = ip2long(Yii::$app->request->userIP);
+                $model->user_accepted_id = Yii::$app->user->identity->id;
+            } else {
+                $model->status = (int)$status;
+                $model->date_status = NULL;
+                $model->accepted_ip = NULL;
+                $model->user_accepted_id = NULL;
+            }
 
             if ($model->update() !== false) {
                 return 1;

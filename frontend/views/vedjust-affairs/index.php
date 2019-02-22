@@ -49,7 +49,10 @@ $this->params['breadcrumbs'][] = 'Дела';
                     ]) . ' ';
         }
 
-        if ($modelVed->status_id === 2 && $modelVed->user_created_id === Yii::$app->user->identity->id)
+        if (
+            ($modelVed->user_formed_id === Yii::$app->user->identity->id && $modelVed->status_id == 2) || 
+            ($modelVed->user_accepted_id == Yii::$app->user->identity->id && ($modelVed->status_id == 3 || $modelVed->status_id == 4))
+           )
         {
             echo Html::a('Откатить', 'javascript:void(0);', 
                     [
@@ -92,7 +95,7 @@ $this->params['breadcrumbs'][] = 'Дела';
     {
         echo Html::button('Переместить в ...',
             [
-                'value' => Url::to('/vedjust-ved/send-ext-docs&id=' . $modelVed->id),
+                'value' => Url::to('/vedjust-ved/send-ext-docs?id=' . $modelVed->id),
                 'class' => 'btn btn-success',
                 'id' => 'modalVedExtDocCreate'
             ]
@@ -106,7 +109,7 @@ $this->params['breadcrumbs'][] = 'Дела';
         && ($modelVed->status_id === 3 || $modelVed->status_id === 4)):
     ?>
         <?= Html::a('Поместить в архив', 
-            Url::to('/vedjust-storage/create&ved=' . $modelVed->id), ['class' => 'btn btn-success']); 
+            Url::to('/vedjust-storage/create?ved=' . $modelVed->id), ['class' => 'btn btn-success']); 
         ?>
     <?php endif; ?>
     </p>

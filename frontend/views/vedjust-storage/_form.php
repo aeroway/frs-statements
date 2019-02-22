@@ -17,7 +17,7 @@ use frontend\models\VedjustArchive;
     <?php $form = ActiveForm::begin(); ?>
 
     <?php
-    if(strpos(Yii::$app->request->get("r"), 'create')) {
+    if(strpos(Yii::$app->request->pathInfo, 'create')) {
         if (!empty(Yii::$app->request->get('ved'))) {
             echo $form->field($model, 'ved_id')->hiddenInput(['value' => Yii::$app->request->get('ved')])->label(false);
         } else {
