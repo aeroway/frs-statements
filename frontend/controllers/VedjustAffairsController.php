@@ -96,8 +96,14 @@ class VedjustAffairsController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index', 'id' => $model->ved_id]);
+            Yii::$app->getSession()->setFlash('successAffairs', 'block');
+
+            return $this->render('create', [
+                'model' => new VedjustAffairs(),
+            ]);
         }
+
+        Yii::$app->getSession()->setFlash('successAffairs', 'none');
 
         return $this->render('create', [
             'model' => $model,

@@ -40,7 +40,7 @@ class VedjustArea extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Отдел',
+            'name' => 'Район',
             'id_dpt' => 'Id Dpt',
         ];
     }

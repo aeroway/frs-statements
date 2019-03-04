@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-//use yii\grid\GridView;
 use kartik\grid\GridView;
 use kartik\export\ExportMenu;
 use yii\widgets\Pjax;
@@ -43,47 +42,39 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php
-    if (Yii::$app->user->can('addAudit') || Yii::$app->user->can('limitAudit')) {
-        $buttons =
+    $buttons =
+    [
+        'class' => 'yii\grid\ActionColumn',
+        'buttons' =>
         [
-            'class' => 'yii\grid\ActionColumn',
-            'template' => '{view}',
-        ];
-    } else {
-        $buttons =
-        [
-            'class' => 'yii\grid\ActionColumn',
-            'buttons' =>
-            [
-                'delete' => function($url, $model, $key)
+            'delete' => function($url, $model, $key)
+            {
+                if($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
                 {
-                    if($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
-                    {
-                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', 
-                                ['vedjust-ved/delete','id' => $model['id']], 
-                                [
-                                    'title' => Yii::t('yii', 'Delete'),
-                                    'aria-label' => Yii::t('yii', 'Delete'),
-                                    'data-pjax' => '0',
-                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                    'data-method' => 'post',
-                                ]);
-                    }
-                },
-                'createvedpdf' => function ($url, $model, $key)
-                {
-                    return Html::a('<span class="glyphicon glyphicon-file"></span>',
-                            $url,
+                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', 
+                            ['vedjust-ved/delete','id' => $model['id']], 
                             [
-                                'title' => Yii::t('yii', 'Сформировать PDF'),
-                                'aria-label' => Yii::t('yii', 'Сформировать PDF'),
-                                'target' => '_blank',
+                                'title' => Yii::t('yii', 'Delete'),
+                                'aria-label' => Yii::t('yii', 'Delete'),
+                                'data-pjax' => '0',
+                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                'data-method' => 'post',
                             ]);
-                },
-            ],
-            'template' => '{delete} {createvedpdf}',
-        ];
-    }
+                }
+            },
+            'createvedpdf' => function ($url, $model, $key)
+            {
+                return Html::a('<span class="glyphicon glyphicon-file"></span>',
+                        $url,
+                        [
+                            'title' => Yii::t('yii', 'Сформировать PDF'),
+                            'aria-label' => Yii::t('yii', 'Сформировать PDF'),
+                            'target' => '_blank',
+                        ]);
+            },
+        ],
+        'template' => '{delete} {createvedpdf} {view}',
+    ];
 
     $gridColumns = [
         'id',

@@ -33,7 +33,7 @@ class VedjustVedController extends Controller
                         'allow' => true,
                         'actions' =>
                         [
-                            'index', 'delete', 'create', // standard actions
+                            'index', 'delete', 'create', 'view', // standard actions
                             'changestatus', // formed docs
                             'changestatusreturn', // return status step back
                             'changeverified', // accepted docs
@@ -48,7 +48,7 @@ class VedjustVedController extends Controller
                         'allow' => true,
                         'actions' => 
                         [
-                            'index', 'view',
+                            'index',
                             'setarchive',
                             'view-ext-doc', // thumbnail previews
                             'index-ext-doc-detailed',
@@ -93,7 +93,7 @@ class VedjustVedController extends Controller
 
         $params = Yii::$app->request->queryParams;
 
-        if (count($params) <= 1) {
+        if (count($params) <= 0) {
             $params = Yii::$app->session['VedjustVedSearch'];
             if(isset(Yii::$app->session['VedjustVedSearch']['page']))
                 $_GET['page'] = Yii::$app->session['VedjustVedSearch']['page'];

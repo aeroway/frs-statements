@@ -18,54 +18,60 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             //'id',
+            'archiveUnit.name',
             [
                 'attribute' => 'status.name',
                 'label' => 'Состояние',
             ],
             [
                 'attribute' => 'date_create',
-                'format' =>  ['date', 'php:d M Y h:i:s'],
+                'format' =>  ['date', 'php:d M Y'],
             ],
+            // [
+            //     'attribute' => 'create_ip',
+            //     'value' => function ($model) {
+            //         return $model->create_ip ? long2ip($model->create_ip) : '';
+            //     },
+            // ],
             [
-                'attribute' => 'create_ip',
-                'value' => function ($model) {
-                    return $model->create_ip ? long2ip($model->create_ip) : '';
-                },
-            ],
-            [
-                'attribute' => 'userCreated.username',
+                'attribute' => 'userCreated.full_name',
                 'label' => 'Создал',
             ],
+            'userCreated.agency.name',
             //'num_ved',
-            'archiveUnit.name',
             [
                 'attribute' => 'date_formed',
-                'format' =>  ['date', 'php:d M Y h:i:s'],
+                'format' =>  ['date', 'php:d M Y'],
             ],
+            // [
+            //     'attribute' => 'formed_ip',
+            //     'value' => function ($model) {
+            //         return $model->formed_ip ? long2ip($model->formed_ip) : '';
+            //     },
+            // ],
             [
-                'attribute' => 'formed_ip',
-                'value' => function ($model) {
-                    return $model->formed_ip ? long2ip($model->formed_ip) : '';
-                },
-            ],
-            [
-                'attribute' => 'userFormed.username',
+                'attribute' => 'userFormed.full_name',
                 'label' => 'Сформировал',
             ],
             [
                 'attribute' => 'date_reception',
                 'format' =>  ['date', 'php:d M Y h:i:s'],
             ],
+            // [
+            //     'attribute' => 'accepted_ip',
+            //     'value' => function ($model) {
+            //         return $model->accepted_ip ? long2ip($model->accepted_ip) : '';
+            //     },
+            // ],
             [
-                'attribute' => 'accepted_ip',
-                'value' => function ($model) {
-                    return $model->accepted_ip ? long2ip($model->accepted_ip) : '';
-                },
-            ],
-            [
-                'attribute' => 'userAccepted.username',
+                'attribute' => 'userAccepted.full_name',
                 'label' => 'Принял',
             ],
+            'userAccepted.agency.name',
+            'subdivision.name',
+            'address.name',
+            'comment',
+            'area.name',
         ],
     ]) ?>
 

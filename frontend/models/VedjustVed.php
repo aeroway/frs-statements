@@ -77,16 +77,16 @@ class VedjustVed extends \yii\db\ActiveRecord
             'num_ved' => 'Номер ведомости',
             'comment' => 'Комментарий',
             'status_id' => 'Состояние',
-            'date_reception' => 'Дата подтверждения',
+            'date_reception' => 'Дата принятия',
             'date_formed' => 'Дата формирования',
             'user_created_id' => 'Создал',
-            'user_accepted_id' => 'Подтвердил',
+            'user_accepted_id' => 'Принял',
             'user_formed_id' => 'Сформировал',
             'verified' => 'Проверено',
             'target' => 'Получатель',
             'create_ip' => 'IP создания',
             'formed_ip' => 'IP формирования',
-            'accepted_ip' => 'IP подтверждения',
+            'accepted_ip' => 'IP принятия',
             'kuvd_affairs' => 'КУВД дела',
             'ref_num_affairs' => '№ обращения',
             'archive_unit_id' => 'Ед. арх. хранения',
@@ -154,10 +154,11 @@ class VedjustVed extends \yii\db\ActiveRecord
             ->all();
 
         $modelVed = VedjustVed::find()
-            ->select("archive_unit.name_rp, address.name, ved.user_created_id, ved.user_accepted_id")
+            ->select("archive_unit.name_rp, address.name, ved.user_created_id, ved.user_accepted_id, area.name as area_name")
             ->asArray()
             ->leftJoin('archive_unit', 'archive_unit.id = ved.archive_unit_id')
             ->leftJoin('address', 'address.id = ved.address_id')
+            ->leftJoin('area', 'area.id = ved.area_id')
             ->where(["ved.id" => $this->id])
             ->one();
 
@@ -169,6 +170,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             <h1>Ведомость " . $modelVed['name_rp'] . " №$this->id</h1>
             <h2>от $dateCreate</h2>
             <h3>" . $modelVed['name'] . "</h3>
+            <h4>" . $modelVed['area_name'] . "</h4>
         </div>
         <div>
         <table border='1' cellpadding='3' width='100%' cellspacing='0'>
@@ -301,7 +303,7 @@ class VedjustVed extends \yii\db\ActiveRecord
      */
     public function getArea()
     {
-        return $this->hasOne(VedjustAddress::className(), ['id' => 'area_id']);
+        return $this->hasOne(VedjustArea::className(), ['id' => 'area_id']);
     }
 
     /**

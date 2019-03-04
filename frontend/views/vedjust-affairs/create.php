@@ -13,10 +13,18 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="vedjust-affairs-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?php //echo Html::encode($this->title) ?></h1>
+    <div id="successAffairs" style="display: <?= Yii::$app->session->getFlash('successAffairs'); ?>;">
+        <div class="alert alert-success">Запись добавлена.</div>
+    </div>
 
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>
 
 </div>
+<script type="text/javascript">
+    setTimeout(function () {
+            document.getElementById('successAffairs').style.display = 'none';
+        }, 2000);
+</script>
