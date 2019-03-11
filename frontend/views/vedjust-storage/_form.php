@@ -32,7 +32,10 @@ use frontend\models\VedjustArchive;
         }
 
         echo $form->field($model, 'archive_id')->widget(Select2::classname(), [
-                'data' => ArrayHelper::map(VedjustArchive::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
+                'data' => ArrayHelper::map(VedjustArchive::find()
+                    ->where(['archive.subdivision_id' => Yii::$app->user->identity->subdivision_id])
+                    ->orderBy(['name' => SORT_ASC])
+                    ->all(), 'id', 'name'),
                 'language' => 'ru',
                 'options' => ['placeholder' => 'Выберите архивохранилище'],
                 'pluginOptions' => [

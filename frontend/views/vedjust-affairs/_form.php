@@ -13,6 +13,10 @@ use frontend\models\VedjustVed;
 
 <div class="vedjust-affairs-form">
 
+<?php //print_r($model->ved->id); die;?>
+
+    <?= Html::a('Назад', ['index', 'id' => !empty(Yii::$app->request->get('id')) ? Yii::$app->request->get('id') : ''], ['class' => 'btn btn-info']); ?>
+
     <?php $form = ActiveForm::begin(); ?>
 
     <?php

@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'date_reception',
-                'format' =>  ['date', 'php:d M Y h:i:s'],
+                'format' =>  ['date', 'php:d M Y'],
             ],
             // [
             //     'attribute' => 'accepted_ip',
