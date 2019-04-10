@@ -29,7 +29,7 @@ class VedjustAffairsController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'issuance', 'view'],
+                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'changestatusall', 'issuance', 'view'],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
                     [
@@ -44,6 +44,7 @@ class VedjustAffairsController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'changestatus' => ['GET'],
+                    'changestatusall' => ['GET'],
                 ],
             ],
         ];
@@ -58,6 +59,8 @@ class VedjustAffairsController extends Controller
         $searchModel = new VedjustAffairsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $model = new VedjustAffairs();
+
+        $dataProvider->pagination->pageSize = 100;
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -206,6 +209,19 @@ class VedjustAffairsController extends Controller
             }
         } else {
            return 0; 
+        }
+    }
+
+    // Check all box
+    public function actionChangestatusall($id, $status)
+    {
+        if (($allAffairsId = VedjustAffairs::find()->select(['id'])->where(['ved_id' => $id])->all()) !== null) {
+            foreach ($allAffairsId as $affairsId) {
+                $this->actionChangestatus($affairsId->id, $status);
+            }
+            return 1;
+        } else {
+            return 0;
         }
     }
 

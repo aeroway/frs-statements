@@ -42,7 +42,9 @@ class VedjustAffairsSearch extends VedjustAffairs
     public function search($params)
     {
         if(!empty(Yii::$app->request->get('id')))
-            $query = VedjustAffairs::find()->where(['ved_id' => Yii::$app->request->get('id')]);
+            $query = VedjustAffairs::find()
+                ->where(['ved_id' => Yii::$app->request->get('id')])
+                ->orderBy(['kuvd' => SORT_ASC]);
         else
             $query = VedjustAffairs::find();
 

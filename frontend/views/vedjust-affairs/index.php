@@ -244,7 +244,9 @@ $this->params['breadcrumbs'][] = 'Дела';
                     [
                         'class' => 'select-on-check-all',
                         'value' => 1,
-                        'onclick' => '$(".kv-row-checkbox").prop("checked", $(this).is(":checked")); selectionAll();',
+                        'id' => 'kv-row-checkbox',
+                        'onclick' => '$(".kv-row-checkbox").prop("checked", $(this).is(":checked"));
+                                      selectionAll('.$modelVed->id.');',
                     ]),
                 'contentOptions' => ['class' => 'kv-row-select'],
                 'content' => function($model, $key) {
@@ -293,14 +295,19 @@ if (document.getElementsByClassName("kv-row-checkbox").length === 0) {
 }
 
 // выбрать все записи
-function selectionAll() {
-    var elements = document.querySelectorAll('input.kv-row-checkbox');
+function selectionAll(value) {
+    var checkStatus = document.getElementById("kv-row-checkbox").checked;
 
-    for (var i = 0; i < elements.length; i++) {
-        if (!elements[i].disabled) {
-            changeStatusAffairs(elements[i].value);
+    $.ajax(
+    {
+        type: 'GET',
+        url: '/vedjust-affairs/changestatusall',
+        data: 'id=' + value + '&status=' + +checkStatus,
+        success: function(data) { 
+            if (data == 0) alert('Ошибка обработки.');
+            location.reload();
         }
-    }
+    });
 }
 
 function changeStatusAffairs(value) {
