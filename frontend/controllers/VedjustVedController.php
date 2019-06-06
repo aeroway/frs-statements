@@ -269,7 +269,29 @@ class VedjustVedController extends Controller
 
         if ($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
         {
-            $model->status_id = 2;
+            // Пропуск одной стадии, если создаёт ведомость с типом "невостреб." сам на себя
+            if ($model->user_created_id === Yii::$app->user->identity->id
+                && $model->archive_unit_id === 4 
+                && $model->address_id === Yii::$app->user->identity->address_id) {
+
+                VedjustAffairs::updateAll([
+                    'status' => 1,
+                    'date_status' => date('Y-m-d H:i:s'),
+                    'accepted_ip' => ip2long(Yii::$app->request->userIP),
+                    'user_accepted_id' => Yii::$app->user->identity->id
+                ],
+                ['=', 'ved_id', $id]);
+
+                $model->status_id = 3;
+                $model->verified = 1;
+                $model->date_reception = date('Y-m-d H:i:s');
+                $model->accepted_ip = ip2long(Yii::$app->request->userIP);
+                $model->user_accepted_id = Yii::$app->user->identity->id;
+
+            } else {
+                $model->status_id = 2;
+            }
+
             $model->date_formed = date('Y-m-d H:i:s');
             $model->formed_ip = ip2long(Yii::$app->request->userIP);
             $model->user_formed_id = Yii::$app->user->identity->id;
