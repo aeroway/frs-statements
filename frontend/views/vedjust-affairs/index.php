@@ -108,7 +108,7 @@ $this->params['breadcrumbs'][] = 'Дела';
         && empty(VedjustStorage::find()->where(['ved_id' => $modelVed->id])->one()->ved_id)
         && ($modelVed->status_id === 3 || $modelVed->status_id === 4)):
     ?>
-        <?= Html::a('Поместить на выдачу', 
+        <?= Html::a('Поместить в архивохранилище', 
             Url::to('/vedjust-storage/create?ved=' . $modelVed->id), ['class' => 'btn btn-success']); 
         ?>
     <?php endif; ?>
