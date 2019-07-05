@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = 'Дела';
             <div class="col-md-3 col-sm-4 col-xs-6">
                 <div class="dummy"></div>
                 <div class="thumbnail purple">
+                    <?= '<b>Название хранилища:</b> ' . $storage["name"] . '<br>' ?>
                     <?= '<b>Размещено:</b> ' . $storage["comment"]; ?>
                 </div>
             </div>
@@ -214,6 +215,16 @@ $this->params['breadcrumbs'][] = 'Дела';
         'filterModel' => $searchModel,
         'rowOptions' => function($model)
         {
+            if (!empty(Yii::$app->session['VedjustVedSearch'])) {
+                foreach (Yii::$app->session['VedjustVedSearch'] as $value) {
+                    if (!empty($value['kuvd_affairs'])) {
+                        $wordKuvd = addcslashes($value["kuvd_affairs"], '/');
+                        $patternKuvd = "/($wordKuvd)+/iu";
+                        if (preg_match($patternKuvd, $model->kuvd)) { return ['class' => 'info']; }
+                    }
+                }
+            }
+
             if ($model->ved->status_id >= 3 && $model->status == 0) return ['class' => 'danger'];
         },
         'columns' => [
@@ -247,6 +258,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                         'id' => 'kv-row-checkbox',
                         'onclick' => '$(".kv-row-checkbox").prop("checked", $(this).is(":checked"));
                                       selectionAll('.$modelVed->id.');',
+                      'disabled' => true,
                     ]),
                 'contentOptions' => ['class' => 'kv-row-select'],
                 'content' => function($model, $key) {
@@ -288,10 +300,11 @@ $this->params['breadcrumbs'][] = 'Дела';
 </div>
 
 <script>
-// удалить "выбрать все", если отсутствуют чекбокс на каждом деле
-if (document.getElementsByClassName("kv-row-checkbox").length === 0) {
+if (document.getElementsByClassName("kv-row-checkbox").length !== 0) {
     var element = document.getElementsByClassName("select-on-check-all");
-    element[0].parentNode.removeChild(element[0]);
+    // удалить "выбрать все", если отсутствуют чекбокс на каждом деле
+    // element[0].parentNode.removeChild(element[0]);
+    element[0].disabled = false;
 }
 
 // выбрать все записи

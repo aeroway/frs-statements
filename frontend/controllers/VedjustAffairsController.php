@@ -60,7 +60,7 @@ class VedjustAffairsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $model = new VedjustAffairs();
 
-        $dataProvider->pagination->pageSize = 100;
+        $dataProvider->pagination->pageSize = 200;
 
         return $this->render('index', [
             'searchModel' => $searchModel,

@@ -56,7 +56,7 @@ use frontend\models\VedjustVed;
                     ],
                 ]);
         }
-        echo $form->field($model, 'p_count')->textInput(['type' => 'number', 'min' => '1', 'step' => '1', 'value' => 1]);
+        // echo $form->field($model, 'p_count')->textInput(['type' => 'number', 'min' => '1', 'step' => '1', 'value' => 1]);
     } else {
         echo $form->field($model, 'ved_id')->hiddenInput(['value' => $model->ved_id])->label(false);
     }

@@ -42,6 +42,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     {
         return [
             [['kuvd', 'p_count'], 'required'],
+            [['kuvd'], 'unique', 'targetAttribute' => ['kuvd', 'ved_id']],
             [['comment', 'kuvd', 'ref_num'], 'string'],
             [['date_create', 'date_status'], 'safe'],
             [['ved_id', 'status', 'user_created_id', 'user_accepted_id', 'create_ip', 'accepted_ip', 'p_count'], 'integer'],
@@ -77,7 +78,8 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function getStoragePath($id)
     {
         $modelStorage = VedjustStorage::find()
-        ->select(['comment'])
+        ->select(['comment', 'name'])
+        ->innerJoin('archive', 'storage.archive_id = archive.id')
         ->where(['=', 'ved_id', $id])
         ->asArray()
         ->one();
@@ -105,7 +107,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     {
         $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $this->id])->asArray()->one()["num"];
 
-        return $numIssuance . ' из ' . $this->p_count;
+        return $numIssuance; // . ' из ' . $this->p_count;
     }
 
     /**

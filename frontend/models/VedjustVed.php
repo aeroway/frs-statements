@@ -151,6 +151,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             ->select('kuvd, comment')
             ->asArray()
             ->where(["ved_id" => $this->id])
+            ->orderBy(["kuvd" => SORT_ASC])
             ->all();
 
         $modelVed = VedjustVed::find()
@@ -205,11 +206,11 @@ class VedjustVed extends \yii\db\ActiveRecord
         </div>
         ";
 
-        $pdf = new Pdf();//Yii::$app->pdf; // or new Pdf();
-        $mpdf = $pdf->api; // fetches mpdf api
-        //$mpdf->SetHeader('Kartik Header'); // call methods or set any properties
-        $mpdf->WriteHtml($content); // call mpdf write html
-        echo $mpdf->Output('ved.pdf', 'D'); // call the mpdf api output as needed
+        $pdf = new Pdf();
+        $mpdf = $pdf->api;
+        $mpdf->SetHeader('AW');
+        $mpdf->WriteHtml($content);
+        echo $mpdf->Output('ved.pdf', 'D');
 
         exit;
     }

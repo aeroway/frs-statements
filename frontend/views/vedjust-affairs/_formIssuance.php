@@ -13,7 +13,7 @@ use frontend\models\VedjustVed;
 
 <div class="vedjust-affairs-form">
 
-    <?= '<p>Выдано (' . $numIssuance . '/' . $p_count . ')</p>'; ?>
+    <?php //echo '<p>Выдано (' . $numIssuance . '/' . $p_count . ')</p>'; ?>
     <?php foreach ($nameIssuance as $key => $value) : ?>
         <?= $key + 1 . '. ' . $value["name"] . '<br>'; ?>
     <?php endforeach; ?>
