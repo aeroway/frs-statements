@@ -51,8 +51,9 @@ $this->params['breadcrumbs'][] = 'Дела';
         }
 
         if (
-            ($modelVed->user_formed_id === Yii::$app->user->identity->id && $modelVed->status_id == 2) || 
-            ($modelVed->user_accepted_id == Yii::$app->user->identity->id && ($modelVed->status_id == 3 || $modelVed->status_id == 4))
+            ($modelVed->user_formed_id === Yii::$app->user->identity->id && $modelVed->status_id == 2)
+            // 2019.08.07 запрет откатывать принятые ведомости
+            // || ($modelVed->user_accepted_id == Yii::$app->user->identity->id && ($modelVed->status_id == 3 || $modelVed->status_id == 4))
            )
         {
             echo Html::a('Откатить', 'javascript:void(0);', 
@@ -258,7 +259,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                         'id' => 'kv-row-checkbox',
                         'onclick' => '$(".kv-row-checkbox").prop("checked", $(this).is(":checked"));
                                       selectionAll('.$modelVed->id.');',
-                      'disabled' => true,
+                        'disabled' => true,
                     ]),
                 'contentOptions' => ['class' => 'kv-row-select'],
                 'content' => function($model, $key) {
@@ -300,7 +301,7 @@ $this->params['breadcrumbs'][] = 'Дела';
 </div>
 
 <script>
-if (document.getElementsByClassName("kv-row-checkbox").length !== 0) {
+if (document.getElementsByClassName("kv-row-checkbox").length !== 0 && !document.getElementsByClassName("kv-row-checkbox")[0].disabled) {
     var element = document.getElementsByClassName("select-on-check-all");
     // удалить "выбрать все", если отсутствуют чекбокс на каждом деле
     // element[0].parentNode.removeChild(element[0]);

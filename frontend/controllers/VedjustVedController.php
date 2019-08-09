@@ -330,6 +330,9 @@ class VedjustVedController extends Controller
 
         } elseif ($model->user_accepted_id == Yii::$app->user->identity->id && ($model->status_id == 3 || $model->status_id == 4)) {
 
+            //2019.08.05 запрет откатывать принятые ведомости
+            return 0;
+
             $model->status_id = 2;
             $model->verified = NULL;
             $model->user_accepted_id = NULL;

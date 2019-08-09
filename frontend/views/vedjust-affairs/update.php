@@ -8,7 +8,6 @@ use yii\helpers\Html;
 $this->params['breadcrumbs'][] = ['label' => 'Ведомости', 'url' => ['vedjust-ved/index']];
 $this->title = 'Редактировать';
 $this->params['breadcrumbs'][] = ['label' => 'Дела', 'url' => ['index', 'id' => $model->ved_id]];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Редактировать';
 ?>
 <div class="vedjust-affairs-update">
@@ -17,6 +16,7 @@ $this->params['breadcrumbs'][] = 'Редактировать';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'vedId' => $model->ved_id,
     ]) ?>
 
 </div>

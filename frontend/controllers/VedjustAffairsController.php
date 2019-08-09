@@ -88,21 +88,28 @@ class VedjustAffairsController extends Controller
      * If creation is successful, the browser will be redirected to the 'index' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($id)
     {
-        $model = new VedjustAffairs();
+        if (!is_numeric($id) || $id < 1 || is_float($id)) {
+            return $this->goHome();
+        }
 
-        if (($modelVed = VedjustVed::findOne(Yii::$app->request->get('id'))) !== null) {
+        $modelVed = VedjustVed::findOne($id);
+
+        if ($modelVed !== null) {
             if ($modelVed->status_id !== 1 || $modelVed->user_created_id !== Yii::$app->user->identity->id) {
                 throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
             }
         }
+
+        $model = new VedjustAffairs();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->getSession()->setFlash('successAffairs', 'block');
 
             return $this->render('create', [
                 'model' => new VedjustAffairs(),
+                'vedId' => $id,
             ]);
         }
 
@@ -110,6 +117,7 @@ class VedjustAffairsController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'vedId' => $id,
         ]);
     }
 

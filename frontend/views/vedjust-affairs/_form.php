@@ -13,9 +13,7 @@ use frontend\models\VedjustVed;
 
 <div class="vedjust-affairs-form">
 
-<?php //print_r($model->ved->id); die;?>
-
-    <?= Html::a('Назад', ['index', 'id' => !empty(Yii::$app->request->get('id')) ? Yii::$app->request->get('id') : ''], ['class' => 'btn btn-info']); ?>
+    <?= Html::a('Назад', ['index', 'id' => $vedId], ['class' => 'btn btn-info']); ?>
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -44,8 +42,8 @@ use frontend\models\VedjustVed;
 
     <?php
     if(strpos(Yii::$app->request->pathInfo, 'create')) {
-        if (!empty(Yii::$app->request->get('id'))) {
-            echo $form->field($model, 'ved_id')->hiddenInput(['value' => Yii::$app->request->get('id')])->label(false);
+        if (!empty($vedId)) {
+            echo $form->field($model, 'ved_id')->hiddenInput(['value' => $vedId])->label(false);
         } else {
             echo $form->field($model, 'ved_id')->widget(Select2::classname(), [
                     'data' => ArrayHelper::map(VedjustVed::find()->orderBy(['num_ved' => SORT_ASC])->all(), 'id', 'num_ved'),
