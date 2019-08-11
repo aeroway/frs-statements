@@ -90,7 +90,13 @@ class VedjustStorageController extends Controller
             $model = new VedjustStorage();
 
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                $modelVed->status_id = 5;
+                if ($modelVed->status_id === 3) {
+                    $modelVed->status_id = 5;
+                }
+                if ($modelVed->status_id === 4) {
+                    $modelVed->status_id = 6;
+                }
+
                 $modelVed->save();
 
                 return $this->redirect(['vedjust-ved/index']);

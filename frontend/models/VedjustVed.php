@@ -170,7 +170,7 @@ class VedjustVed extends \yii\db\ActiveRecord
         <div style='text-align: center;'>
             <h1>Ведомость " . $modelVed['name_rp'] . " №$this->id</h1>
             <h2>от $dateCreate</h2>
-            <h3>" . $modelVed['name'] . "</h3>
+            <h3>Получатель: " . $modelVed['name'] . "</h3>
             <h4>" . $modelVed['area_name'] . "</h4>
         </div>
         <div>
@@ -208,7 +208,7 @@ class VedjustVed extends \yii\db\ActiveRecord
 
         $pdf = new Pdf();
         $mpdf = $pdf->api;
-        $mpdf->SetHeader('AW');
+        // $mpdf->SetHeader('AW');
         $mpdf->WriteHtml($content);
         echo $mpdf->Output('ved.pdf', 'D');
 

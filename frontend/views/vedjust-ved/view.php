@@ -33,11 +33,15 @@ $this->params['breadcrumbs'][] = $this->title;
             //         return $model->create_ip ? long2ip($model->create_ip) : '';
             //     },
             // ],
+            'userCreated.agency.name',
             [
                 'attribute' => 'userCreated.full_name',
                 'label' => 'Создал',
             ],
-            'userCreated.agency.name',
+            [
+                'attribute' => 'userCreated.phone',
+                'label' => 'Контактный номер',
+            ],
             //'num_ved',
             [
                 'attribute' => 'date_formed',
@@ -49,9 +53,14 @@ $this->params['breadcrumbs'][] = $this->title;
             //         return $model->formed_ip ? long2ip($model->formed_ip) : '';
             //     },
             // ],
+            // 'userFormed.agency.name',
             [
                 'attribute' => 'userFormed.full_name',
                 'label' => 'Сформировал',
+            ],
+            [
+                'attribute' => 'userFormed.phone',
+                'label' => 'Контактный номер',
             ],
             [
                 'attribute' => 'date_reception',
@@ -63,11 +72,15 @@ $this->params['breadcrumbs'][] = $this->title;
             //         return $model->accepted_ip ? long2ip($model->accepted_ip) : '';
             //     },
             // ],
+            'userAccepted.agency.name',
             [
                 'attribute' => 'userAccepted.full_name',
                 'label' => 'Принял',
             ],
-            'userAccepted.agency.name',
+            [
+                'attribute' => 'userAccepted.phone',
+                'label' => 'Контактный номер',
+            ],
             'subdivision.name',
             'address.name',
             'comment',

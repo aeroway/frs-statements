@@ -141,9 +141,9 @@ $this->params['breadcrumbs'][] = 'Дела';
             'update' => function($url, $model, $key)
             {
                 //редактировать - статус "создаётся" или статус "принято" и тот, кто принял
-                if (($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) 
-                    || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id))
-                {
+                // if (($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) 
+                //     || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id))
+                // {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/update','id' => $model['id']]);
 
                     return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $customurl, 
@@ -152,7 +152,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                                 'aria-label' => Yii::t('yii', 'Update'),
                                 'data-pjax' => '0',
                             ]);
-                }
+                // }
             },
             'issuance' => function($url, $model, $key)
             {

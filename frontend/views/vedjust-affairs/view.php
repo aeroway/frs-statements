@@ -30,6 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'userCreated.full_name',
                 'label' => 'Создал',
             ],
+            [
+                'attribute' => 'userCreated.phone',
+                'label' => 'Контактный номер',
+            ],
             // [
             //     'attribute' => 'create_ip',
             //     'value' => function ($model) {
@@ -43,6 +47,10 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'userAccepted.full_name',
                 'label' => 'Подтвердил',
+            ],
+            [
+                'attribute' => 'userAccepted.phone',
+                'label' => 'Контактный номер',
             ],
             // [
             //     'attribute' => 'accepted_ip',

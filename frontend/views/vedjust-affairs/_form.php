@@ -13,8 +13,6 @@ use frontend\models\VedjustVed;
 
 <div class="vedjust-affairs-form">
 
-    <?= Html::a('Назад', ['index', 'id' => $vedId], ['class' => 'btn btn-info']); ?>
-
     <?php $form = ActiveForm::begin(); ?>
 
     <?php
@@ -27,8 +25,7 @@ use frontend\models\VedjustVed;
     ?>
 
     <?php if(strpos(Yii::$app->request->pathInfo, 'update')) : ?>
-        <?php if ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id) : ?>
-        <?php else : ?>
+        <?php if ($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) : ?>
             <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus']); ?>
         <?php endif; ?>
     <?php endif; ?>
@@ -38,7 +35,7 @@ use frontend\models\VedjustVed;
         <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus']) ?>
     <?php endif; ?>
 
-    <?= $form->field($model, 'comment')->textArea() ?>
+    <?= $form->field($model, 'comment')->textArea(['placeholder' => 'Комментарий'])->label(false); ?>
 
     <?php
     if(strpos(Yii::$app->request->pathInfo, 'create')) {
@@ -61,6 +58,7 @@ use frontend\models\VedjustVed;
     ?>
 
     <div class="form-group">
+        <?= Html::a('Назад', ['index', 'id' => $vedId], ['class' => 'btn btn-info']); ?>
         <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Сохранить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
