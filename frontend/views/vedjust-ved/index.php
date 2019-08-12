@@ -182,7 +182,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Источник',
                 'content' => function($model) {
                     return $model->userCreated->AgencyName . ' (' . $model->userCreated->SubdivisionName . ')';
-                }
+                },
+                'format' => 'html',
+                'contentOptions' => [
+                    'style' => 'min-width: 180px; overflow: auto; white-space: normal; word-wrap: break-word;'
+                ],
             ],
             // [
             //     'attribute' => 'user_created_id',
@@ -196,6 +200,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Получатель',
                 'value' => 'targetRecipient',
                 'filter' => ArrayHelper::map(VedjustAgency::find()->asArray()->all(), 'id', 'name'),
+                'format' => 'html',
+                'contentOptions' => [
+                    'style' => 'min-width: 150px; overflow: auto; white-space: normal; word-wrap: break-word;'
+                ],
             ],
             // [
             //     'attribute' => 'user_accepted_id',
@@ -240,6 +248,10 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'address_id',
                 'value' => 'address.name',
+                'format' => 'html',
+                'contentOptions' => [
+                    'style' => 'min-width: 180px; overflow: auto; white-space: normal; word-wrap: break-word;'
+                ],
             ],
             [
                 'class' => 'kartik\grid\DataColumn',

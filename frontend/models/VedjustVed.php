@@ -63,6 +63,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
             [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAddress::className(), 'targetAttribute' => ['address_id' => 'id']],
             [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustArea::className(), 'targetAttribute' => ['area_id' => 'id']],
+            [['target'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['target' => 'id']],
         ];
     }
 
@@ -128,19 +129,21 @@ class VedjustVed extends \yii\db\ActiveRecord
     {
         $target = '';
 
-        switch ($this->target) {
-            case 1:
-                $target = 'МФЦ';
-                break;
-            case 2:
-                $target = 'ФКП';
-                break;
-            case 3:
-                $target = 'Росреестр';
-                break;
-            default:
-                return 'Куда-то';
-        }
+        // switch ($this->target) {
+        //     case 1:
+        //         $target = 'МФЦ';
+        //         break;
+        //     case 2:
+        //         $target = 'ФКП';
+        //         break;
+        //     case 3:
+        //         $target = 'Росреестр';
+        //         break;
+        //     default:
+        //         return 'Куда-то';
+        // }
+
+        $target = $this->AgencyName;
 
         return $target . ' (' . $this->subdivision->name . ')';
     }
@@ -151,15 +154,19 @@ class VedjustVed extends \yii\db\ActiveRecord
             ->select('kuvd, comment')
             ->asArray()
             ->where(["ved_id" => $this->id])
-            ->orderBy(["kuvd" => SORT_ASC])
+            ->orderBy(["id" => SORT_ASC])
             ->all();
 
         $modelVed = VedjustVed::find()
-            ->select("archive_unit.name_rp, address.name, ved.user_created_id, ved.user_accepted_id, area.name as area_name")
+            ->select("archive_unit.name_rp, address.name, ved.user_created_id, ved.user_accepted_id, area.name as area_name, agency.name as agName, agsr.name as ags, adrs.name as adr")
             ->asArray()
             ->leftJoin('archive_unit', 'archive_unit.id = ved.archive_unit_id')
             ->leftJoin('address', 'address.id = ved.address_id')
+            ->leftJoin('agency', 'agency.id = ved.target')
             ->leftJoin('area', 'area.id = ved.area_id')
+            ->innerJoin('user', '"user".id = ved.user_created_id')
+            ->innerJoin('address adrs', 'adrs.id = "user".address_id')
+            ->innerJoin('agency agsr', 'agsr.id = "user".agency_id')
             ->where(["ved.id" => $this->id])
             ->one();
 
@@ -170,7 +177,8 @@ class VedjustVed extends \yii\db\ActiveRecord
         <div style='text-align: center;'>
             <h1>Ведомость " . $modelVed['name_rp'] . " №$this->id</h1>
             <h2>от $dateCreate</h2>
-            <h3>Получатель: " . $modelVed['name'] . "</h3>
+            <h3>Передал: " . '<br>' . $modelVed['ags'] . '<br>' . $modelVed['adr'] . "</h3>
+            <h3>Получатель: " . '<br>' . $modelVed['agName'] . '<br>' . $modelVed['name'] . "</h3>
             <h4>" . $modelVed['area_name'] . "</h4>
         </div>
         <div>
@@ -232,6 +240,26 @@ class VedjustVed extends \yii\db\ActiveRecord
                 break;
             default:
                 return $this->archive_unit_id;
+        }
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAgency()
+    {
+        return $this->hasOne(VedjustAgency::className(), ['id' => 'target']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAgencyName()
+    {
+        if (!empty($this->agency)) {
+            return $this->agency->name;
+        } else {
+            return 'не указан';
         }
     }
 

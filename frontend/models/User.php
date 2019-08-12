@@ -90,6 +90,7 @@ class User extends \yii\db\ActiveRecord
             return 'не указан';
         }
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -98,16 +99,17 @@ class User extends \yii\db\ActiveRecord
         return $this->hasOne(VedjustAgency::className(), ['id' => 'agency_id']);
     }
 
-
-        public function getAgencyName()
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAgencyName()
     {
-        if (!empty($this->agency) ) {
+        if (!empty($this->agency)) {
             return $this->agency->name;
         } else {
             return 'не указан';
         }
     }
-
 
     /**
      * @return \yii\db\ActiveQuery
