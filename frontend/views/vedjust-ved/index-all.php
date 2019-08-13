@@ -22,23 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?php if (!Yii::$app->user->can('addAudit') && !Yii::$app->user->can('limitAudit')): ?>
-            <?= Html::button('Создать ведомость', ['value' => Url::to('/vedjust-ved/create'), 'class' => 'btn btn-success', 'id' => 'modalVedCreate']); ?>
-        <?php endif; ?>
-
-        <?php if (Yii::$app->getRequest()->getCookies()->getValue('archive')): ?>
-            <?= Html::a('Скрыть архивные', 'javascript:void(0);', ['class' => 'btn btn-warning', 'onclick' => 'setArchive(0);']); ?>
-        <?php endif; ?>
-
-        <?php if(!Yii::$app->getRequest()->getCookies()->getValue('archive')): ?> 
-            <?= Html::a('Показать все', 'javascript:void(0);', ['class' => 'btn btn-info', 'onclick' => 'setArchive(1);']); ?>
-        <?php endif; ?>
-
         <?= Html::a('Сброс фильтров', ['reset'], ['class' => 'btn btn-warning']); ?>
-
-        <?php if(Yii::$app->user->can('confirmExtDocs') || Yii::$app->user->can('addAudit') || Yii::$app->user->can('limitAudit')): ?>
-            <?= Html::a('Экстер. документы', Url::to('/vedjust-ved/view-ext-doc'), ['class' => 'btn btn-info']); ?>
-        <?php endif; ?>
 
         <?php if(Yii::$app->user->can('audit')): ?>
             <?= Html::a('Поиск по организациям', Url::to('/vedjust-ved/index-all'), ['class' => 'btn btn-info']); ?>
@@ -51,21 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'class' => 'yii\grid\ActionColumn',
         'buttons' =>
         [
-            'delete' => function($url, $model, $key)
-            {
-                if($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
-                {
-                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', 
-                            ['vedjust-ved/delete','id' => $model['id']], 
-                            [
-                                'title' => Yii::t('yii', 'Delete'),
-                                'aria-label' => Yii::t('yii', 'Delete'),
-                                'data-pjax' => '0',
-                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'data-method' => 'post',
-                            ]);
-                }
-            },
             'createvedpdf' => function ($url, $model, $key)
             {
                 return Html::a('<span class="glyphicon glyphicon-file"></span>',
@@ -77,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ]);
             },
         ],
-        'template' => '{delete} {createvedpdf} {view}',
+        'template' => '{createvedpdf} {view}',
     ];
 
     $gridColumns = [
@@ -98,13 +67,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $data->userCreated->username;
             },
         ],
-        // [
-        //     'attribute' => 'user_created_id',
-        //     'value' => 'userAccepted.username',
-        //     'content'=>function($model){
-        //         return $model->user_created_id;
-        //     }
-        // ],
         [
             'attribute' => 'user_accepted_id',
             'value' => 'userAccepted.username',
@@ -126,22 +88,6 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
     ?>
 
-    <?php
-    Modal::begin([
-        'options' => [
-            'tabindex' => false
-        ],
-        'header' => 'Создать ведомость',
-        'id' => 'modalVed',
-        'size' => 'modal-sm',
-    ]);
-
-    echo "<div id='modalVedContent'></div>";
-
-    Modal::end();
-
-    ?>
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -150,10 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
             if ($model->status_id != 1 && $model->userCreated->username == Yii::$app->user->identity->username) return ['class' => 'warning'];
         },
         'columns' => [
-            //['class' => 'yii\grid\SerialColumn'],
 
-            //'id',
-            //'num_ved',
             [
                 //'attribute' => 'archive_unit_id',
                 'label' => 'Тип',
@@ -161,6 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'iconUnit',
                 'contentOptions' => ['style' => 'text-align: center; width: 40px;'],
             ],
+
             [
                 'attribute' => 'id',
                 'label' => '№ вед.',
@@ -169,11 +113,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'format' => 'html',
             ],
+
             [
                 'attribute' => 'date_create',
                 'label' => 'Создано',
                 'format' =>  ['date', 'php:d.m.Y'],
             ],
+
             [
                 'attribute' => 'status_id',
                 'value' => function($data) {
@@ -181,8 +127,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'format' => 'html',
             ],
+
             [
-                // 'attribute' => 'user_created_id',
                 'label' => 'Источник',
                 'content' => function($model) {
                     return $model->userCreated->AgencyName . ' (' . $model->userCreated->SubdivisionName . ')';
@@ -192,13 +138,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'style' => 'min-width: 180px; overflow: auto; white-space: normal; word-wrap: break-word;'
                 ],
             ],
-            // [
-            //     'attribute' => 'user_created_id',
-            //     'value' => function($data) {
-            //      return Html::a(Html::encode($data->userCreated->username), ['vedjust-affairs/index', 'id' => $data['id']]);
-            //     },
-            //     'format' => 'html',
-            // ],
+
             [
                 'attribute' => 'target',
                 'label' => 'Получатель',
@@ -209,18 +149,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'style' => 'min-width: 150px; overflow: auto; white-space: normal; word-wrap: break-word;'
                 ],
             ],
-            // [
-            //     'attribute' => 'user_accepted_id',
-            //     'content'=>function($model) {
-            //         return (!empty($model->userAccepted)) ? 
-            //             $model->userAccepted->AgencyName . ' (' . $model->userAccepted->SubdivisionName . ')' : '';
-            //     }
-            // ],
+
             [
                 'attribute' => 'date_reception',
                 'label' => 'Принято',
                 'format' =>  ['date', 'php:d.m.Y'],
             ],
+
             [
                 'attribute' => 'ext_reg',
                 'label' => 'ЭР',
@@ -229,26 +164,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => ['style' => 'text-align: center; width: 80px;'],
                 'filter' => ['1' => '✔ - Экстерриториальная регистрация', '0' => '✖ - Обычная регистрация'],
             ],
-            // [
-            //     'attribute' => 'kuvd_affairs',
-            //     'value' => function($data) {
-            //         $output = '';
-            //         for ($i = 0; $i < count($data->affairs); $i++) { 
-            //             $output .= $data->affairs[$i]["kuvd"] . '<br>';
-            //         }
 
-            //         return $output;
-            //     },
-            //     'format' => 'html',
-            // ],
-            // 'verified',
-            // [
-            //     'attribute' => 'IconStatus',
-            //     'label' => 'Статус',
-            //     'format' => 'html',
-            //     'value' => 'IconStatus',
-            //     'contentOptions' => ['style'=>'text-align: center; width: 65px;'],
-            // ],
             [
                 'attribute' => 'address_id',
                 'value' => 'address.name',
@@ -257,6 +173,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'style' => 'min-width: 180px; overflow: auto; white-space: normal; word-wrap: break-word;'
                 ],
             ],
+
             [
                 'class' => 'kartik\grid\DataColumn',
                 'attribute' => 'comment',
@@ -264,10 +181,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => [
                     'style' => 'max-width:150px; overflow: auto; white-space: normal; word-wrap: break-word;'
                 ],
-                /*'value' => function($model) {
-                    return "<span style='max-width:150px; min-height: 100px; overflow: auto; word-wrap: break-word;'>"
-                        . $model->comment . "</span>";
-                },*/
             ],
 
             $buttons,

@@ -53,9 +53,10 @@ class VedjustVedController extends Controller
                             'view-ext-doc', // thumbnail previews
                             'index-ext-doc-detailed',
                             'view-ext-doc-detailed', // detail view
-                            'reset'
+                            'reset',
+                            'index-all'
                         ],
-                        'roles' => ['addAudit', 'limitAudit'],
+                        'roles' => ['audit', 'addAudit', 'limitAudit'],
                     ],
                     [
                         'allow' => true,
@@ -104,6 +105,32 @@ class VedjustVedController extends Controller
         $dataProvider = $searchModel->search($params);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Lists all VedjustVed models.
+     * @return mixed
+     */
+    public function actionIndexAll()
+    {
+        $searchModel = new VedjustVedSearch();
+
+        $params = Yii::$app->request->queryParams;
+
+        if (count($params) <= 0) {
+            $params = Yii::$app->session['VedjustVedAllSearch'];
+            if(isset(Yii::$app->session['VedjustVedAllSearch']['page']))
+                $_GET['page'] = Yii::$app->session['VedjustVedAllSearch']['page'];
+        } else {
+            Yii::$app->session['VedjustVedAllSearch'] = $params;
+        }
+
+        $dataProvider = $searchModel->search($params);
+
+        return $this->render('index-all', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

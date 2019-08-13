@@ -158,7 +158,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             ->all();
 
         $modelVed = VedjustVed::find()
-            ->select("archive_unit.name_rp, address.name, ved.user_created_id, ved.user_accepted_id, area.name as area_name, agency.name as agName, agsr.name as ags, adrs.name as adr")
+            ->select("archive_unit.name_rp, address.name, ved.user_created_id, ved.user_accepted_id, area.name as area_name, agency.name as agName, agsr.name as ags, adrs.name as adr, ved.comment")
             ->asArray()
             ->leftJoin('archive_unit', 'archive_unit.id = ved.archive_unit_id')
             ->leftJoin('address', 'address.id = ved.address_id')
@@ -172,6 +172,18 @@ class VedjustVed extends \yii\db\ActiveRecord
 
         $dateCreate = Yii::$app->formatter->asDate($this->date_create, 'dd.MM.yyyy');
 
+        if (!empty($modelVed['area_name'])) {
+            $vedAreaName = "<h4>" . $modelVed['area_name'] . "</h4>";
+        } else {
+            $vedAreaName = '';
+        }
+
+        if (!empty($modelVed['comment'])) {
+            $vedComment = "<h4>" . $modelVed['comment'] . "</h4>";
+        } else {
+            $vedComment = '';
+        }
+
         $content = 
         "
         <div style='text-align: center;'>
@@ -179,7 +191,8 @@ class VedjustVed extends \yii\db\ActiveRecord
             <h2>от $dateCreate</h2>
             <h3>Передал: " . '<br>' . $modelVed['ags'] . '<br>' . $modelVed['adr'] . "</h3>
             <h3>Получатель: " . '<br>' . $modelVed['agName'] . '<br>' . $modelVed['name'] . "</h3>
-            <h4>" . $modelVed['area_name'] . "</h4>
+            " . $vedAreaName . "
+            " . $vedComment . "
         </div>
         <div>
         <table border='1' cellpadding='3' width='100%' cellspacing='0'>
@@ -227,7 +240,7 @@ class VedjustVed extends \yii\db\ActiveRecord
     {
         switch ($this->archive_unit_id) {
             case 1:
-                return '<span class="glyphicon glyphicon-briefcase" title="Дела правоустанавливающих документов"> </span>';
+                return '<span class="glyphicon glyphicon-briefcase" title="Реестровое дело"> </span>';
                 break;
             case 2:
                 return '<span class="glyphicon glyphicon-file" title="Расписки"> </span>';
