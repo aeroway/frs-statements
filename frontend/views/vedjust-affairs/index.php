@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = 'Дела';
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?php if (Yii::$app->user->can('editArchive')): ?>
+    <?php if (Yii::$app->user->can('archive')): ?>
         <?php //$storage = $modelAffairs->getStoragePath($idVed); ?>
         <?php if ($storage): ?>
         <div class="row">
@@ -66,13 +66,13 @@ $this->params['breadcrumbs'][] = 'Дела';
         // принять может тот, кому было отправлено
         $target = 0;
 
-        if (Yii::$app->user->can('editMfc') === true)
+        if (Yii::$app->user->can('mfc') === true)
             $target = 1;
 
-        if (Yii::$app->user->can('editZkp') === true)
+        if (Yii::$app->user->can('zkp') === true)
             $target = 2;
 
-        if (Yii::$app->user->can('editRosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
+        if (Yii::$app->user->can('rosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
             $target = 3;
 
         if ($modelVed->status_id === 2 && $modelVed->target === $target) {
@@ -106,7 +106,7 @@ $this->params['breadcrumbs'][] = 'Дела';
     ?>
 
     <?php // one ved record in storage
-    if (Yii::$app->user->can('editArchive')
+    if (Yii::$app->user->can('archive')
         && empty(VedjustStorage::find()->where(['ved_id' => $modelVed->id])->one()->ved_id)
         && ($modelVed->status_id === 3 || $modelVed->status_id === 4)):
     ?>
@@ -162,7 +162,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                     && $model->status === 1
                     && $numIssuance !== $model->p_count
                     && $model->getCheckAffairsIssuance($model->ved_id)
-                    && Yii::$app->user->can('editIssuance'))
+                    && Yii::$app->user->can('issuance'))
                 {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/issuance', 'id' => $model['id']]);
 

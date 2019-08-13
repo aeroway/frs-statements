@@ -89,7 +89,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             }
                         ?>
                         <?= $form->field($modelAuthAssignment, "[{$i}]item_name")->dropDownList(
-                            ArrayHelper::map(AuthItem::find()->orderBy(['name' => SORT_ASC])->all(), 'name', 'name'));
+                            ArrayHelper::map(AuthItem::find()->orderBy(['description' => SORT_ASC])->all(), 'name', 'description'));
                         ?>
                         <div class="row">
                             <div class="col-sm-6">

@@ -48,14 +48,12 @@ return [
             'thousandSeparator' => '',
             'currencyCode' => 'RUR',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
     ],
     'params' => $params,
     'language' => 'ru-RU',

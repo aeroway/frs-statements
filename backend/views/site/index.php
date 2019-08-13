@@ -18,7 +18,7 @@ $this->title = 'Ведомости';
 
                 <p>Здесь можно управлять ролями зарегистрированных пользователей.</p>
 
-                <p><a class="btn btn-default" href="index.php?r=vedjust-user">Редактировать &raquo;</a></p>
+                <p><a class="btn btn-default" href="vedjust-user">Редактировать &raquo;</a></p>
             </div>
             <div class="col-lg-4">
             </div>
