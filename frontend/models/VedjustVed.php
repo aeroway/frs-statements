@@ -29,6 +29,7 @@ use kartik\mpdf\Pdf;
  * @property int $area_id
  * @property int $ext_reg
  * @property int $ext_reg_created
+ * @property int $search_all
  *
  * @property Affairs[] $affairs
  * @property Status $status
@@ -37,6 +38,8 @@ use kartik\mpdf\Pdf;
  */
 class VedjustVed extends \yii\db\ActiveRecord
 {
+    public $search_all;
+
     /**
      * @inheritdoc
      */
@@ -54,7 +57,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             [['target', 'subdivision_id'], 'required'],
             [['date_create', 'date_reception', 'date_formed'], 'safe'],
             [['num_ved', 'comment'], 'string'],
-            [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'address_id', 'ext_reg', 'ext_reg_created', 'area_id'], 'integer'],
+            [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'address_id', 'ext_reg', 'ext_reg_created', 'area_id', 'search_all'], 'integer'],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustStatus::className(), 'targetAttribute' => ['status_id' => 'id']],
             [['user_accepted_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_accepted_id' => 'id']],
             [['user_created_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_created_id' => 'id']],
@@ -97,6 +100,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             'ext_reg' => 'Экстерриториальная регистрация',
             'ext_reg_created' => 'Перемещено в таблицу экстер. документов',
             'area_id' => 'Район',
+            'search_all' => 'Поиск по краю (МФЦ, Росреестр, Палата)',
         ];
     }
 
@@ -128,21 +132,6 @@ class VedjustVed extends \yii\db\ActiveRecord
     public function getTargetRecipient()
     {
         $target = '';
-
-        // switch ($this->target) {
-        //     case 1:
-        //         $target = 'МФЦ';
-        //         break;
-        //     case 2:
-        //         $target = 'ФКП';
-        //         break;
-        //     case 3:
-        //         $target = 'Росреестр';
-        //         break;
-        //     default:
-        //         return 'Куда-то';
-        // }
-
         $target = $this->AgencyName;
 
         return $target . ' (' . $this->subdivision->name . ')';

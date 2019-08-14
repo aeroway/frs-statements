@@ -15,12 +15,12 @@ class VedjustVedSearch extends VedjustVed
     /**
      * @inheritdoc
      */
-    public $kuvd_affairs, $ref_num_affairs;
+    public $kuvd_affairs, $ref_num_affairs, $search_all;
 
     public function rules()
     {
         return [
-            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target'], 'integer'],
+            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target', 'search_all'], 'integer'],
             [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 'user_accepted_id', 'archive_unit_id', 'comment', 'address_id', 'ref_num_affairs'], 'safe'],
         ];
     }
@@ -43,46 +43,52 @@ class VedjustVedSearch extends VedjustVed
      */
     public function search($params)
     {
-        //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
-        //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
-        if (Yii::$app->user->identity->agency_id == 2) {
-            $userSd = User::find()
-                ->alias('us')
-                ->select(['us.id'])
-                ->where(['=', 'us.agency_id', Yii::$app->user->identity->agency_id]);
+        if (!empty($params["VedjustVedSearch"]["search_all"])) {
+            $query = VedjustVed::find()
+                ->alias('v')
+                ->distinct(['v.id']);
         } else {
-            $userSd = User::find()
-                ->alias('us')
-                ->select(['us.id'])
-                ->where(['=', 'us.subdivision_id', Yii::$app->user->identity->subdivision_id]);
-        }
+            //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
+            //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
+            if (Yii::$app->user->identity->agency_id == 2) {
+                $userSd = User::find()
+                    ->alias('us')
+                    ->select(['us.id'])
+                    ->where(['=', 'us.agency_id', Yii::$app->user->identity->agency_id]);
+            } else {
+                $userSd = User::find()
+                    ->alias('us')
+                    ->select(['us.id'])
+                    ->where(['=', 'us.subdivision_id', Yii::$app->user->identity->subdivision_id]);
+            }
 
-        if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
-            $query = VedjustVed::find()
-                ->alias('v')
-                ->distinct(['v.id'])
-                ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
-                ->where(
-                ['or',
-                    ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
-                    ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
-                ]);
-        } else {
-            $query = VedjustVed::find()
-                ->alias('v')
-                ->distinct(['v.id'])
-                ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
-                ->where(
-                    ['and',
-                        ['or',
-                            ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
-                            ['IS', 'date_reception', NULL],
-                        ],
-                        ['or',
-                            ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
-                            ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
-                        ],
+            if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
+                $query = VedjustVed::find()
+                    ->alias('v')
+                    ->distinct(['v.id'])
+                    ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
+                    ->where(
+                    ['or',
+                        ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
+                        ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
                     ]);
+            } else {
+                $query = VedjustVed::find()
+                    ->alias('v')
+                    ->distinct(['v.id'])
+                    ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
+                    ->where(
+                        ['and',
+                            ['or',
+                                ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
+                                ['IS', 'date_reception', NULL],
+                            ],
+                            ['or',
+                                ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
+                                ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
+                            ],
+                        ]);
+            }
         }
 
         // add conditions that should always apply here

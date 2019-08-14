@@ -39,10 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php if(Yii::$app->user->can('confirmExtDocs') || Yii::$app->user->can('addAudit') || Yii::$app->user->can('limitAudit')): ?>
             <?= Html::a('Экстер. документы', Url::to('/vedjust-ved/view-ext-doc'), ['class' => 'btn btn-info']); ?>
         <?php endif; ?>
-
-        <?php if(Yii::$app->user->can('audit')): ?>
-            <?= Html::a('Поиск по организациям', Url::to('/vedjust-ved/index-all'), ['class' => 'btn btn-info']); ?>
-        <?php endif; ?>
     </p>
 
     <?php
@@ -152,8 +148,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             //['class' => 'yii\grid\SerialColumn'],
 
-            //'id',
-            //'num_ved',
             [
                 //'attribute' => 'archive_unit_id',
                 'label' => 'Тип',

@@ -54,7 +54,6 @@ class VedjustVedController extends Controller
                             'index-ext-doc-detailed',
                             'view-ext-doc-detailed', // detail view
                             'reset',
-                            'index-all'
                         ],
                         'roles' => ['audit', 'addAudit', 'limitAudit'],
                     ],
@@ -66,7 +65,7 @@ class VedjustVedController extends Controller
                             'ext-doc-accepted', // accepted an ext.ter. documents
                             'send-ext-docs', // create ext.ter. documents
                             'view-ext-doc',
-                            'index-ext-doc-detailed'
+                            'index-ext-doc-detailed',
                         ],
                         'roles' => ['confirmExtDocs'],
                     ],
@@ -105,32 +104,6 @@ class VedjustVedController extends Controller
         $dataProvider = $searchModel->search($params);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Lists all VedjustVed models.
-     * @return mixed
-     */
-    public function actionIndexAll()
-    {
-        $searchModel = new VedjustVedSearch();
-
-        $params = Yii::$app->request->queryParams;
-
-        if (count($params) <= 0) {
-            $params = Yii::$app->session['VedjustVedAllSearch'];
-            if(isset(Yii::$app->session['VedjustVedAllSearch']['page']))
-                $_GET['page'] = Yii::$app->session['VedjustVedAllSearch']['page'];
-        } else {
-            Yii::$app->session['VedjustVedAllSearch'] = $params;
-        }
-
-        $dataProvider = $searchModel->search($params);
-
-        return $this->render('index-all', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

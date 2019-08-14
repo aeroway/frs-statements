@@ -15,6 +15,10 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
+    <?php if (Yii::$app->user->can('issuance')) : ?>
+        <?= $form->field($model, 'search_all')->checkbox(); ?>
+    <?php endif; ?>
+
     <?= $form->field($model, 'ref_num_affairs', [
             'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn"></span></div>',
         ])->textInput(['placeholder' => '№ обращения']);
