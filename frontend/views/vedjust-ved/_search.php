@@ -19,6 +19,11 @@ use yii\widgets\ActiveForm;
         <?= $form->field($model, 'search_all')->checkbox(); ?>
     <?php endif; ?>
 
+    <?= $form->field($model, 'id', [
+            'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn"></span></div>',
+        ])->textInput(['placeholder' => 'Номер ведомости']);
+    ?>
+
     <?= $form->field($model, 'ref_num_affairs', [
             'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn"></span></div>',
         ])->textInput(['placeholder' => '№ обращения']);

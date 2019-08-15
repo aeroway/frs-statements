@@ -272,8 +272,10 @@ $this->params['breadcrumbs'][] = 'Дела';
                                 'id' => 'status' . $key,
                                 'value' => $key,
                                 'onclick' => 'changeStatusAffairs(this.value);',
-                                'disabled' => (isset($model->ved->verified) && !($model->ved->verified === 0)) || 
-                                    ($model->ved->user_created_id == Yii::$app->user->identity->id) ? true : false,
+                                'disabled' => !empty($model->ved->verified)
+                                    || ($model->ved->user_created_id === Yii::$app->user->identity->id)
+                                    || ($model->ved->address_id !== Yii::$app->user->identity->address_id)
+                                    ? true : false,
                             ]
                         );
                     }
