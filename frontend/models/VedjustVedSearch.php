@@ -46,7 +46,8 @@ class VedjustVedSearch extends VedjustVed
         if (!empty($params["VedjustVedSearch"]["search_all"])) {
             $query = VedjustVed::find()
                 ->alias('v')
-                ->distinct(['v.id']);
+                ->distinct(['v.id'])
+                ->where(['<>', 'v.status_id', 1]);
         } else {
             //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
             //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу

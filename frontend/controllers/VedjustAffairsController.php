@@ -153,7 +153,12 @@ class VedjustAffairsController extends Controller
         $model = $this->findModel($id);
         $modelIssuance = new VedjustIssuance();
 
-        if ($model->ved->status_id === 5 && $model->status === 1 && $numIssuance !== $model->p_count && $model->getCheckAffairsIssuance($model->ved_id) && Yii::$app->user->can('issuance')) {
+        if (($model->ved->status_id === 5 || $model->ved->status_id === 6)
+            && $model->status === 1
+            // && $numIssuance !== $model->p_count
+            && $model->getCheckAffairsIssuance($model->ved_id)
+            && Yii::$app->user->can('issuance')
+        ) {
             if ($modelIssuance->load(Yii::$app->request->post()) && $modelIssuance->save()) {
                 return $this->redirect(['index', 'id' => $model->ved_id]);
             }

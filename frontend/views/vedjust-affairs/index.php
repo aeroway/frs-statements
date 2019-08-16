@@ -158,9 +158,9 @@ $this->params['breadcrumbs'][] = 'Дела';
             {
                 $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $model->id])->asArray()->one()["num"];
 
-                if($model->ved->status_id === 5
+                if(($model->ved->status_id === 5 || $model->ved->status_id === 6)
                     && $model->status === 1
-                    && $numIssuance !== $model->p_count
+                    // && $numIssuance !== $model->p_count
                     && $model->getCheckAffairsIssuance($model->ved_id)
                     && Yii::$app->user->can('issuance'))
                 {
