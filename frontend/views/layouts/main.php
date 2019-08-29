@@ -37,14 +37,14 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [
-        ['label' => 'Главная', 'url' => ['/site/index']],
+        ['label' => 'Главная', 'url' => ['/']],
         //['label' => 'О нас', 'url' => ['/site/about']],
         //['label' => 'Контакты', 'url' => ['/site/contact']],
     ];
 
     if (Yii::$app->user->can('archive')) {
         $menuItems = [
-            ['label' => 'Главная', 'url' => ['/site/index']],
+            ['label' => 'Главная', 'url' => ['/']],
             ['label' => 'Ведомости', 'url' => ['/vedjust-ved/index']],
             ['label' => 'Архивохранилище', 'url' => ['/vedjust-archive/index']],
         ];

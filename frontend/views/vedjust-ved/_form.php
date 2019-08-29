@@ -61,7 +61,7 @@ use yii\bootstrap\ActiveForm;
             'language' => 'ru',
             'options' => [
                 'placeholder' => 'Выберите единицу архивного хранения',
-                'value' => 1,
+                'value' => 4,
                 'onchange' => 'changeExtReg(this.value);'
             ],
             'pluginOptions' => [
