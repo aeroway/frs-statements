@@ -1,4 +1,15 @@
 ﻿$(document).ready(function() {
+
+    (function ($) {
+        "use strict";   
+        var $currentTr = $('tr').first();
+        $('body').on('click', 'tr', function (e) {
+            $currentTr.removeClass('selected');
+            $currentTr = $(this);
+            $currentTr.addClass('selected');
+        });
+    })(jQuery);
+
     /* Ведомости */
     $('#modalVedCreate').click(function () {
         $('#modalVed').modal('show')
