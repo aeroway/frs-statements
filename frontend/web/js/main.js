@@ -3,7 +3,7 @@
     (function ($) {
         "use strict";   
         var $currentTr = $('tr').first();
-        $('body').on('click', 'tr', function (e) {
+        $('tbody').on('click', 'tr', function (e) {
             $currentTr.removeClass('selected');
             $currentTr = $(this);
             $currentTr.addClass('selected');
