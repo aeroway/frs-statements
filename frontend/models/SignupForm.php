@@ -45,7 +45,7 @@ class SignupForm extends Model
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
 
-            [['full_name', 'position', 'phone', 'agency_id', 'subject_id', 'subdivision_id'], 'required'],
+            [['full_name', 'position', 'phone', 'agency_id', 'subject_id', 'subdivision_id', 'address_id'], 'required'],
             [['agency_id', 'subject_id', 'subdivision_id', 'address_id'], 'integer'],
 
             [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],

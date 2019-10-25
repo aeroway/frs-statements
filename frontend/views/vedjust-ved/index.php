@@ -8,6 +8,7 @@ use yii\bootstrap\Modal;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use frontend\models\VedjustAgency;
+use frontend\models\VedjustStatus;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\VedjustVedSearch */
@@ -73,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ]);
             },
         ],
-        'template' => '{delete} {createvedpdf} {view}',
+        'template' => '{view} {delete} {createvedpdf}',
     ];
 
     $gridColumns = [
@@ -173,6 +174,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($data) {
                     return Html::a(Html::encode($data->status->name), ['vedjust-affairs/index', 'id' => $data['id']]);
                 },
+                'filter' => ArrayHelper::map(VedjustStatus::find()->asArray()->all(), 'id', 'name'),
                 'format' => 'html',
             ],
             [
