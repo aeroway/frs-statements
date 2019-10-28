@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?php //echo Html::encode($this->title) ?></h1>
     <div id="successAffairs" style="display: <?= Yii::$app->session->getFlash('successAffairs'); ?>;">
-        <div class="alert alert-success">Запись добавлена.</div>
+        <div class="alert alert-success">Запись добавлена: <?= $kuvd ?>.</div>
     </div>
 
     <?= $this->render('_form', [
@@ -24,8 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
 </div>
+<!--
 <script type="text/javascript">
     setTimeout(function () {
             document.getElementById('successAffairs').style.display = 'none';
         }, 2000);
 </script>
+-->
