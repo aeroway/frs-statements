@@ -26,6 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'date_create',
                 'format' =>  ['date', 'php:d M Y'],
+                'contentOptions' => ['class' => 'warning'],
             ],
             // [
             //     'attribute' => 'create_ip',
@@ -33,11 +34,11 @@ $this->params['breadcrumbs'][] = $this->title;
             //         return $model->create_ip ? long2ip($model->create_ip) : '';
             //     },
             // ],
-            'userCreated.agency.name',
             [
                 'attribute' => 'userCreated.full_name',
                 'label' => 'Создал',
             ],
+            // 'userCreated.agency.name',
             [
                 'attribute' => 'userCreated.phone',
                 'label' => 'Контактный номер',
@@ -46,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'date_formed',
                 'format' =>  ['date', 'php:d M Y'],
+                'contentOptions' => ['class' => 'warning'],
             ],
             // [
             //     'attribute' => 'formed_ip',
@@ -53,11 +55,13 @@ $this->params['breadcrumbs'][] = $this->title;
             //         return $model->formed_ip ? long2ip($model->formed_ip) : '';
             //     },
             // ],
-            // 'userFormed.agency.name',
             [
                 'attribute' => 'userFormed.full_name',
                 'label' => 'Сформировал',
             ],
+            'userFormed.agency.name',
+            'userFormed.subdivision.name',
+            'userFormed.address.name',
             [
                 'attribute' => 'userFormed.phone',
                 'label' => 'Контактный номер',
@@ -65,6 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'date_reception',
                 'format' =>  ['date', 'php:d M Y'],
+                'contentOptions' => ['class' => 'warning'],
             ],
             // [
             //     'attribute' => 'accepted_ip',
@@ -72,17 +77,17 @@ $this->params['breadcrumbs'][] = $this->title;
             //         return $model->accepted_ip ? long2ip($model->accepted_ip) : '';
             //     },
             // ],
-            'userAccepted.agency.name',
             [
                 'attribute' => 'userAccepted.full_name',
                 'label' => 'Принял',
             ],
+            'agency.name',
+            'subdivision.name',
+            'address.name',
             [
                 'attribute' => 'userAccepted.phone',
                 'label' => 'Контактный номер',
             ],
-            'subdivision.name',
-            'address.name',
             'comment',
             'area.name',
         ],
