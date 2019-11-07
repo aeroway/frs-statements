@@ -7,6 +7,9 @@ use yii\helpers\ArrayHelper;
 use frontend\models\VedjustStatus;
 use frontend\models\VedjustAgency;
 use frontend\models\VedjustArchiveUnit;
+use frontend\models\VedjustSubdivision;
+use frontend\models\VedjustAddress;
+use frontend\models\VedjustArea;
 use frontend\models\User;
 use yii\bootstrap\ActiveForm;
 
@@ -23,67 +26,82 @@ use yii\bootstrap\ActiveForm;
     <?php
     if(strpos(Yii::$app->request->pathInfo, 'create'))
     {
-        echo $form->field($model, 'date_create')->hiddenInput(['value' => date('Y-m-d H:i:s')])->label(false);
         echo $form->field($model, 'status_id')->hiddenInput(['value' => 1])->label(false);
+        echo $form->field($model, 'date_create')->hiddenInput(['value' => date('Y-m-d H:i:s')])->label(false);
         echo $form->field($model, 'user_created_id')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false);
         echo $form->field($model, 'create_ip')->hiddenInput(['value' => ip2long(Yii::$app->request->userIP)])->label(false);
-        echo $form->field($model, 'comment')->textArea();
-        echo $form->field($model, 'target')->inline(false)->radioList(ArrayHelper::map(VedjustAgency::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'), ['onchange' => "changeVals()"]);
-        echo $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
-            'language' => 'ru',
-            'options' => ['placeholder' => 'Выберите отдел', 'onchange' => 'fillAddress()'],
-            'pluginOptions' => [
-                'allowClear' => false,
-                'tags' => false,
-            ],
-        ]);
-
-        echo $form->field($model, 'address_id')->widget(Select2::classname(), [
-            'language' => 'ru',
-            'options' => ['placeholder' => 'Выберите адрес', 'onchange' => 'fillArea(this.value)'],
-            'pluginOptions' => [
-                'allowClear' => false,
-                'tags' => false,
-            ],
-        ]);
-
-        echo $form->field($model, 'area_id')->widget(Select2::classname(), [
-            'language' => 'ru',
-            'options' => ['placeholder' => 'Выберите район'],
-            'pluginOptions' => [
-                'allowClear' => false,
-                'tags' => false,
-            ],
-        ]);
-
-        echo $form->field($model, 'archive_unit_id')->widget(Select2::classname(), [
-            'data' => ArrayHelper::map(VedjustArchiveUnit::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
-            'language' => 'ru',
-            'options' => [
-                'placeholder' => 'Выберите единицу архивного хранения',
-                'value' => 4,
-                'onchange' => 'changeExtReg(this.value);'
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]);
-        echo $form->field($model, 'ext_reg')->checkbox();
     }
-    else
-    {
-        echo $form->field($model, 'status_id')->widget(Select2::classname(), [
-            'data' => ArrayHelper::map(VedjustStatus::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
-            'language' => 'ru',
-            'options' => [
-                'placeholder' => 'Выберите Состояние',
-                'value' => 3,
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]);
+
+    echo $form->field($model, 'comment')->textArea();
+
+    echo $form->field($model, 'target')->inline(false)->radioList(ArrayHelper::map(VedjustAgency::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'), ['onchange' => "changeVals()"]);
+
+    if (empty($model->subdivision_id)) {
+        $dataSD = '';
+    } else {
+        $dataSD = ArrayHelper::map(VedjustSubdivision::find()->where(['agency_id' => $model->target])->orderBy(['name' => SORT_ASC])->all(), 'id', 'name');
     }
+
+    echo $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
+        'data' => $dataSD,
+        'language' => 'ru',
+        'options' => [
+            'placeholder' => 'Выберите отдел',
+            'onchange' => 'fillAddress();'
+        ],
+        'pluginOptions' => [
+            'allowClear' => false,
+            'tags' => false,
+        ],
+    ]);
+
+    if (empty($model->address_id)) {
+        $dataAddress = '';
+    } else {
+        $dataAddress = ArrayHelper::map(VedjustAddress::find()->where(['subdivision_id' => $model->subdivision_id])->orderBy(['name' => SORT_ASC])->all(), 'id', 'name');
+    }
+
+    echo $form->field($model, 'address_id')->widget(Select2::classname(), [
+        'data' => $dataAddress,
+        'language' => 'ru',
+        'options' => ['placeholder' => 'Выберите адрес', 'onchange' => 'fillArea(this.value)'],
+        'pluginOptions' => [
+            'allowClear' => false,
+            'tags' => false,
+        ],
+    ]);
+
+    if (empty($model->area_id)) {
+        $dataArea = '';
+    } else {
+        $dataArea = ArrayHelper::map(VedjustArea::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name');
+    }
+
+    echo $form->field($model, 'area_id')->widget(Select2::classname(), [
+        'data' => $dataArea,
+        'language' => 'ru',
+        'options' => ['placeholder' => 'Выберите район'],
+        'pluginOptions' => [
+            'allowClear' => false,
+            'tags' => false,
+        ],
+    ]);
+
+    echo $form->field($model, 'archive_unit_id')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map(VedjustArchiveUnit::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
+        'language' => 'ru',
+        'options' => [
+            'placeholder' => 'Выберите единицу архивного хранения',
+            'value' => 4,
+            'onchange' => 'changeExtReg(this.value);'
+        ],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ]);
+
+    echo $form->field($model, 'ext_reg')->checkbox();
+
     ?>
 
     <div class="form-group">
@@ -94,7 +112,7 @@ use yii\bootstrap\ActiveForm;
 
 </div>
 <script>
-$(".field-vedjustved-area_id").hide();
+
 function changeVals() {
 
     $.ajax(

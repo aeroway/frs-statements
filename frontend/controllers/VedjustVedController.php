@@ -33,7 +33,7 @@ class VedjustVedController extends Controller
                         'allow' => true,
                         'actions' =>
                         [
-                            'index', 'delete', 'create', 'view', // standard actions
+                            'index', 'delete', 'create', 'view', 'update', // standard actions
                             'changestatus', // formed docs
                             'changestatusreturn', // return status step back
                             'changeverified', // accepted docs
@@ -193,6 +193,9 @@ class VedjustVedController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+
+        if (!($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id))
+            throw new ForbiddenHttpException('Вы не можете редактировать чужие записи.');
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index', 'id' => $model->id]);

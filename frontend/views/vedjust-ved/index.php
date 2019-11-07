@@ -63,6 +63,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]);
                 }
             },
+            'update' => function($url, $model, $key)
+            {
+                // редактировать - статус "создаётся"
+                if (($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id))
+                {
+                    $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-ved/update', 'id' => $model['id']]);
+
+                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $customurl, 
+                            [
+                                'title' => Yii::t('yii', 'Update'),
+                                'aria-label' => Yii::t('yii', 'Update'),
+                                'data-pjax' => '0',
+                            ]);
+                }
+            },
             'createvedpdf' => function ($url, $model, $key)
             {
                 return Html::a('<span class="glyphicon glyphicon-file"></span>',
@@ -74,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ]);
             },
         ],
-        'template' => '{view} {delete} {createvedpdf}',
+        'template' => '{view} {delete} {createvedpdf} {update}',
     ];
 
     $gridColumns = [

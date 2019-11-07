@@ -10,6 +10,9 @@
         });
     })(jQuery);
 
+    /* Районы для Росреестра */
+    $(".field-vedjustved-area_id").hide();
+
     /* Ведомости */
     $('#modalVedCreate').click(function () {
         $('#modalVed').modal('show')
