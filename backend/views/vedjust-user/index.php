@@ -41,6 +41,11 @@ $this->params['breadcrumbs'][] = $this->title;
             //'agency_id',
             //'subdivision_id',
             //'address_id',
+            [
+                // 'attribute' => 'authAssignment',
+                'value' => 'iconExistUserRole',
+                'format' => 'html',
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

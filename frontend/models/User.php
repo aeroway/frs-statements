@@ -73,6 +73,17 @@ class User extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getIconExistUserRole()
+    {
+        switch ((boolean)$this->authAssignment) {
+            case 1:
+                return '<span class="glyphicon glyphicon-plus" title="Доступ присутствует"> </span>';
+                break;
+            default:
+                return '<span class="glyphicon glyphicon-minus" title="Доступ отсутствует"> </span>';
+        }
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

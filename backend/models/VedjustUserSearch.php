@@ -41,7 +41,7 @@ class VedjustUserSearch extends User
      */
     public function search($params)
     {
-        $query = User::find();
+        $query = User::find()->select("user.id, username, full_name, position, phone");
 
         // add conditions that should always apply here
 
@@ -56,6 +56,9 @@ class VedjustUserSearch extends User
             // $query->where('0=1');
             return $dataProvider;
         }
+
+        $query->groupBy(['user.id', 'username', 'full_name', 'position', 'phone']);
+        $query->joinWith('authAssignment asgn');
 
         // grid filtering conditions
         $query->andFilterWhere([
