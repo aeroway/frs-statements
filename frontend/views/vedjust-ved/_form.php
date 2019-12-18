@@ -112,6 +112,8 @@ use yii\bootstrap\ActiveForm;
 
 </div>
 <script>
+/* Районы для Росреестра */
+$(".field-vedjustved-area_id").hide();
 
 function changeVals() {
 
