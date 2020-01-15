@@ -30,16 +30,14 @@ class SignupForm extends Model
      */
     public function getEmailLowercase()
     {
-        return strtolower($this->email);
+        $this->email = strtolower($this->email);
+
+        return $this->email;
     }
 
     public function rules()
     {
         return [
-            // ['username', 'required'],
-            // ['username', 'filter', 'filter' => 'trim'],
-            // ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'Это имя пользователя уже занято.'],
-            // [['username', 'full_name', 'position'], 'string', 'min' => 2, 'max' => 255],
             ['email', 'required'],
             ['email', 'filter', 'filter' => 'trim'],
             ['email', 'email'],
@@ -84,15 +82,6 @@ class SignupForm extends Model
      */
     public function signup()
     {
-        // if (($model = VedjustSubdivision::findOne((int)$this->subdivision_id)) === null) {
-        //     $model = new VedjustSubdivision();
-        //     $model->name = $this->subdivision_id;
-        //     $model->subject_id = $this->subject_id;
-        //     $model->agency_id = $this->agency_id;
-        //     $model->save();
-        //     $this->subdivision_id = $model->id;
-        // }
-
         if ($this->validate()) {
             $user = new User();
             $user->username = $this->email;
@@ -106,6 +95,7 @@ class SignupForm extends Model
             $user->address_id = $this->address_id;
             $user->setPassword($this->password);
             $user->generateAuthKey();
+
             if ($user->save()) {
                 return $user;
             }

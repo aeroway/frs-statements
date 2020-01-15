@@ -12,7 +12,6 @@ class PasswordResetRequestForm extends Model
 {
     public $email;
 
-
     /**
      * {@inheritdoc}
      */
@@ -24,10 +23,21 @@ class PasswordResetRequestForm extends Model
             ['email', 'email'],
             ['email', 'exist',
                 'targetClass' => '\common\models\User',
+                'targetAttribute' => ['emailLowercase' => 'lower(email)'],
                 'filter' => ['status' => User::STATUS_ACTIVE],
-                'message' => 'There is no user with this email address.'
+                'message' => 'Нет пользователя с таким e-mail адресом.'
             ],
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEmailLowercase()
+    {
+        $this->email = strtolower($this->email);
+
+        return $this->email;
     }
 
     /**
