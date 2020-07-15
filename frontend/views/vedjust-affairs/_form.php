@@ -68,5 +68,6 @@ use frontend\models\VedjustVed;
 <script>
 function changeKuvdValue() {
     document.getElementById("vedjustaffairs-kuvd").value = document.getElementById("vedjustaffairs-kuvd").value.replace(/\./g, "/");
+	document.getElementById("vedjustaffairs-kuvd").value = document.getElementById("vedjustaffairs-kuvd").value.replace(/\|/g, "/");
 }
 </script>

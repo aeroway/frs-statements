@@ -11,11 +11,11 @@
     })(jQuery);
 
     /* Ведомости */
-    $('#modalVedCreate').click(function () {
-        $('#modalVed').modal('show')
-            .find('#modalVedContent')
-            .load($(this).attr('value'));
-    });
+    // $('#modalVedCreate').click(function () {
+    //     $('#modalVed').modal('show')
+    //         .find('#modalVedContent')
+    //         .load($(this).attr('value'));
+    // });
 
     $('#modalVedExtDocCreate').click(function () {
         $('#modalVedExtDoc').modal('show')

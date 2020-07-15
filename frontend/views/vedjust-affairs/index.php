@@ -232,7 +232,10 @@ $this->params['breadcrumbs'][] = 'Дела';
             ['class' => 'yii\grid\SerialColumn'],
 
             //'id',
-            'kuvd',
+            [
+                'attribute' => 'kuvd',
+                'contentOptions' => ['style'=>'width: 150px;'],
+            ],
             'ref_num',
             [
                 'label' => 'Создано',

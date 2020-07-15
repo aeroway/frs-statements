@@ -24,7 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php if (!Yii::$app->user->can('addAudit') && !Yii::$app->user->can('limitAudit')): ?>
-            <?= Html::button('Создать ведомость', ['value' => Url::to('/vedjust-ved/create'), 'class' => 'btn btn-success', 'id' => 'modalVedCreate']); ?>
+            <?php // echo Html::button('Создать ведомость', ['value' => Url::to('/vedjust-ved/create'), 'class' => 'btn btn-success', 'id' => 'modalVedCreate']); ?>
+            <?= Html::a('Создать ведомость', Url::to('/vedjust-ved/create'), ['class' => 'btn btn-success']); ?>
         <?php endif; ?>
 
         <?php if (Yii::$app->getRequest()->getCookies()->getValue('archive')): ?>
@@ -139,18 +140,18 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php
-    Modal::begin([
-        'options' => [
-            'tabindex' => false
-        ],
-        'header' => 'Создать ведомость',
-        'id' => 'modalVed',
-        'size' => 'modal-sm',
-    ]);
+    // Modal::begin([
+    //     'options' => [
+    //         'tabindex' => false
+    //     ],
+    //     'header' => 'Создать ведомость',
+    //     'id' => 'modalVed',
+    //     'size' => 'modal-sm',
+    // ]);
 
-    echo "<div id='modalVedContent'></div>";
+    // echo "<div id='modalVedContent'></div>";
 
-    Modal::end();
+    // Modal::end();
 
     ?>
 

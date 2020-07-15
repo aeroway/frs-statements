@@ -21,88 +21,119 @@ use yii\bootstrap\ActiveForm;
 
 <div class="vedjust-ved-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data', 'style' => 'width: 500px;']]); ?>
+
+    <?php if(strpos(Yii::$app->request->pathInfo, 'create')) : ?>
+        <?= $form->field($model, 'status_id')
+            ->hiddenInput(['value' => 1])
+            ->label(false);
+        ?>
+        <?= $form->field($model, 'date_create')
+            ->hiddenInput(['value' => date('Y-m-d H:i:s')])
+            ->label(false);
+        ?>
+        <?= $form->field($model, 'user_created_id')
+            ->hiddenInput(['value' => Yii::$app->user->identity->id])
+            ->label(false);
+        ?>
+        <?= $form->field($model, 'create_ip')
+            ->hiddenInput(['value' => ip2long(Yii::$app->request->userIP)])
+            ->label(false);
+        ?>
+    <?php endif; ?>
+
+    <?= $form->field($model, 'comment')->textArea(); ?>
+
+    <?= $form->field($model, 'target')
+        ->inline(false)
+        ->radioList(ArrayHelper::map(VedjustAgency::find()
+            ->orderBy(['name' => SORT_ASC])
+            ->all()
+            , 'id', 'name')
+        , ['onchange' => "changeVals()"]);
+    ?>
 
     <?php
-    if(strpos(Yii::$app->request->pathInfo, 'create'))
-    {
-        echo $form->field($model, 'status_id')->hiddenInput(['value' => 1])->label(false);
-        echo $form->field($model, 'date_create')->hiddenInput(['value' => date('Y-m-d H:i:s')])->label(false);
-        echo $form->field($model, 'user_created_id')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false);
-        echo $form->field($model, 'create_ip')->hiddenInput(['value' => ip2long(Yii::$app->request->userIP)])->label(false);
-    }
-
-    echo $form->field($model, 'comment')->textArea();
-
-    echo $form->field($model, 'target')->inline(false)->radioList(ArrayHelper::map(VedjustAgency::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'), ['onchange' => "changeVals()"]);
-
-    if (empty($model->subdivision_id)) {
-        $dataSD = '';
-    } else {
-        $dataSD = ArrayHelper::map(VedjustSubdivision::find()->where(['agency_id' => $model->target])->orderBy(['name' => SORT_ASC])->all(), 'id', 'name');
-    }
-
-    echo $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
-        'data' => $dataSD,
-        'language' => 'ru',
-        'options' => [
-            'placeholder' => 'Выберите отдел',
-            'onchange' => 'fillAddress();'
-        ],
-        'pluginOptions' => [
-            'allowClear' => false,
-            'tags' => false,
-        ],
-    ]);
-
-    if (empty($model->address_id)) {
-        $dataAddress = '';
-    } else {
-        $dataAddress = ArrayHelper::map(VedjustAddress::find()->where(['subdivision_id' => $model->subdivision_id])->orderBy(['name' => SORT_ASC])->all(), 'id', 'name');
-    }
-
-    echo $form->field($model, 'address_id')->widget(Select2::classname(), [
-        'data' => $dataAddress,
-        'language' => 'ru',
-        'options' => ['placeholder' => 'Выберите адрес', 'onchange' => 'fillArea(this.value)'],
-        'pluginOptions' => [
-            'allowClear' => false,
-            'tags' => false,
-        ],
-    ]);
-
-    if (empty($model->area_id)) {
-        $dataArea = '';
-    } else {
-        $dataArea = ArrayHelper::map(VedjustArea::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name');
-    }
-
-    echo $form->field($model, 'area_id')->widget(Select2::classname(), [
-        'data' => $dataArea,
-        'language' => 'ru',
-        'options' => ['placeholder' => 'Выберите район'],
-        'pluginOptions' => [
-            'allowClear' => false,
-            'tags' => false,
-        ],
-    ]);
-
-    echo $form->field($model, 'archive_unit_id')->widget(Select2::classname(), [
-        'data' => ArrayHelper::map(VedjustArchiveUnit::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
-        'language' => 'ru',
-        'options' => [
-            'placeholder' => 'Выберите единицу архивного хранения',
-            'value' => 4,
-            'onchange' => 'changeExtReg(this.value);'
-        ],
-        'pluginOptions' => [
-            'allowClear' => true
-        ],
-    ]);
-
-    echo $form->field($model, 'ext_reg')->checkbox();
-
+    $vedSubdivision = empty($model->subdivision_id) ? '' : 
+        ArrayHelper::map(VedjustSubdivision::find()
+            ->where(['agency_id' => $model->target])
+            ->orderBy(['name' => SORT_ASC])
+            ->all()
+        , 'id', 'name');
     ?>
+
+    <?= $form->field($model, 'subdivision_id')->widget(Select2::classname(), [
+            'data' => $vedSubdivision,
+            'language' => 'ru',
+            'options' => [
+                'placeholder' => 'Выберите отдел',
+                'onchange' => 'fillAddress();',
+            ],
+            'pluginOptions' => [
+                'allowClear' => false,
+                'tags' => false,
+            ],
+        ]);
+    ?>
+
+    <?php
+    $vedAddresses = empty($model->address_id) ? '' :
+        ArrayHelper::map(VedjustAddress::find()
+            ->where(['subdivision_id' => $model->subdivision_id])
+            ->orderBy(['name' => SORT_ASC])
+            ->all()
+        , 'id', 'name');
+    ?>
+
+    <?= $form->field($model, 'address_id')->widget(Select2::classname(), [
+            'data' => $vedAddresses,
+            'language' => 'ru',
+            'options' => ['placeholder' => 'Выберите адрес', 'onchange' => 'fillArea(this.value)'],
+            'pluginOptions' => [
+                'allowClear' => false,
+                'tags' => false,
+            ],
+        ]);
+    ?>
+
+    <?php
+    $vedArea = empty($model->area_id) ? '' :
+        ArrayHelper::map(VedjustArea::find()
+            ->orderBy(['name' => SORT_ASC])
+            ->all()
+        , 'id', 'name');
+    ?>
+
+    <?= $form->field($model, 'area_id')->widget(Select2::classname(), [
+            'data' => $vedArea,
+            'language' => 'ru',
+            'options' => [
+                'placeholder' => 'Выберите район',
+            ],
+            'pluginOptions' => [
+                'allowClear' => false,
+                'tags' => false,
+            ],
+        ]);
+    ?>
+
+    <?= $form->field($model, 'archive_unit_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map(VedjustArchiveUnit::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
+            'language' => 'ru',
+            'options' => [
+                'placeholder' => 'Выберите единицу архивного хранения',
+                'value' => 4,
+                'onchange' => 'changeExtReg(this.value);',
+            ],
+            'pluginOptions' => [
+                'allowClear' => true,
+            ],
+        ]);
+    ?>
+
+    <?= $form->field($model, 'ext_reg')->checkbox(); ?>
+
+    <?php // $form->field($model, 'file')->fileInput(); ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
@@ -111,27 +142,22 @@ use yii\bootstrap\ActiveForm;
     <?php ActiveForm::end(); ?>
 
 </div>
+
 <script>
 /* Районы для Росреестра */
 $(".field-vedjustved-area_id").hide();
 
 function changeVals() {
-
-    $.ajax(
-    {
+    $.ajax({
         type: 'GET',
         url: '/site/municipality',
         data: 'subject_id=1' + '&agency_id=' + $("input[name='VedjustVed[target]']:checked").val(),
-        success: function(data)
-        {
-            if (data == 0)
-            {
+        success: function(data) {
+            if (data == 0) {
                 //alert('Данные отсутствуют.');
                 $("#vedjustved-subdivision_id").empty();
                 $("#vedjustved-subdivision_id").append( $('<option value="">Нет данных</option>'));
-            }
-            else
-            {
+            } else {
                 //alert('Данные получены.');
                 $("#vedjustved-subdivision_id").empty();
                 $("#vedjustved-subdivision_id").append("<option disabled selected>Выберите отдел</option>");
@@ -139,7 +165,6 @@ function changeVals() {
             }
         }
     });
-
 }
 
 function fillAddress() {

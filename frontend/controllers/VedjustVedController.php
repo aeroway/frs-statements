@@ -9,6 +9,7 @@ use frontend\models\VedjustVedSearch;
 use frontend\models\VedjustExtDocSearch;
 use frontend\models\VedjustAffairs;
 use frontend\models\VedjustExtDoc;
+use yii\web\UploadedFile;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
@@ -167,7 +168,7 @@ class VedjustVedController extends Controller
 
     /**
      * Creates a new VedjustVed model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * If creation is successful, the browser will be redirected to the 'index' page.
      * @return mixed
      */
     public function actionCreate()
@@ -175,10 +176,18 @@ class VedjustVedController extends Controller
         $model = new VedjustVed();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->file = UploadedFile::getInstance($model, 'file');
+
+            if ($model->file) {
+                if ($this->batchImportAffairs($model)) {
+                    return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
+                }
+            }
+
             return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
         }
 
-        return $this->renderAjax('create', [
+        return $this->render('create', [
             'model' => $model,
         ]);
     }
@@ -194,11 +203,20 @@ class VedjustVedController extends Controller
     {
         $model = $this->findModel($id);
 
-        if (!($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id))
+        if (!($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)) {
             throw new ForbiddenHttpException('Вы не можете редактировать чужие записи.');
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index', 'id' => $model->id]);
+            $model->file = UploadedFile::getInstance($model, 'file');
+
+            if ($model->file) {
+                if ($this->batchImportAffairs($model)) {
+                    return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
+                }
+            }
+
+            return $this->redirect(['index']);
         }
 
         return $this->render('update', [
@@ -490,5 +508,44 @@ class VedjustVedController extends Controller
         } else {
             return 0;
         }
+    }
+
+    public function convertToUTF8($text) {
+        $encoding = mb_detect_encoding($text, mb_detect_order(), false);
+    
+        if ($encoding == "UTF-8") {
+            $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');    
+        }
+
+        $out = iconv(mb_detect_encoding($text, mb_detect_order(), false), "UTF-8//IGNORE", $text);
+
+        return $out;
+    }
+
+    private function batchImportAffairs($model) {
+            $file_import = 'uploads/' . 'ved-import.csv'; //date('YmdHis') . '-' . $model->file->name;
+            $model->file->saveAs($file_import);
+            $handle = fopen($file_import, 'r');
+
+            if ($handle) {
+                while (($line = fgetcsv($handle, 0, ";")) != FALSE) {
+                    $bulkInsertArray[] = [
+                        'ref_num' => $this->convertToUTF8($line[0]),
+                        'kuvd' => $this->convertToUTF8(preg_replace('/[^0-9\/, ]{5}/i', '', $line[4])),
+                        'date_create' => date('Y-m-d H:i:s'),
+                        'user_created_id' => Yii::$app->user->identity->id,
+                        'create_ip' => ip2long(Yii::$app->request->userIP),
+                        'ved_id' => $model->id,
+                    ];
+                }
+                unset($bulkInsertArray[0]);
+
+                fclose($handle);
+
+                Yii::$app->db->createCommand()->batchInsert('affairs', 
+                    ['ref_num', 'kuvd', 'date_create', 'user_created_id', 'create_ip', 'ved_id'],
+                    $bulkInsertArray
+                )->execute();
+            }
     }
 }
