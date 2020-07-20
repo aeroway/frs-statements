@@ -184,7 +184,7 @@ class VedjustVedController extends Controller
                 }
             }
 
-            return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
+            return $this->redirect(['vedjust-affairs/create', 'id' => $model->id]);
         }
 
         return $this->render('create', [
@@ -207,16 +207,22 @@ class VedjustVedController extends Controller
             throw new ForbiddenHttpException('Вы не можете редактировать чужие записи.');
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $model->file = UploadedFile::getInstance($model, 'file');
-
-            if ($model->file) {
-                if ($this->batchImportAffairs($model)) {
-                    return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
-                }
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->address_id != 393) {
+                $model->area_id = NULL;
             }
 
-            return $this->redirect(['index']);
+            if ($model->save()) {
+                $model->file = UploadedFile::getInstance($model, 'file');
+
+                if ($model->file) {
+                    if ($this->batchImportAffairs($model)) {
+                        return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
+                    }
+                }
+
+                return $this->redirect(['index']);
+            }
         }
 
         return $this->render('update', [

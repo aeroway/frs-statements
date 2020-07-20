@@ -110,7 +110,7 @@ class VedjustAffairsController extends Controller
             return $this->render('create', [
                 'model' => new VedjustAffairs(),
                 'vedId' => $id,
-                'kuvd' => $model->kuvd,
+                'kuvd' => '<br>'. $model->ref_num . '<br>' . $model->kuvd,
             ]);
         }
 

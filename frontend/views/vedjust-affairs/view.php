@@ -20,8 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
 
             //'status',
-            'kuvd',
             'ref_num',
+            'kuvd',
             [
                 'attribute' => 'date_create',
                 'format' =>  ['date', 'php:d M Y'],

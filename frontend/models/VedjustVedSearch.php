@@ -96,6 +96,7 @@ class VedjustVedSearch extends VedjustVed
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]],
         ]);
 
         $this->load($params);
@@ -112,7 +113,7 @@ class VedjustVedSearch extends VedjustVed
         $query->joinWith('userAccepted ua');
         $query->joinWith('archiveUnit au');
         $query->joinWith('address adr');
-        $query->orderBy(['v.id' => SORT_DESC]);
+        // $query->orderBy(['v.id' => SORT_DESC]);
 
         // grid filtering conditions
         $query->andFilterWhere([

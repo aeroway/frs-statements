@@ -41,7 +41,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['kuvd'], 'required'],
+            // [['kuvd'], 'required'],
             [['kuvd'], 'unique', 'targetAttribute' => ['kuvd', 'ved_id']],
             [['comment', 'kuvd', 'ref_num'], 'string'],
             [['date_create', 'date_status'], 'safe'],

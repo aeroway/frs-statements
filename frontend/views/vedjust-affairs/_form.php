@@ -31,8 +31,8 @@ use frontend\models\VedjustVed;
     <?php endif; ?>
 
     <?php if(strpos(Yii::$app->request->pathInfo, 'create')) : ?>
-        <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus', 'onChange' => 'changeKuvdValue();']) ?>
-        <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus']) ?>
+        <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus', 'onChange' => 'changeRefnumValue();']) ?>
+        <?= $form->field($model, 'kuvd')->textInput(['onChange' => 'changeKuvdValue();']) ?>
     <?php endif; ?>
 
     <?= $form->field($model, 'comment')->textArea(['placeholder' => 'Комментарий'])->label(false); ?>
@@ -69,5 +69,10 @@ use frontend\models\VedjustVed;
 function changeKuvdValue() {
     document.getElementById("vedjustaffairs-kuvd").value = document.getElementById("vedjustaffairs-kuvd").value.replace(/\./g, "/");
 	document.getElementById("vedjustaffairs-kuvd").value = document.getElementById("vedjustaffairs-kuvd").value.replace(/\|/g, "/");
+}
+
+function changeRefnumValue() {
+    document.getElementById("vedjustaffairs-ref_num").value = document.getElementById("vedjustaffairs-ref_num").value.replace(/\./g, "/");
+    document.getElementById("vedjustaffairs-ref_num").value = document.getElementById("vedjustaffairs-ref_num").value.replace(/ЬАС/ig, "MFC");
 }
 </script>

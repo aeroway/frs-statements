@@ -54,7 +54,7 @@ class VedjustVed extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['target', 'subdivision_id', 'address_id'], 'required'],
+            [['target', 'subdivision_id', 'address_id', 'archive_unit_id'], 'required'],
             [['date_create', 'date_reception', 'date_formed'], 'safe'],
             [['num_ved', 'comment'], 'string'],
             [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'address_id', 'ext_reg', 'ext_reg_created', 'area_id', 'search_all'], 'integer'],
@@ -142,7 +142,7 @@ class VedjustVed extends \yii\db\ActiveRecord
     public function getVedPdf()
     {
         $modelAffairs = VedjustAffairs::find()
-            ->select('kuvd, comment')
+            ->select('ref_num, kuvd, comment')
             ->asArray()
             ->where(["ved_id" => $this->id])
             ->orderBy(["id" => SORT_ASC])
@@ -189,6 +189,7 @@ class VedjustVed extends \yii\db\ActiveRecord
         <table border='1' cellpadding='3' width='100%' cellspacing='0'>
             <tr>
                 <td>№</td>
+                <td>№ обращения</td>
                 <td>КУВД</td>
                 <td>Комментарий</td>
             </tr>";
@@ -200,6 +201,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             "
             <tr>
                 <td>" . $i . "</td>
+                <td>" . $value['ref_num'] . "</td>
                 <td>" . $value['kuvd'] . "</td>
                 <td>" . $value['comment'] . "</td>
             </tr>

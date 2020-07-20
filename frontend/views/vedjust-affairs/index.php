@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\grid\GridView;
+use kartik\export\ExportMenu;
 use frontend\models\VedjustVed;
 use frontend\models\VedjustAffairs;
 use frontend\models\VedjustStorage;
@@ -211,6 +212,43 @@ $this->params['breadcrumbs'][] = 'Дела';
     Modal::end();
     ?>
 
+    <?php
+    $gridColumns = [
+        'ref_num',
+        'kuvd',
+        [
+            'attribute' => 'date_create',
+            'format' =>  ['date', 'php:d M Y'],
+        ],
+        [
+            'attribute' => 'user_created_id',
+            'value' => function($data) {
+                return $data->userCreated->full_name;
+            },
+        ],
+        [
+            'attribute' => 'date_status',
+            'format' =>  ['date', 'php:d M Y'],
+        ],
+        [
+            'attribute' => 'userAccepted.full_name',
+            'label' => 'Подтвердил',
+        ],
+        'p_count',
+        'comment',
+    ];
+    ?>
+
+    <?= ExportMenu::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => $gridColumns,
+        'exportConfig' => [
+            ExportMenu::FORMAT_HTML => false,
+            ExportMenu::FORMAT_TEXT => false,
+            ExportMenu::FORMAT_PDF => false,
+        ],
+    ]); ?>
+
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -231,12 +269,14 @@ $this->params['breadcrumbs'][] = 'Дела';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            //'id',
+            [
+                'attribute' => 'ref_num',
+                'contentOptions' => ['style'=>'width: 200px;'],
+            ],
             [
                 'attribute' => 'kuvd',
-                'contentOptions' => ['style'=>'width: 150px;'],
+                'contentOptions' => ['style'=>'width: 200px;'],
             ],
-            'ref_num',
             [
                 'label' => 'Создано',
                 'attribute' => 'date_create',

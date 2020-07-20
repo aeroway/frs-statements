@@ -1,9 +1,9 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
 use yii\jui\DatePicker;
 use kartik\select2\Select2;
-use yii\helpers\ArrayHelper;
 use frontend\models\VedjustStatus;
 use frontend\models\VedjustAgency;
 use frontend\models\VedjustArchiveUnit;
@@ -23,7 +23,7 @@ use yii\bootstrap\ActiveForm;
 
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data', 'style' => 'width: 500px;']]); ?>
 
-    <?php if(strpos(Yii::$app->request->pathInfo, 'create')) : ?>
+    <?php if (strpos(Yii::$app->request->pathInfo, 'create')) : ?>
         <?= $form->field($model, 'status_id')
             ->hiddenInput(['value' => 1])
             ->label(false);
@@ -126,7 +126,7 @@ use yii\bootstrap\ActiveForm;
                 'onchange' => 'changeExtReg(this.value);',
             ],
             'pluginOptions' => [
-                'allowClear' => true,
+                'allowClear' => false,
             ],
         ]);
     ?>
@@ -145,7 +145,7 @@ use yii\bootstrap\ActiveForm;
 
 <script>
 /* Районы для Росреестра */
-$(".field-vedjustved-area_id").hide();
+// $(".field-vedjustved-area_id").hide();
 
 function changeVals() {
     $.ajax({
