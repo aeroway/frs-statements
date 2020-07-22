@@ -177,9 +177,16 @@ class VedjustVedController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $model->file = UploadedFile::getInstance($model, 'file');
+            $model->pkpvd_xlsx = UploadedFile::getInstance($model, 'pkpvd_xlsx');
 
             if ($model->file) {
                 if ($this->batchImportAffairs($model)) {
+                    return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
+                }
+            }
+
+            if ($model->pkpvd_xlsx) {
+                if ($this->importPkpvdXlsx($model)) {
                     return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
                 }
             }
@@ -214,9 +221,16 @@ class VedjustVedController extends Controller
 
             if ($model->save()) {
                 $model->file = UploadedFile::getInstance($model, 'file');
+                $model->pkpvd_xlsx = UploadedFile::getInstance($model, 'pkpvd_xlsx');
 
                 if ($model->file) {
                     if ($this->batchImportAffairs($model)) {
+                        return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
+                    }
+                }
+
+                if ($model->pkpvd_xlsx) {
+                    if ($this->importPkpvdXlsx($model)) {
                         return $this->redirect(['vedjust-affairs/index', 'id' => $model->id]);
                     }
                 }
@@ -553,5 +567,52 @@ class VedjustVedController extends Controller
                     $bulkInsertArray
                 )->execute();
             }
+    }
+
+    private function importPkpvdXlsx($model) {
+        $file_import = 'uploads/' . 'import-pkpvd.xlsx';
+
+        $model->pkpvd_xlsx->saveAs($file_import);
+        $handle = fopen($file_import, 'r');
+
+        if ($handle) {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_import);
+            $worksheet = $spreadsheet->getActiveSheet()->toArray();
+            $bulkInsertArray = array();
+
+            foreach ($worksheet as $value) {
+                if ($value[9] != NULL || $value[10] != NULL) {
+                    $bulkInsertArray[] = [
+                        'ref_num' => $value[6],
+                        'kuvd' => $value[10],
+                        'comment' => $value[9],
+                        'date_create' => date('Y-m-d H:i:s'),
+                        'user_created_id' => Yii::$app->user->identity->id,
+                        'create_ip' => ip2long(Yii::$app->request->userIP),
+                        'ved_id' => $model->id,
+                    ];
+                }
+                
+            }
+
+            if ($bulkInsertArray[0]["ref_num"] == 'Внутренний номер обращения' 
+                    && $bulkInsertArray[0]["kuvd"] == 'Номера КУВД/КУВИ'
+                    && $bulkInsertArray[0]["comment"] == 'Номер пакета') {
+                $result = true;
+            } else {
+                $result = false;
+            }
+
+            unset($bulkInsertArray[0]);
+        }
+
+        fclose($handle);
+
+        Yii::$app->db->createCommand()->batchInsert('affairs', 
+            ['ref_num', 'kuvd', 'comment', 'date_create', 'user_created_id', 'create_ip', 'ved_id'],
+            $bulkInsertArray
+        )->execute();
+
+        return $result;
     }
 }

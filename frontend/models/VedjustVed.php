@@ -38,7 +38,7 @@ use kartik\mpdf\Pdf;
  */
 class VedjustVed extends \yii\db\ActiveRecord
 {
-    public $search_all, $file;
+    public $search_all, $file, $pkpvd_xlsx;
 
     /**
      * @inheritdoc
@@ -68,6 +68,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustArea::className(), 'targetAttribute' => ['area_id' => 'id']],
             [['target'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['target' => 'id']],
             [['file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'csv'],
+            [['pkpvd_xlsx'], 'file', 'skipOnEmpty' => true, 'extensions' => 'xlsx'],
         ];
     }
 
@@ -103,6 +104,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             'area_id' => 'Район',
             'search_all' => 'Поиск по краю (МФЦ, Росреестр, Палата)',
             'file' => 'Файл выгрузки КУВД из ФГИС ЕГРН',
+            'pkpvd_xlsx' => 'Файл PKPVD сопроводительный реестр',
         ];
     }
 
