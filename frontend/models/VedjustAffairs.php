@@ -42,7 +42,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     {
         return [
             // [['kuvd'], 'required'],
-            [['kuvd'], 'unique', 'targetAttribute' => ['kuvd', 'ved_id']],
+            [['kuvd', 'ref_num'], 'unique', 'targetAttribute' => ['kuvd', 'ref_num', 'ved_id']],
             [['kuvd', 'ref_num'], 'string', 'max' => 40],
             [['comment'], 'string'],
             [['date_create', 'date_status'], 'safe'],

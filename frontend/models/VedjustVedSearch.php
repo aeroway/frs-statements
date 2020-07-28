@@ -69,10 +69,11 @@ class VedjustVedSearch extends VedjustVed
                     ->distinct(['v.id'])
                     ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
                     ->where(
-                    ['or',
-                        ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
-                        ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
-                    ]);
+                        ['or',
+                            ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
+                            ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
+                        ]
+                    );
             } else {
                 $query = VedjustVed::find()
                     ->alias('v')
@@ -82,13 +83,15 @@ class VedjustVedSearch extends VedjustVed
                         ['and',
                             ['or',
                                 ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
-                                ['IS', 'date_reception', NULL],
+                                ['and', ['IS', 'date_reception', NULL], ['>=', 'date_formed', date('Y-m-d', strtotime("-10 days"))]],
+                                ['=', 'v.status_id', 1],
                             ],
                             ['or',
                                 ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
                                 ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
                             ],
-                        ]);
+                        ]
+                    );
             }
         }
 
@@ -113,7 +116,6 @@ class VedjustVedSearch extends VedjustVed
         $query->joinWith('userAccepted ua');
         $query->joinWith('archiveUnit au');
         $query->joinWith('address adr');
-        // $query->orderBy(['v.id' => SORT_DESC]);
 
         // grid filtering conditions
         $query->andFilterWhere([
