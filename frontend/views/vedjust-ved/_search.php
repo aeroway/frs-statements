@@ -15,27 +15,28 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <?php if (Yii::$app->user->can('issuance')) : ?>
-        <?= $form->field($model, 'search_all')->checkbox(); ?>
-    <?php endif; ?>
+    <?php //if (Yii::$app->user->can('issuance')) : ?>
+        <?php //echo $form->field($model, 'search_all')->checkbox(); ?>
+    <?php //endif; ?>
 
-    <?= $form->field($model, 'id', [
+    <?php /* echo $form->field($model, 'ref_num_affairs', [
             'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn"></span></div>',
-        ])->textInput(['placeholder' => 'Номер ведомости']);
+        ])->textInput(['placeholder' => '№ обращения']); */
     ?>
 
-    <?= $form->field($model, 'ref_num_affairs', [
-            'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn"></span></div>',
-        ])->textInput(['placeholder' => '№ обращения']);
-    ?>
-
-    <?= $form->field($model, 'kuvd_affairs', [
+    <?php /* echo $form->field($model, 'kuvd_affairs', [
             'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn">' .
             Html::submitButton('Поиск', ['class' => 'btn btn-default']) . '</span></div>',
-        ])->textInput(['placeholder' => 'КУВД']);
+        ])->textInput(['placeholder' => 'КУВД']); */
     ?>
 
-    <?php // $form->field($model, 'date_create') ?>
+    <?= $form->field($model, 'search_ref_num_kuvd_comment', [
+            'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn">' .
+            Html::submitButton('Поиск', ['class' => 'btn btn-default']) . '</span></div>',
+        ])->textInput(['placeholder' => '№ обращения, КУВД, комментарий ведомости или дела']);
+    ?>
+
+    <?php // echo $form->field($model, 'date_create') ?>
 
     <?php // echo $form->field($model, 'num_ved') ?>
 

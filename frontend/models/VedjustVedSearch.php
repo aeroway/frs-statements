@@ -15,13 +15,14 @@ class VedjustVedSearch extends VedjustVed
     /**
      * @inheritdoc
      */
-    public $kuvd_affairs, $ref_num_affairs, $search_all;
+    public $kuvd_affairs, $ref_num_affairs, $search_all, $search_ref_num_kuvd_comment, $search_num_ved;
 
     public function rules()
     {
         return [
-            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target', 'search_all'], 'integer'],
-            [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 'user_accepted_id', 'archive_unit_id', 'comment', 'address_id', 'ref_num_affairs'], 'safe'],
+            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target', 'search_all', 'search_num_ved'], 'integer'],
+            [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 
+                'user_accepted_id', 'archive_unit_id', 'comment', 'address_id', 'ref_num_affairs', 'search_ref_num_kuvd_comment'], 'safe'],
         ];
     }
 
@@ -43,11 +44,28 @@ class VedjustVedSearch extends VedjustVed
      */
     public function search($params)
     {
-        if (!empty($params["VedjustVedSearch"]["search_all"])) {
+        if (!empty($params["VedjustVedSearch"]["search_num_ved"])) {
+            $numVed = $params["VedjustVedSearch"]["search_num_ved"];
             $query = VedjustVed::find()
                 ->alias('v')
                 ->distinct(['v.id'])
-                ->where(['<>', 'v.status_id', 1]);
+                ->where(['and', ['<>', 'v.status_id', 1], ['=', 'v.id', $numVed]]);
+        } elseif (!empty($params["VedjustVedSearch"]["search_ref_num_kuvd_comment"])) {
+            $refNumKuvdCmt = $params["VedjustVedSearch"]["search_ref_num_kuvd_comment"];
+            $query = VedjustVed::find()
+                ->alias('v')
+                ->distinct(['v.id'])
+                ->where(
+                    ['and',
+                        ['<>', 'v.status_id', 1],
+                        ['or',
+                            ['LIKE', 'a.ref_num', $refNumKuvdCmt],
+                            ['LIKE', 'a.kuvd', $refNumKuvdCmt],
+                            ['LIKE', 'a.comment', $refNumKuvdCmt],
+                            ['LIKE', 'v.comment', $refNumKuvdCmt],
+                        ],
+                    ],
+                );
         } else {
             //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
             //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
