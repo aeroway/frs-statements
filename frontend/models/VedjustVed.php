@@ -241,7 +241,7 @@ class VedjustVed extends \yii\db\ActiveRecord
                 return '<span class="glyphicon glyphicon-file" title="Расписки"> </span>';
                 break;
             case 3:
-                return '<span class="glyphicon glyphicon-folder-open" title="Выходные документы"> </span>';
+                return '<span class="glyphicon glyphicon-folder-open" title="Документы"> </span>';
                 break;
             case 4:
                 return '<span class="glyphicon glyphicon-floppy-disk" title="Невостребованные документы"> </span>';

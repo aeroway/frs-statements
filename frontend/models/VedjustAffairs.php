@@ -41,7 +41,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            // [['kuvd'], 'required'],
+            ['ref_num', 'either', 'skipOnEmpty' => false, 'params' => ['other' => 'kuvd']],
             [['kuvd', 'ref_num'], 'unique', 'targetAttribute' => ['kuvd', 'ref_num', 'ved_id']],
             [['kuvd', 'ref_num'], 'string', 'max' => 40],
             [['comment'], 'string'],
@@ -73,6 +73,15 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             'accepted_ip' => 'IP подтверждения',
             'p_count' => 'Число заявителей',
         ];
+    }
+
+    public function either($attribute_name, $params)
+    {
+        $field1 = $this->getAttributeLabel($attribute_name);
+        $field2 = $this->getAttributeLabel($params['other']);
+        if (empty($this->$attribute_name) && empty($this->{$params['other']})) {
+            $this->addError($attribute_name, "Необходимо заполнить {$field1} или {$field2}.");
+        }
     }
 
     // location of docs in storage
