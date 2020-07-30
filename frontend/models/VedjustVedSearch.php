@@ -49,15 +49,35 @@ class VedjustVedSearch extends VedjustVed
             $query = VedjustVed::find()
                 ->alias('v')
                 ->distinct(['v.id'])
-                ->where(['and', ['<>', 'v.status_id', 1], ['=', 'v.id', $numVed]]);
+                ->innerJoin('user us', 'us.id = v.user_created_id')
+                ->where(
+                    ['or',
+                        ['and',
+                            ['=', 'v.status_id', 1],
+                            ['=', 'us.address_id', Yii::$app->user->identity->address_id],
+                            ['=', 'v.id', $numVed],
+                        ],
+                        ['and',
+                            ['<>', 'v.status_id', 1],
+                            ['=', 'v.id', $numVed]
+                        ],
+                    ],
+                );
         } elseif (!empty($params["VedjustVedSearch"]["search_ref_num_kuvd_comment"])) {
             $refNumKuvdCmt = $params["VedjustVedSearch"]["search_ref_num_kuvd_comment"];
             $query = VedjustVed::find()
                 ->alias('v')
                 ->distinct(['v.id'])
+                ->innerJoin('user us', 'us.id = v.user_created_id')
                 ->where(
                     ['and',
-                        ['<>', 'v.status_id', 1],
+                        ['or',
+                            ['<>', 'v.status_id', 1],
+                            ['and',
+                                ['=', 'v.status_id', 1],
+                                ['=', 'us.address_id', Yii::$app->user->identity->address_id],
+                            ],
+                        ],
                         ['or',
                             ['LIKE', 'a.ref_num', $refNumKuvdCmt],
                             ['LIKE', 'a.kuvd', $refNumKuvdCmt],
