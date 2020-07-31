@@ -143,6 +143,10 @@ class VedjustVed extends \yii\db\ActiveRecord
 
     public function getVedPdf()
     {
+        if ($this->status_id == 1) {
+            return 0;
+        }
+
         $modelAffairs = VedjustAffairs::find()
             ->select('ref_num, kuvd, comment')
             ->asArray()

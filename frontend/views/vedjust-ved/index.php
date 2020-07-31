@@ -82,13 +82,15 @@ $this->params['breadcrumbs'][] = $this->title;
             },
             'createvedpdf' => function ($url, $model, $key)
             {
-                return Html::a('<span class="glyphicon glyphicon-file"></span>',
-                        $url,
+                if ($model->status_id != 1) {
+                    return Html::a('<span class="glyphicon glyphicon-file"></span>', $url,
                         [
                             'title' => Yii::t('yii', 'Сформировать PDF'),
                             'aria-label' => Yii::t('yii', 'Сформировать PDF'),
                             'target' => '_blank',
-                        ]);
+                        ],
+                    );
+                }
             },
         ],
         'template' => '{view} {delete} {createvedpdf} {update}',

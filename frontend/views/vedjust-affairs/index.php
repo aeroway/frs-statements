@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = 'Дела';
     }
     ?>
 
-    <?= Html::a('Экспорт в PDF', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => 'btn btn-info']) . ' '; ?>
+    <?= ($modelVed->status_id != 1) ? Html::a('Экспорт в PDF', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => 'btn btn-info']) : ''; ?>
 
     <?php
     if (
