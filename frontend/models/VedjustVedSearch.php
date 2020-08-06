@@ -86,6 +86,7 @@ class VedjustVedSearch extends VedjustVed
                         ],
                     ],
                 );
+            $query->joinWith('affairs a');
         } else {
             //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
             //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
@@ -148,11 +149,11 @@ class VedjustVedSearch extends VedjustVed
             return $dataProvider;
         }
 
-        $query->joinWith('affairs a');
+        // $query->joinWith('affairs a');
         // $query->joinWith('status s');
-        $query->joinWith('userCreated uc');
-        $query->joinWith('userAccepted ua');
-        $query->joinWith('archiveUnit au');
+        // $query->joinWith('userCreated uc');
+        // $query->joinWith('userAccepted ua');
+        // $query->joinWith('archiveUnit au');
         $query->joinWith('address adr');
 
         // grid filtering conditions
