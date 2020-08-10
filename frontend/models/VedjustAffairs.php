@@ -127,6 +127,29 @@ class VedjustAffairs extends \yii\db\ActiveRecord
         return ($modelVed->status_id == 2 && $modelVed->address_id == Yii::$app->user->identity->address_id);
     }
 
+    public function statusAffairsBarcode($model)
+    {
+        if (empty($model->barcode)) {
+            return false;
+        }
+
+        return VedjustAffairs::updateAll(
+            [
+                'status' => 1,
+                'date_status' => date('Y-m-d H:i:s'),
+                'accepted_ip' => ip2long(Yii::$app->request->userIP),
+                'user_accepted_id' => Yii::$app->user->identity->id,
+            ],
+            ['and',
+                ['or',
+                    ['=', 'ref_num', $model->barcode],
+                    ['=', 'kuvd', $model->barcode],
+                ],
+                ['=', 'ved_id', $model->ved_id],
+            ],
+        );
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

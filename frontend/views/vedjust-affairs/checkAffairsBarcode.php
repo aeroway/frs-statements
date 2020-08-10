@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?php //echo Html::encode($this->title) ?></h1>
     <div id="successCheckAffairsBarcode" style="display: <?= Yii::$app->session->getFlash('successCheckAffairsBarcode'); ?>;">
-        <?php echo ($status ? '<div class="alert alert-success">Подтвержена запись: ' : '<div class="alert alert-danger">Запись отсутствует: ') . $barcode . '</div>' ?>
+        <?php echo ($status ? '<div class="alert alert-success">Подтвержена запись ' : '<div class="alert alert-danger">Запись отсутствует ') . $barcode . '</div>' ?>
     </div>
 
     <?= $this->render('_formAffairsBarcode', [

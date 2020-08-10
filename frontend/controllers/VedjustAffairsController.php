@@ -149,29 +149,13 @@ class VedjustAffairsController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post())) {
-            $statusCheckBarcode = VedjustAffairs::updateAll(
-                [
-                    'status' => 1,
-                    'date_status' => date('Y-m-d H:i:s'),
-                    'accepted_ip' => ip2long(Yii::$app->request->userIP),
-                    'user_accepted_id' => Yii::$app->user->identity->id,
-                ],
-                ['and',
-                    ['or',
-                        ['=', 'ref_num', $model->barcode],
-                        ['=', 'kuvd', $model->barcode],
-                    ],
-                    ['=', 'ved_id', $model->ved_id],
-                ]
-            );
-
             Yii::$app->getSession()->setFlash('successCheckAffairsBarcode', 'block');
 
             return $this->render('checkAffairsBarcode', [
                 'model' => new VedjustAffairs(),
                 'vedId' => $id,
                 'barcode' => $model->barcode,
-                'status' => $statusCheckBarcode,
+                'status' => $model->statusAffairsBarcode($model),
             ]);
         }
 
