@@ -26,6 +26,7 @@ use Yii;
 class VedjustAffairs extends \yii\db\ActiveRecord
 {
     public static $numIssuance;
+    public $barcode;
 
     /**
      * @inheritdoc
@@ -43,7 +44,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
         return [
             ['ref_num', 'either', 'skipOnEmpty' => false, 'params' => ['other' => 'kuvd']],
             [['kuvd', 'ref_num'], 'unique', 'targetAttribute' => ['kuvd', 'ref_num', 'ved_id']],
-            [['kuvd', 'ref_num'], 'string', 'max' => 40],
+            [['kuvd', 'ref_num', 'barcode'], 'string', 'max' => 40],
             [['comment'], 'string'],
             [['date_create', 'date_status'], 'safe'],
             [['ved_id', 'status', 'user_created_id', 'user_accepted_id', 'create_ip', 'accepted_ip', 'p_count'], 'integer'],
@@ -72,6 +73,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             'create_ip' => 'IP создания',
             'accepted_ip' => 'IP подтверждения',
             'p_count' => 'Число заявителей',
+            'barcode' => '№ обращения или КУВД',
         ];
     }
 
@@ -117,7 +119,12 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     {
         $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $this->id])->asArray()->one()["num"];
 
-        return $numIssuance; // . ' из ' . $this->p_count;
+        return $numIssuance;
+    }
+
+    public function checkPermitAffairsBarcode($modelVed)
+    {
+        return ($modelVed->status_id == 2 && $modelVed->address_id == Yii::$app->user->identity->address_id);
     }
 
     /**
@@ -151,5 +158,4 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     {
         return $this->hasMany(VedjustIssuance::className(), ['affairs_id' => 'id']);
     }
-
 }

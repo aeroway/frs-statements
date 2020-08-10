@@ -29,7 +29,7 @@ class VedjustAffairsController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'changestatusall', 'issuance', 'view'],
+                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'changestatusall', 'issuance', 'view', 'check-affairs-barcode'],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
                     [
@@ -59,6 +59,11 @@ class VedjustAffairsController extends Controller
         $searchModel = new VedjustAffairsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $model = new VedjustAffairs();
+        $modelVed = VedjustVed::findOne($id);
+
+        if ($modelVed === NULL) {
+            return $this->goHome();
+        }
 
         $dataProvider->pagination->pageSize = 200;
 
@@ -67,6 +72,8 @@ class VedjustAffairsController extends Controller
             'dataProvider' => $dataProvider,
             'storage' => $model->getStoragePath($id),
             'idVed' => $id,
+            'model' => $model,
+            'modelVed' => $modelVed,
         ]);
     }
 
@@ -124,6 +131,61 @@ class VedjustAffairsController extends Controller
     }
 
     /**
+     * Check of receipt an affairs with barcode scanner
+     * If accept is successful, the browser will show a message.
+     * @return mixed
+     */
+    public function actionCheckAffairsBarcode($id)
+    {
+        if (!is_numeric($id) || $id < 1 || is_float($id)) {
+            return $this->goHome();
+        }
+
+        $modelVed = VedjustVed::findOne($id);
+        $model = new VedjustAffairs();
+
+        if ($modelVed === NULL || !$model->checkPermitAffairsBarcode($modelVed)) {
+            throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
+        }
+
+        if ($model->load(Yii::$app->request->post())) {
+            $statusCheckBarcode = VedjustAffairs::updateAll(
+                [
+                    'status' => 1,
+                    'date_status' => date('Y-m-d H:i:s'),
+                    'accepted_ip' => ip2long(Yii::$app->request->userIP),
+                    'user_accepted_id' => Yii::$app->user->identity->id,
+                ],
+                ['and',
+                    ['or',
+                        ['=', 'ref_num', $model->barcode],
+                        ['=', 'kuvd', $model->barcode],
+                    ],
+                    ['=', 'ved_id', $model->ved_id],
+                ]
+            );
+
+            Yii::$app->getSession()->setFlash('successCheckAffairsBarcode', 'block');
+
+            return $this->render('checkAffairsBarcode', [
+                'model' => new VedjustAffairs(),
+                'vedId' => $id,
+                'barcode' => $model->barcode,
+                'status' => $statusCheckBarcode,
+            ]);
+        }
+
+        Yii::$app->getSession()->setFlash('successCheckAffairsBarcode', 'none');
+
+        return $this->render('checkAffairsBarcode', [
+            'model' => $model,
+            'vedId' => $id,
+            'barcode' => '',
+            'status' => '',
+        ]);
+    }
+
+    /**
      * Updates an existing VedjustAffairs model.
      * If update is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
@@ -134,8 +196,7 @@ class VedjustAffairsController extends Controller
     {
         $model = $this->findModel($id);
 
-        // if (($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) 
-        //     || ($model->ved->status_id === 3 && $model->user_accepted_id === Yii::$app->user->identity->id)) {
+        // if ($model->user_created_id === Yii::$app->user->identity->id || $model->ved->address_id === Yii::$app->user->identity->address_id) {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 return $this->redirect(['index', 'id' => $model->ved_id]);
             }
@@ -144,7 +205,7 @@ class VedjustAffairsController extends Controller
                 'model' => $model,
             ]);
         // } else {
-        //     throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
+            // throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
         // }
     }
 
@@ -199,19 +260,19 @@ class VedjustAffairsController extends Controller
     }
 
     // Check box
-    public function actionChangestatus($id, $status)
+    public function actionChangestatus($id, $status, $all = false)
     {
         $model = $this->findModel($id);
 
         if ($model->ved->status_id === 2) {
 
-            if (!$model->status) {
-                $model->status = (int)$status;
+            if (!$model->status || $all) {
+                $model->status = 1;
                 $model->date_status = date('Y-m-d H:i:s');
                 $model->accepted_ip = ip2long(Yii::$app->request->userIP);
                 $model->user_accepted_id = Yii::$app->user->identity->id;
             } else {
-                $model->status = (int)$status;
+                $model->status = 0;
                 $model->date_status = NULL;
                 $model->accepted_ip = NULL;
                 $model->user_accepted_id = NULL;
@@ -232,7 +293,7 @@ class VedjustAffairsController extends Controller
     {
         if (($allAffairsId = VedjustAffairs::find()->select(['id'])->where(['ved_id' => $id])->all()) !== null) {
             foreach ($allAffairsId as $affairsId) {
-                $this->actionChangestatus($affairsId->id, $status);
+                $this->actionChangestatus($affairsId->id, $status, $all = true);
             }
             return 1;
         } else {

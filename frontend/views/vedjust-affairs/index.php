@@ -40,49 +40,50 @@ $this->params['breadcrumbs'][] = 'Дела';
 
     <p>
     <?php
-    if (($modelVed = VedjustVed::findOne($idVed)) !== null) {
-        if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id)
-        {
-            echo Html::a('Добавить дело ', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']) . ' ';
-            echo Html::a('Сформировать', 'javascript:void(0);', 
-                    [
-                        'class' => 'btn btn-success',
-                        'onclick' => 'changeStatusVed(' . $modelVed->id . ');'
-                    ]) . ' ';
-        }
-
-        if (
-            ($modelVed->user_formed_id === Yii::$app->user->identity->id && $modelVed->status_id == 2)
-            // 2019.08.07 запрет откатывать принятые ведомости
-            // || ($modelVed->user_accepted_id == Yii::$app->user->identity->id && ($modelVed->status_id == 3 || $modelVed->status_id == 4))
-           )
-        {
-            echo Html::a('Откатить', 'javascript:void(0);', 
-                    [
-                        'class' => 'btn btn-danger',
-                        'onclick' => 'changeStatusVedReturn(' . $modelVed->id . ');'
-                    ]) . ' ';
-        }
-
-        // принять может тот, кому было отправлено
-        $target = 0;
-
-        if (Yii::$app->user->can('mfc') === true)
-            $target = 1;
-
-        if (Yii::$app->user->can('zkp') === true)
-            $target = 2;
-
-        if (Yii::$app->user->can('rosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
-            $target = 3;
-
-        if ($modelVed->status_id === 2 && $modelVed->target === $target) {
-            echo $modelVed->verified ? '' : 
-                Html::a('Принято', 'javascript:void(0);', 
-                    ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . $modelVed->id . ');']
-                );
-        }
+    if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id) {
+        echo Html::a('Добавить дело ', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']) . ' ';
+        echo Html::a('Сформировать', 'javascript:void(0);', 
+            [
+                'class' => 'btn btn-success',
+                'onclick' => 'changeStatusVed(' . $modelVed->id . ');'
+            ]) . ' ';
     }
+
+    if ($model->checkPermitAffairsBarcode($modelVed)) {
+        echo Html::a('Проверить дела по штрих-коду', ['check-affairs-barcode', 'id' => $modelVed->id], ['class' => 'btn btn-info']) . ' ';
+    }
+
+    if (($modelVed->user_formed_id === Yii::$app->user->identity->id && $modelVed->status_id == 2)
+        // 2019.08.07 запрет откатывать принятые ведомости
+        // || ($modelVed->user_accepted_id == Yii::$app->user->identity->id && ($modelVed->status_id == 3 || $modelVed->status_id == 4))
+        )
+    {
+        echo Html::a('Откатить', 'javascript:void(0);', 
+                [
+                    'class' => 'btn btn-danger',
+                    'onclick' => 'changeStatusVedReturn(' . $modelVed->id . ');'
+                ]) . ' ';
+    }
+
+    // принять может тот, кому было отправлено
+    $target = 0;
+
+    if (Yii::$app->user->can('mfc') === true)
+        $target = 1;
+
+    if (Yii::$app->user->can('zkp') === true)
+        $target = 2;
+
+    if (Yii::$app->user->can('rosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
+        $target = 3;
+
+    if ($modelVed->status_id === 2 && $modelVed->target === $target) {
+        echo $modelVed->verified ? '' : 
+            Html::a('Принято', 'javascript:void(0);', 
+                ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . $modelVed->id . ');']
+            );
+    }
+
     ?>
 
     <?= ($modelVed->status_id != 1) ? Html::a('Экспорт в PDF', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => 'btn btn-info']) : ''; ?>
