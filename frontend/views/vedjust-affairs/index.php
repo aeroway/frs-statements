@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = 'Дела';
     }
 
     if ($model->checkPermitAffairsBarcode($modelVed)) {
-        echo Html::a('Проверить дела по штрих-коду', ['check-affairs-barcode', 'id' => $modelVed->id], ['class' => 'btn btn-info']) . ' ';
+        echo Html::a('', ['check-affairs-barcode', 'id' => $modelVed->id], ['class' => 'btn btn-info glyphicon glyphicon-barcode', 'title' => 'Продтвердить получение дела по штрих-коду']) . ' ';
     }
 
     if (($modelVed->user_formed_id === Yii::$app->user->identity->id && $modelVed->status_id == 2)
@@ -86,7 +86,7 @@ $this->params['breadcrumbs'][] = 'Дела';
 
     ?>
 
-    <?= ($modelVed->status_id != 1) ? Html::a('Экспорт в PDF', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => 'btn btn-info']) : ''; ?>
+    <?= ($modelVed->status_id != 1) ? Html::a('<img src="/images/icons/pdf-32x32.png">', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => '', 'title' => 'Экспорт в PDF']) : ''; ?>
 
     <?php
     if (

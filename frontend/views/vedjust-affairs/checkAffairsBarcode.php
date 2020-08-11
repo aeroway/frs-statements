@@ -8,7 +8,7 @@ use yii\helpers\Html;
 
 $this->params['breadcrumbs'][] = ['label' => 'Ведомости', 'url' => ['vedjust-ved/index']];
 $this->title = 'Проверить дело по штрих-коду';
-$this->params['breadcrumbs'][] = ['label' => 'Проверка дел', 'url' => ['index', 'id' => $vedId,]];
+$this->params['breadcrumbs'][] = ['label' => 'Дела', 'url' => ['index', 'id' => $vedId,]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="vedjust-affairs-check-affairs-barcode">
