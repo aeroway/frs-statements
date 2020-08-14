@@ -42,6 +42,7 @@ class VedjustVedController extends Controller
                             'setarchive', // show archive docs
                             'reset', // reset filters
                             'fill-area', // get list of districts
+                            'createcopy', // create a duplicate of ved and affairs
                         ],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
@@ -196,6 +197,46 @@ class VedjustVedController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+        ]);
+    }
+
+    /**
+     * Creates a new VedjustVed model as a copy of the previous.
+     * If creation is successful, the browser will be redirected to the 'index' page.
+     * @return mixed
+     */
+    public function actionCreatecopy($id)
+    {
+        $modelVed = new VedjustVed();
+
+
+        if ($modelVed->load(Yii::$app->request->post()) && $modelVed->save()) {
+
+            $modelSource = $this->findModel($id);
+            $modelSource = VedjustAffairs::find()
+                ->where(['ved_id' => $id])
+                ->orderBy(['id' => SORT_ASC])
+                ->all();
+
+            foreach ($modelSource as $affairs) {
+                $modelAffairs = new VedjustAffairs();
+                $modelAffairs->status = 0;
+                $modelAffairs->date_create = date('Y-m-d');
+                $modelAffairs->comment = $affairs->comment;
+                $modelAffairs->kuvd = $affairs->kuvd;
+                $modelAffairs->ved_id = $modelVed->id;
+                $modelAffairs->create_ip = ip2long(Yii::$app->request->userIP);
+                $modelAffairs->user_created_id = Yii::$app->user->identity->id;
+                $modelAffairs->ref_num = $affairs->ref_num;
+                $modelAffairs->save();
+            }
+
+            return $this->redirect(['vedjust-affairs/index', 'id' => $modelVed->id]);
+        }
+
+        return $this->render('createcopy', [
+            'model' => $modelVed,
+            'copy' => true,
         ]);
     }
 

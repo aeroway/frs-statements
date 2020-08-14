@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = 'Дела';
     <p>
     <?php
     if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id) {
-        echo Html::a('Добавить дело ', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']) . ' ';
+        echo Html::a('Добавить дело', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']) . ' ';
         echo Html::a('Сформировать', 'javascript:void(0);', 
             [
                 'class' => 'btn btn-success',
@@ -51,6 +51,10 @@ $this->params['breadcrumbs'][] = 'Дела';
 
     if ($model->checkPermitAffairsBarcode($modelVed)) {
         echo Html::a('', ['check-affairs-barcode', 'id' => $modelVed->id], ['class' => 'btn btn-info glyphicon glyphicon-barcode', 'title' => 'Продтвердить получение дела по штрих-коду']) . ' ';
+    }
+
+    if ($modelVed->status_id === 3 || $modelVed->status_id === 4) {
+        echo Html::a('', ['vedjust-ved/createcopy', 'id' => $modelVed->id], ['class' => 'btn btn-warning glyphicon glyphicon-plus', 'title' => 'Создать с копированием']);
     }
 
     if (($modelVed->user_formed_id === Yii::$app->user->identity->id && $modelVed->status_id == 2)

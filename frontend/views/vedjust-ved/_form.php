@@ -133,8 +133,10 @@ use yii\bootstrap\ActiveForm;
 
     <?= $form->field($model, 'ext_reg')->checkbox(); ?>
 
-    <?php // $form->field($model, 'file')->fileInput(); ?>
-    <?= $form->field($model, 'pkpvd_xlsx')->fileInput(); ?>
+    <?php if (empty($copy)): ?>
+        <?php // echo $form->field($model, 'file')->fileInput(); ?>
+        <?= $form->field($model, 'pkpvd_xlsx')->fileInput(); ?>
+    <?php endif; ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

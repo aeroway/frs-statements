@@ -50,38 +50,32 @@ $this->params['breadcrumbs'][] = $this->title;
         'class' => 'yii\grid\ActionColumn',
         'buttons' =>
         [
-            'delete' => function($url, $model, $key)
-            {
-                if($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
-                {
+            'delete' => function($url, $model, $key) {
+                if($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) {
                     return Html::a('<span class="glyphicon glyphicon-trash"></span>', 
-                            ['vedjust-ved/delete','id' => $model['id']], 
-                            [
-                                'title' => Yii::t('yii', 'Delete'),
-                                'aria-label' => Yii::t('yii', 'Delete'),
-                                'data-pjax' => '0',
-                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'data-method' => 'post',
-                            ]);
+                        ['vedjust-ved/delete','id' => $model['id']], 
+                        [
+                            'title' => Yii::t('yii', 'Delete'),
+                            'aria-label' => Yii::t('yii', 'Delete'),
+                            'data-pjax' => '0',
+                            'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                            'data-method' => 'post',
+                        ]);
                 }
             },
-            'update' => function($url, $model, $key)
-            {
-                // редактировать - статус "создаётся"
-                if (($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id))
-                {
+            'update' => function($url, $model, $key) {
+                if (($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)) {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-ved/update', 'id' => $model['id']]);
 
                     return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $customurl, 
-                            [
-                                'title' => Yii::t('yii', 'Update'),
-                                'aria-label' => Yii::t('yii', 'Update'),
-                                'data-pjax' => '0',
-                            ]);
+                        [
+                            'title' => Yii::t('yii', 'Update'),
+                            'aria-label' => Yii::t('yii', 'Update'),
+                            'data-pjax' => '0',
+                        ]);
                 }
             },
-            'createvedpdf' => function ($url, $model, $key)
-            {
+            'createvedpdf' => function ($url, $model, $key) {
                 if ($model->status_id != 1) {
                     return Html::a('<span class="glyphicon glyphicon-file"></span>', $url,
                         [
@@ -92,8 +86,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     );
                 }
             },
+            'createcopy' => function ($url, $model, $key) {
+                if ($model->status_id === 3 || $model->status_id === 4) {
+                    return Html::a('<span class="btn-xs btn-warning glyphicon glyphicon-plus"></span>', $url,
+                        [
+                            'title' => Yii::t('yii', 'Создать с копированием'),
+                            'aria-label' => Yii::t('yii', 'Создать с копированием'),
+                            'target' => '_blank',
+                        ],
+                    );
+                }
+            }
         ],
-        'template' => '{view} {delete} {createvedpdf} {update}',
+        'template' => '{view} {delete} {createvedpdf} {update} {createcopy}',
     ];
 
     $gridColumns = [
@@ -279,10 +284,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => [
                     'style' => 'max-width:150px; overflow: auto; white-space: normal; word-wrap: break-word;'
                 ],
-                /*'value' => function($model) {
-                    return "<span style='max-width:150px; min-height: 100px; overflow: auto; word-wrap: break-word;'>"
-                        . $model->comment . "</span>";
-                },*/
             ],
 
             $buttons,
