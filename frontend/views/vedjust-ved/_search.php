@@ -31,9 +31,9 @@ use yii\widgets\ActiveForm;
     ?>
 
     <?= $form->field($model, 'search_ref_num_kuvd_comment', [
-            'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn">' .
+        'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn">' .
             Html::submitButton('Поиск', ['class' => 'btn btn-default']) . '</span></div>',
-        ])->textInput(['placeholder' => '№ обращения, КУВД, комментарий ведомости или дела']);
+    ])->textInput(['placeholder' => '№ обращения, КУВД, комментарий ведомости или дела']);
     ?>
 
     <?php // echo $form->field($model, 'date_create') ?>

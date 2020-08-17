@@ -26,18 +26,18 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?php if (!Yii::$app->user->can('addAudit') && !Yii::$app->user->can('limitAudit')): ?>
             <?php // echo Html::button('Создать ведомость', ['value' => Url::to('/vedjust-ved/create'), 'class' => 'btn btn-success', 'id' => 'modalVedCreate']); ?>
-            <?= Html::a('Создать ведомость', Url::to('/vedjust-ved/create'), ['class' => 'btn btn-success']); ?>
+            <?= Html::a(NULL, Url::to('/vedjust-ved/create'), ['class' => 'btn btn-success glyphicon glyphicon-plus', 'title' => 'Создать ведомость']); ?>
         <?php endif; ?>
 
         <?php if (Yii::$app->getRequest()->getCookies()->getValue('archive')): ?>
-            <?= Html::a('Скрыть архивные', 'javascript:void(0);', ['class' => 'btn btn-warning', 'onclick' => 'setArchive(0);']); ?>
+            <?= Html::a(NULL, 'javascript:void(0);', ['class' => 'btn btn-danger glyphicon glyphicon-resize-small', 'onclick' => 'setArchive(0);', 'title' => 'Скрыть архивные']); ?>
         <?php endif; ?>
 
         <?php if(!Yii::$app->getRequest()->getCookies()->getValue('archive')): ?> 
-            <?= Html::a('Показать все', 'javascript:void(0);', ['class' => 'btn btn-info', 'onclick' => 'setArchive(1);']); ?>
+            <?= Html::a(NULL, 'javascript:void(0);', ['class' => 'btn btn-info glyphicon glyphicon-resize-full', 'onclick' => 'setArchive(1);', 'title' => 'Показать все']); ?>
         <?php endif; ?>
 
-        <?= Html::a('Сброс фильтров', ['reset'], ['class' => 'btn btn-warning']); ?>
+        <?= Html::a(NULL, ['reset'], ['class' => 'btn btn-warning glyphicon glyphicon-refresh', 'title' => 'Сброс фильтров']); ?>
 
         <?php if(Yii::$app->user->can('confirmExtDocs') || Yii::$app->user->can('addAudit') || Yii::$app->user->can('limitAudit')): ?>
             <?= Html::a('Экстер. документы', Url::to('/vedjust-ved/view-ext-doc'), ['class' => 'btn btn-info']); ?>
@@ -50,9 +50,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'class' => 'yii\grid\ActionColumn',
         'buttons' =>
         [
+            'view' => function($url, $model, $key) {
+                $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-ved/view', 'id' => $model['id']]);
+
+                return Html::a('<span class="btn-xs btn-info glyphicon glyphicon-eye-open"></span>', $customurl, 
+                    [
+                        'title' => Yii::t('yii', 'View'),
+                        'aria-label' => Yii::t('yii', 'View'),
+                        'data-pjax' => '0',
+                    ]);
+            },
             'delete' => function($url, $model, $key) {
                 if($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) {
-                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', 
+                    return Html::a('<span class="btn-xs btn-danger glyphicon glyphicon-trash"></span>', 
                         ['vedjust-ved/delete','id' => $model['id']], 
                         [
                             'title' => Yii::t('yii', 'Delete'),
@@ -67,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 if (($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)) {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-ved/update', 'id' => $model['id']]);
 
-                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $customurl, 
+                    return Html::a('<span class="btn-xs btn-warning glyphicon glyphicon-pencil"></span>', $customurl, 
                         [
                             'title' => Yii::t('yii', 'Update'),
                             'aria-label' => Yii::t('yii', 'Update'),
@@ -77,7 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
             },
             'createvedpdf' => function ($url, $model, $key) {
                 if ($model->status_id != 1) {
-                    return Html::a('<span class="glyphicon glyphicon-file"></span>', $url,
+                    return Html::a('<span class="btn-xs btn-info glyphicon glyphicon-file"></span>', $url,
                         [
                             'title' => Yii::t('yii', 'Сформировать PDF'),
                             'aria-label' => Yii::t('yii', 'Сформировать PDF'),
@@ -98,6 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             }
         ],
+        'contentOptions' => ['style' => 'width: 98px;'],
         'template' => '{view} {delete} {createvedpdf} {update} {createcopy}',
     ];
 
