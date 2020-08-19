@@ -81,14 +81,11 @@ $this->params['breadcrumbs'][] = 'Дела';
     if (Yii::$app->user->can('rosreestr') === true || Yii::$app->user->can('confirmExtDocs') === true)
         $target = 3;
 
-    if ($modelVed->status_id === 2 && $modelVed->target === $target) {
-        echo $modelVed->verified ? '' : 
-            Html::a('Принято', 'javascript:void(0);', 
-                ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . $modelVed->id . ');']
-            );
-    }
-
     ?>
+
+    <?php if ($model->isVedNotVerified($modelVed)) : ?>
+        <?= Html::a('Принято', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . $modelVed->id . ');']); ?>
+    <?php endif; ?>
 
     <?= ($modelVed->status_id != 1) ? Html::a('<img src="/images/icons/pdf-32x32.png">', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => '', 'title' => 'Экспорт в PDF']) : ''; ?>
 
@@ -320,10 +317,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                                 'id' => 'status' . $key,
                                 'value' => $key,
                                 'onclick' => 'changeStatusAffairs(this.value);',
-                                'disabled' => !empty($model->ved->verified)
-                                    || ($model->ved->user_created_id === Yii::$app->user->identity->id)
-                                    || ($model->ved->address_id !== Yii::$app->user->identity->address_id)
-                                    ? true : false,
+                                'disabled' => $model->isCheckBoxDisabled($model->ved),
                             ]
                         );
                     }

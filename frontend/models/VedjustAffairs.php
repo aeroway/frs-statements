@@ -150,6 +150,22 @@ class VedjustAffairs extends \yii\db\ActiveRecord
         );
     }
 
+    public function isCheckBoxDisabled($modelVed) {
+        return !empty($modelVed->verified)
+            || $modelVed->status_id !== 2
+            || Yii::$app->user->can('addAudit')
+            || $modelVed->user_created_id === Yii::$app->user->identity->id
+            || $modelVed->address_id !== Yii::$app->user->identity->address_id;
+    }
+
+    public function isVedNotVerified($modelVed) {
+        return empty($modelVed->verified) &&
+            $modelVed->status_id === 2 &&
+            !Yii::$app->user->can('addAudit') &&
+            $modelVed->user_created_id !== Yii::$app->user->identity->id &&
+            $modelVed->address_id == Yii::$app->user->identity->address_id;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
