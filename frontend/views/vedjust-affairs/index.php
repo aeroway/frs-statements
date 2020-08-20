@@ -42,13 +42,14 @@ $this->params['breadcrumbs'][] = 'Дела';
     <?php
     if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id) {
         echo Html::a('Добавить дело', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']) . ' ';
-        echo Html::a('Сформировать', 'javascript:void(0);', 
-            [
-                'class' => 'btn btn-success',
-                'onclick' => 'changeStatusVed(' . $modelVed->id . ');'
-            ]) . ' ';
     }
+    ?>
 
+    <?php if ($modelVed->checkPermitformed($modelVed)) : ?>
+        <?= Html::a('Сформировать', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeStatusVed(' . $modelVed->id . ');']); ?>
+    <?php endif; ?>
+
+    <?php
     if ($model->checkPermitAffairsBarcode($modelVed)) {
         echo Html::a('', ['check-affairs-barcode', 'id' => $modelVed->id], ['class' => 'btn btn-info glyphicon glyphicon-barcode', 'title' => 'Продтвердить получение дела по штрих-коду']) . ' ';
     }

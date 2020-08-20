@@ -255,6 +255,14 @@ class VedjustVed extends \yii\db\ActiveRecord
         }
     }
 
+    public function checkPermitformed($modelVed) {
+        if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id && !empty($modelVed->affairs[0]->id)) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

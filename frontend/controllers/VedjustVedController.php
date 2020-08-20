@@ -349,8 +349,7 @@ class VedjustVedController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
-        {
+        if ($model->checkPermitformed($model)) {
             // Пропуск одной стадии, если создаёт ведомость с типом "невостреб." сам на себя
             if ($model->user_created_id === Yii::$app->user->identity->id
                 && $model->archive_unit_id === 4 
@@ -369,7 +368,6 @@ class VedjustVedController extends Controller
                 $model->date_reception = date('Y-m-d H:i:s');
                 $model->accepted_ip = ip2long(Yii::$app->request->userIP);
                 $model->user_accepted_id = Yii::$app->user->identity->id;
-
             } else {
                 $model->status_id = 2;
             }
@@ -379,14 +377,12 @@ class VedjustVedController extends Controller
             $model->user_formed_id = Yii::$app->user->identity->id;
 
             if ($model->update() !== false) {
-                return 1;
+                return true;
             } else {
-                return 0;
+                return false;
             }
-        }
-        else
-        {
-           return 0; 
+        } else {
+           return false;
         }
     }
 
