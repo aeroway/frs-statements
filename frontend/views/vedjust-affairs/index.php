@@ -58,16 +58,11 @@ $this->params['breadcrumbs'][] = 'Дела';
         echo Html::a('', ['vedjust-ved/createcopy', 'id' => $modelVed->id], ['class' => 'btn btn-warning glyphicon glyphicon-plus', 'title' => 'Создать с копированием']);
     }
 
-    if (($modelVed->user_formed_id === Yii::$app->user->identity->id && $modelVed->status_id == 2)
-        // 2019.08.07 запрет откатывать принятые ведомости
-        // || ($modelVed->user_accepted_id == Yii::$app->user->identity->id && ($modelVed->status_id == 3 || $modelVed->status_id == 4))
-        )
-    {
-        echo Html::a('Откатить', 'javascript:void(0);', 
-                [
-                    'class' => 'btn btn-danger',
-                    'onclick' => 'changeStatusVedReturn(' . $modelVed->id . ');'
-                ]) . ' ';
+    if ($modelVed->checkPermitStatusReturn($modelVed)) {
+        echo Html::a('Откатить', 'javascript:void(0);', [
+            'class' => 'btn btn-danger', 
+            'onclick' => 'changeStatusVedReturn(' . $modelVed->id . ');'
+        ]);
     }
 
     // принять может тот, кому было отправлено
@@ -109,15 +104,10 @@ $this->params['breadcrumbs'][] = 'Дела';
     }
     ?>
 
-    <?php // one ved record in storage
-    if (Yii::$app->user->can('archive')
-        && empty(VedjustStorage::find()->where(['ved_id' => $modelVed->id])->one()->ved_id)
-        && ($modelVed->status_id === 3 || $modelVed->status_id === 4)):
-    ?>
-        <?= Html::a('Поместить в архивохранилище', 
-            Url::to('/vedjust-storage/create?ved=' . $modelVed->id), ['class' => 'btn btn-success']); 
-        ?>
+    <?php if ($modelVed->canPutVedIntoStorage($modelVed)): ?>
+        <?= Html::a('Поместить в архивохранилище', Url::to('/vedjust-storage/create?ved=' . $modelVed->id), ['class' => 'btn btn-success']); ?>
     <?php endif; ?>
+
     </p>
 
     <?php

@@ -263,6 +263,21 @@ class VedjustVed extends \yii\db\ActiveRecord
         return false;
     }
 
+    public function canPutVedIntoStorage($modelVed) {
+        return Yii::$app->user->can('archive')
+            && empty($modelVed->storage[0]->id)
+            && ($modelVed->status_id === 3 || $modelVed->status_id === 4)
+            && $modelVed->address_id === Yii::$app->user->identity->address_id;
+    }
+
+    public function checkPermitStatusReturn($model) {
+        if ($model->user_formed_id === Yii::$app->user->identity->id && $model->status_id == 2) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

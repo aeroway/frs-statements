@@ -28,10 +28,7 @@ class VedjustStorageController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' =>
-                        [
-                            'create', // standard actions
-                        ],
+                        'actions' => ['create'],
                         'roles' => ['editArchive'],
                     ],
                 ],
@@ -83,9 +80,9 @@ class VedjustStorageController extends Controller
      */
     public function actionCreate($ved)
     {
-        $ved ? $modelVed = VedjustVed::findOne($ved) : $modelVed = NULL;
+        $modelVed =  $this->findModelVed($ved);
 
-        if ($modelVed && ($modelVed->status_id === 3 || $modelVed->status_id === 4)) {
+        if ($modelVed->canPutVedIntoStorage($modelVed)) {
 
             $model = new VedjustStorage();
 
@@ -93,6 +90,7 @@ class VedjustStorageController extends Controller
                 if ($modelVed->status_id === 3) {
                     $modelVed->status_id = 5;
                 }
+
                 if ($modelVed->status_id === 4) {
                     $modelVed->status_id = 6;
                 }
@@ -105,7 +103,6 @@ class VedjustStorageController extends Controller
             return $this->render('create', [
                 'model' => $model,
             ]);
-
         }
 
         throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
@@ -160,4 +157,14 @@ class VedjustStorageController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    protected function findModelVed($id)
+    {
+        if (($model = VedjustVed::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
 }

@@ -376,11 +376,7 @@ class VedjustVedController extends Controller
             $model->formed_ip = ip2long(Yii::$app->request->userIP);
             $model->user_formed_id = Yii::$app->user->identity->id;
 
-            if ($model->update() !== false) {
-                return true;
-            } else {
-                return false;
-            }
+            return $this->updateModel($model);
         } else {
            return false;
         }
@@ -391,38 +387,20 @@ class VedjustVedController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->user_formed_id === Yii::$app->user->identity->id && $model->status_id == 2)
-        {
+        if ($model->checkPermitStatusReturn($model)) {
             $model->status_id = 1;
 
-            foreach ($model->affairs as $affairs)
-            {
-                $affairs->status = 0;
-                $affairs->date_status = NULL;
-                $affairs->accepted_ip = NULL;
-                $affairs->user_accepted_id = NULL;
-                $affairs->update();
-            }
+            VedjustAffairs::updateAll([
+                'status' => 0,
+                'date_status' => NULL,
+                'accepted_ip' => NULL,
+                'user_accepted_id' => NULL,
+            ],
+            ['=', 'ved_id', $id]);
 
             return $this->updateModel($model);
-
-        } elseif ($model->user_accepted_id == Yii::$app->user->identity->id && ($model->status_id == 3 || $model->status_id == 4)) {
-
-            //2019.08.05 запрет откатывать принятые ведомости
-            return 0;
-
-            $model->status_id = 2;
-            $model->verified = NULL;
-            $model->user_accepted_id = NULL;
-            $model->date_reception = NULL;
-            $model->accepted_ip = NULL;
-
-            return $this->updateModel($model);
-
         } else {
-
            return 0;
-
         }
     }
 
@@ -561,9 +539,9 @@ class VedjustVedController extends Controller
     private function updateModel($model)
     {
         if ($model->update() !== false) {
-            return 1;
+            return true;
         } else {
-            return 0;
+            return false;
         }
     }
 

@@ -244,13 +244,14 @@ class VedjustAffairsController extends Controller
     }
 
     // Check box
-    public function actionChangestatus($id, $status, $all = false)
+    public function actionChangestatus($id, $status)
     {
         $model = $this->findModel($id);
 
-        if ($model->ved->status_id === 2) {
-
-            if (!$model->status || $all) {
+        if ($model->isCheckBoxDisabled($model->ved)) {
+            return 0;
+        } else {
+            if (!$model->status) {
                 $model->status = 1;
                 $model->date_status = date('Y-m-d H:i:s');
                 $model->accepted_ip = ip2long(Yii::$app->request->userIP);
@@ -267,23 +268,31 @@ class VedjustAffairsController extends Controller
             } else {
                 return 0;
             }
-        } else {
-           return 0; 
         }
     }
 
-    // Check all box
     public function actionChangestatusall($id, $status)
     {
-        if (($allAffairsId = VedjustAffairs::find()->select(['id'])->where(['ved_id' => $id])->all()) !== null) {
-            foreach ($allAffairsId as $affairsId) {
-                $this->actionChangestatus($affairsId->id, $status, $all = true);
-            }
-            return 1;
-        } else {
+        $modelVed = $this->findModelVed($id);
+        $model = new VedjustAffairs();
+
+        if ($model->isCheckBoxDisabled($modelVed)) {
             return 0;
+        } else {
+            if (!$model->status) {
+                VedjustAffairs::updateAll([
+                    'status' => 1,
+                    'date_status' => date('Y-m-d H:i:s'),
+                    'accepted_ip' => ip2long(Yii::$app->request->userIP),
+                    'user_accepted_id' => Yii::$app->user->identity->id,
+                ],
+                ['=', 'ved_id', $id]);
+            }
+
+            return 1;
         }
     }
+
 
     /**
      * Finds the VedjustAffairs model based on its primary key value.
@@ -301,4 +310,12 @@ class VedjustAffairsController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    protected function findModelVed($id)
+    {
+        if (($model = VedjustVed::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
 }
