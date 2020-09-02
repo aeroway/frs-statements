@@ -108,7 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             }
         ],
-        'contentOptions' => ['style' => 'width: 98px;'],
+        'contentOptions' => ['style' => 'width: 99px;'],
         'template' => '{view} {delete} {createvedpdf} {update} {createcopy}',
     ];
 

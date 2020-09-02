@@ -26,7 +26,8 @@ use frontend\models\VedjustVed;
 
     <?php if(strpos(Yii::$app->request->pathInfo, 'update')) : ?>
         <?php if ($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) : ?>
-            <?= $form->field($model, 'kuvd')->textInput(['autofocus' => 'autofocus']); ?>
+            <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus']); ?>
+            <?= $form->field($model, 'kuvd')->textInput(); ?>
         <?php endif; ?>
     <?php endif; ?>
 
