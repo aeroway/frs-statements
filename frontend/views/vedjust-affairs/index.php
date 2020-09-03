@@ -249,10 +249,13 @@ $this->params['breadcrumbs'][] = 'Дела';
         {
             if (!empty(Yii::$app->session['VedjustVedSearch'])) {
                 foreach (Yii::$app->session['VedjustVedSearch'] as $value) {
-                    if (!empty($value['kuvd_affairs'])) {
-                        $wordKuvd = addcslashes($value["kuvd_affairs"], '/');
+                    if (!empty($value['search_ref_num_kuvd_comment'])) {
+                        $wordKuvd = addcslashes($value["search_ref_num_kuvd_comment"], '/');
                         $patternKuvd = "/($wordKuvd)+/iu";
-                        if (preg_match($patternKuvd, $model->kuvd)) { return ['class' => 'info']; }
+
+                        if (preg_match($patternKuvd, $model->kuvd) || preg_match($patternKuvd, $model->ref_num) || preg_match($patternKuvd, $model->comment)) {
+                            return ['class' => 'info'];
+                        }
                     }
                 }
             }

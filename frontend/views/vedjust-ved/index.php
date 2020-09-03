@@ -213,12 +213,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'html',
             ],
             [
-                // 'attribute' => 'user_created_id',
+                'attribute' => 'user_created_id',
                 'label' => 'Источник',
                 'content' => function($model) {
                     return $model->userCreated->AgencyName . ' (' . $model->userCreated->SubdivisionName . ')';
                 },
                 'format' => 'html',
+                'filter' => ArrayHelper::map(VedjustAgency::find()->asArray()->all(), 'id', 'name'),
                 'contentOptions' => [
                     'style' => 'min-width: 180px; overflow: auto; white-space: normal; word-wrap: break-word;'
                 ],

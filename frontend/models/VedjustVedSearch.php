@@ -151,7 +151,7 @@ class VedjustVedSearch extends VedjustVed
 
         // $query->joinWith('affairs a');
         // $query->joinWith('status s');
-        // $query->joinWith('userCreated uc');
+        $query->joinWith('userCreated uc');
         // $query->joinWith('userAccepted ua');
         // $query->joinWith('archiveUnit au');
         $query->joinWith('address adr');
@@ -170,13 +170,14 @@ class VedjustVedSearch extends VedjustVed
             'ext_reg' => $this->ext_reg,
             'target' => $this->target,
             'status_id' => $this->status_id,
+            'uc.agency_id' => $this->user_created_id,
         ]);
 
         $query->andFilterWhere(['like', 'num_ved', $this->num_ved])
             // ->andFilterWhere(['like', 's.name', $this->status_id])
             ->andFilterWhere(['like', 'a.kuvd', $this->kuvd_affairs])
             ->andFilterWhere(['like', 'a.ref_num', $this->ref_num_affairs])
-            ->andFilterWhere(['like', 'uc.email', $this->user_created_id])
+            // ->andFilterWhere(['like', 'uc.email', $this->user_created_id])
             ->andFilterWhere(['like', 'au.name', $this->archive_unit_id])
             ->andFilterWhere(['like', 'v.comment', $this->comment])
             ->andFilterWhere(['like', 'adr.name', $this->address_id])
