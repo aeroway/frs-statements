@@ -6,6 +6,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\VedjustVedSearch */
 /* @var $form yii\widgets\ActiveForm */
+
 ?>
 
 <div class="vedjust-ved-search">
@@ -15,25 +16,30 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <?php //if (Yii::$app->user->can('issuance')) : ?>
-        <?php //echo $form->field($model, 'search_all')->checkbox(); ?>
-    <?php //endif; ?>
-
     <?php /* echo $form->field($model, 'ref_num_affairs', [
             'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn"></span></div>',
-        ])->textInput(['placeholder' => '№ обращения']); */
+        ])->textInput(['placeholder' => '№ обращения']); */ 
     ?>
 
     <?php /* echo $form->field($model, 'kuvd_affairs', [
             'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn">' .
             Html::submitButton('Поиск', ['class' => 'btn btn-default']) . '</span></div>',
-        ])->textInput(['placeholder' => 'КУВД']); */
+        ])->textInput(['placeholder' => 'КУВД']); */ 
     ?>
 
     <?= $form->field($model, 'search_ref_num_kuvd_comment', [
-        'template' => '<div class="input-group col-xs-4">{input}<span class="input-group-btn">' .
-            Html::submitButton('Поиск', ['class' => 'btn btn-default']) . '</span></div>',
-    ])->textInput(['placeholder' => '№ обращения, КУВД, комментарий ведомости или дела']);
+            'template' => '<div class="input-group col-xs-5">{input}<span class="input-group-btn">' .
+                '<div id="vedjustvedsearch-strict" role="radiogroup">
+                    <span data-toggle="buttons">
+                        <label title="Поиск похожей записи" class="btn btn-default' . (!$model->strict ? ' active' : '') . '">
+                            <input type="radio" name="VedjustVedSearch[strict]" value="0">Прим.</label>
+                        <label title="Поиск по строгому соответствию" class="btn btn-default' . ($model->strict ? ' active' : '') . '">
+                            <input type="radio" name="VedjustVedSearch[strict]" value="1"' . ($model->strict ? ' checked' : '') . '>Точный</label>
+                    </span>'
+                    . Html::submitButton('<span class="glyphicon glyphicon-search"></span>', ['class' => 'btn btn-info', 'title' => 'Поиск']) .
+                '</div>
+            </span></div>',
+        ])->textInput(['placeholder' => '№ обращения, КУВД, комментарий ведомости или дела']); 
     ?>
 
     <?php // echo $form->field($model, 'date_create') ?>

@@ -15,12 +15,12 @@ class VedjustVedSearch extends VedjustVed
     /**
      * @inheritdoc
      */
-    public $kuvd_affairs, $ref_num_affairs, $search_all, $search_ref_num_kuvd_comment, $search_num_ved;
+    public $kuvd_affairs, $ref_num_affairs, $search_all, $search_ref_num_kuvd_comment, $search_num_ved, $strict;
 
     public function rules()
     {
         return [
-            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target', 'search_all', 'search_num_ved'], 'integer'],
+            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target', 'search_all', 'search_num_ved', 'strict'], 'integer'],
             [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 
                 'user_accepted_id', 'archive_unit_id', 'comment', 'address_id', 'ref_num_affairs', 'search_ref_num_kuvd_comment'], 'safe'],
         ];
@@ -44,6 +44,12 @@ class VedjustVedSearch extends VedjustVed
      */
     public function search($params)
     {
+        if (!empty($params["VedjustVedSearch"]["strict"])) {
+            $symbolStrict = '=';
+        } else {
+            $symbolStrict = 'LIKE';
+        }
+
         if (!empty($params["VedjustVedSearch"]["search_num_ved"])) {
             $numVed = $params["VedjustVedSearch"]["search_num_ved"];
             $query = VedjustVed::find()
@@ -55,11 +61,11 @@ class VedjustVedSearch extends VedjustVed
                         ['and',
                             ['=', 'v.status_id', 1],
                             ['=', 'us.address_id', Yii::$app->user->identity->address_id],
-                            ['=', 'v.id', $numVed],
+                            [$symbolStrict, 'v.id', $numVed],
                         ],
                         ['and',
                             ['<>', 'v.status_id', 1],
-                            ['=', 'v.id', $numVed]
+                            [$symbolStrict, 'v.id', $numVed]
                         ],
                     ],
                 );
@@ -79,10 +85,10 @@ class VedjustVedSearch extends VedjustVed
                             ],
                         ],
                         ['or',
-                            ['LIKE', 'a.ref_num', $refNumKuvdCmt],
-                            ['LIKE', 'a.kuvd', $refNumKuvdCmt],
-                            ['LIKE', 'a.comment', $refNumKuvdCmt],
-                            ['LIKE', 'v.comment', $refNumKuvdCmt],
+                            [$symbolStrict, 'a.ref_num', $refNumKuvdCmt],
+                            [$symbolStrict, 'a.kuvd', $refNumKuvdCmt],
+                            [$symbolStrict, 'a.comment', $refNumKuvdCmt],
+                            [$symbolStrict, 'v.comment', $refNumKuvdCmt],
                         ],
                     ],
                 );
