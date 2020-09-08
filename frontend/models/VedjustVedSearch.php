@@ -61,11 +61,11 @@ class VedjustVedSearch extends VedjustVed
                         ['and',
                             ['=', 'v.status_id', 1],
                             ['=', 'us.address_id', Yii::$app->user->identity->address_id],
-                            [$symbolStrict, 'v.id', $numVed],
+                            ['=', 'v.id', $numVed],
                         ],
                         ['and',
                             ['<>', 'v.status_id', 1],
-                            [$symbolStrict, 'v.id', $numVed]
+                            ['=', 'v.id', $numVed]
                         ],
                     ],
                 );
