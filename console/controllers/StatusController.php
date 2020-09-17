@@ -25,7 +25,7 @@ class StatusController extends Controller
             if (empty($pathExcel[1])) {
                 $start = microtime(true);
                 $this->importPkpvdXlsx($pathExcel[0]);
-                echo $time = (microtime(true) - $start) / 60;
+                echo $time = ((microtime(true) - $start) / 60) . "\n";
                 unlink($pathExcel[0]);
             }
         }
@@ -40,32 +40,28 @@ class StatusController extends Controller
             foreach ($sheet->getRowIterator() as $row) {
                 $cells = $row->getCells();
 
-                if (!empty($cells[5])
-                    && $cells[5] != 'Номер внешней системы'
-                    && $cells[5]->getValue()
-                    && strpos($cells[3], "Other") === false
-                    && $modelStatus->checkActualCompletionDate($cells[23])) {
-
-                    $select = Yii::$app->db2->createCommand("SELECT req_num, ext_sys_num, status FROM status_sys WHERE ext_sys_num = '$cells[5]'")->queryOne();
-
-                    if (empty($select['ext_sys_num'])) {
-                        Yii::$app->db2->createCommand()->insert('status_sys', [
-                            'req_num' => $cells[3],
-                            'ext_sys_num' => $cells[5],
-                            'status' => empty($cells[19]) ? NULL : $cells[19],
-                        ])->execute();
-                    } elseif ($select['ext_sys_num'] == $cells[5] && $select['status'] != $cells[19]) {
-                        Yii::$app->db2->createCommand()->update(
-                            'status_sys', [
-                                'status' => empty($cells[19]) ? NULL : $cells[19],
-                                'date_update' => Yii::$app->formatter->asDate('now', 'php:Y-m-d'),
-                            ],
-                            ['ext_sys_num' => $cells[5]],
-                        )->execute();
-                    }
+                if (!empty($cells[5]) && $cells[5] != 'Номер внешней системы' && $cells[5]->getValue() && strpos($cells[3], "Other") === false) {
+                    $newEntries[] = [$cells[3], $cells[5], empty($cells[19]) ? NULL : $cells[19]];
                 }
             }
         }
+
+        Yii::$app->db2->createCommand()->truncateTable('status_sys_temp')->execute();
+        $modelStatus->batchInsert('status_sys_temp', ['req_num', 'ext_sys_num', 'status'], $newEntries);
+
+        $selectDifference = $modelStatus->selectDifference();
+
+        foreach ($selectDifference as $diff) {
+            if ($diff['esn'] === NULL) {
+                $difference[] = [$diff['req_num'], $diff['ext_sys_num'], empty($diff['status']) ? NULL : $diff['status']];
+            }
+
+            if ($diff['status'] != $diff['s1']) {
+                $modelStatus->updateStatus($diff['status'], $diff['ext_sys_num']);
+            }
+        }
+
+        $modelStatus->batchInsert('status_sys', ['req_num', 'ext_sys_num', 'status'], $difference);
 
         $reader->close();
     }

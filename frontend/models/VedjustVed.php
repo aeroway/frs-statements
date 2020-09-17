@@ -232,7 +232,7 @@ class VedjustVed extends \yii\db\ActiveRecord
         $mpdf = $pdf->api;
         // $mpdf->SetHeader('AW');
         $mpdf->WriteHtml($content);
-        echo $mpdf->Output('ved.pdf', 'D');
+        echo $mpdf->Output('ved.pdf', 'I');
 
         exit;
     }
