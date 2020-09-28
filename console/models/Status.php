@@ -9,29 +9,33 @@ class Status extends Model
 {
     public function batchInsert($table, $columns, $newEntries) {
         if (!empty($newEntries)) {
-            Yii::$app->db2->createCommand()->batchInsert($table, $columns, $newEntries)->execute();
+            $newEntries = array_chunk($newEntries, 10);
+
+            for ($i = 0; $i < count($newEntries); $i++) { 
+                Yii::$app->db2->createCommand()->batchInsert($table, $columns, $newEntries[$i])->execute();
+            }
         }
     }
 
-    public function updateStatus($status, $extSysNum) {
+    public function updateStatus($status, $reqNum) {
         Yii::$app->db2->createCommand()->update(
             'status_sys', [
                 'status' => empty($status) ? NULL : $status,
                 'date_update' => Yii::$app->formatter->asDate('now', 'php:Y-m-d'),
             ],
-            ['ext_sys_num' => $extSysNum],
+            ['req_num' => $reqNum],
         )->execute();
     }
 
     public function selectDifference() {
         return (new \yii\db\Query)
-            ->select(['ss.ext_sys_num AS esn', 'ss.status AS s1', 'sst.req_num', 'sst.ext_sys_num', 'sst.status'])  
+            ->select(['ss.status AS s1', 'sst.status', 'sst.req_num', 'sst.ext_sys_num'])
             ->from('status_sys ss')
-            ->join('FULL OUTER JOIN', 'status_sys_temp sst', 'sst.ext_sys_num = ss.ext_sys_num')
+            ->join('FULL OUTER JOIN', 'status_sys_temp sst', 'sst.req_num = ss.req_num')
             ->where(
                 ['or',
                     ['<>', 'sst.status', 'ss.status'],
-                    ['IS', 'ss.ext_sys_num', NULL],
+                    ['IS', 'ss.req_num', NULL],
                 ],
             )
             ->all(Yii::$app->db2);

@@ -40,24 +40,23 @@ class StatusController extends Controller
             foreach ($sheet->getRowIterator() as $row) {
                 $cells = $row->getCells();
 
-                if (!empty($cells[5]) && $cells[5] != 'Номер внешней системы' && $cells[5]->getValue() && strpos($cells[3], "Other") === false) {
-                    $newEntries[] = [$cells[3], $cells[5], empty($cells[19]) ? NULL : $cells[19]];
+                if (!empty($cells[3]) && $cells[3] != 'Номер обращения' && $cells[3]->getValue() && strpos($cells[3], "Other") === false) {
+                    $newEntries[] = [trim($cells[3]->getValue()), trim($cells[5]->getValue()), empty($cells[19]->getValue()) ? NULL : trim($cells[19]->getValue())];
                 }
             }
         }
 
         Yii::$app->db2->createCommand()->truncateTable('status_sys_temp')->execute();
         $modelStatus->batchInsert('status_sys_temp', ['req_num', 'ext_sys_num', 'status'], $newEntries);
-
         $selectDifference = $modelStatus->selectDifference();
 
         foreach ($selectDifference as $diff) {
-            if ($diff['esn'] === NULL) {
+            if ($diff['s1'] === NULL) {
                 $difference[] = [$diff['req_num'], $diff['ext_sys_num'], empty($diff['status']) ? NULL : $diff['status']];
             }
 
-            if ($diff['status'] != $diff['s1']) {
-                $modelStatus->updateStatus($diff['status'], $diff['ext_sys_num']);
+            if ($diff['s1'] !== NULL && $diff['status'] != $diff['s1']) {
+                $modelStatus->updateStatus($diff['status'], $diff['req_num']);
             }
         }
 
