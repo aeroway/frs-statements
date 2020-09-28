@@ -280,6 +280,20 @@ class VedjustVed extends \yii\db\ActiveRecord
         return false;
     }
 
+    public function checkLimitOpenVed() {
+        $countOpenVed = VedjustVed::find()->where(['and', ['status_id' => 1], ['user_created_id' => Yii::$app->user->identity->id]])->count();
+
+        if ($countOpenVed > 1) {
+            Yii::$app->session->setFlash('limitOpenVed', "Вы не можете создавать новые ведомости, пока не завершите формирование предыдущих $countOpenVed.
+                Недопускается создавать и бросать в подвисшем состоянии ведомости в большом количестве со статусом \"создаётся\".
+                Ниже представлен список Ваших ведомостей, которые нужно сформировать или удалить часть из них прямо сейчас.");
+
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

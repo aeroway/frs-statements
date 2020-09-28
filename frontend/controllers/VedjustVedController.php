@@ -195,6 +195,10 @@ class VedjustVedController extends Controller
             return $this->redirect(['vedjust-affairs/create', 'id' => $model->id]);
         }
 
+        if ($model->checkLimitOpenVed()) {
+            return $this->redirect(['index']);
+        }
+
         return $this->render('create', [
             'model' => $model,
         ]);

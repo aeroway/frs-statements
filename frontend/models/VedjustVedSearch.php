@@ -138,6 +138,16 @@ class VedjustVedSearch extends VedjustVed
                         ]
                     );
             }
+
+            if ($this->checkLimitOpenVed()) {
+                $query = VedjustVed::find()
+                    ->where(
+                        ['and',
+                            ['status_id' => 1],
+                            ['user_created_id' => Yii::$app->user->identity->id],
+                        ],
+                    );
+            }
         }
 
         // add conditions that should always apply here
