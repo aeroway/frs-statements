@@ -47,7 +47,7 @@ class VedjustVedSearch extends VedjustVed
         if (!empty($params["VedjustVedSearch"]["strict"])) {
             $symbolStrict = '=';
         } else {
-            $symbolStrict = 'LIKE';
+            $symbolStrict = 'ILIKE';
         }
 
         if (!empty($params["VedjustVedSearch"]["search_num_ved"])) {
@@ -74,14 +74,14 @@ class VedjustVedSearch extends VedjustVed
             $query = VedjustVed::find()
                 ->alias('v')
                 ->distinct(['v.id'])
-                ->innerJoin('user us', 'us.id = v.user_created_id')
+                // ->innerJoin('user us', 'us.id = v.user_created_id')
                 ->where(
                     ['and',
                         ['or',
                             ['<>', 'v.status_id', 1],
                             ['and',
                                 ['=', 'v.status_id', 1],
-                                ['=', 'us.address_id', Yii::$app->user->identity->address_id],
+                                ['=', 'uc.address_id', Yii::$app->user->identity->address_id],
                             ],
                         ],
                         ['or',
@@ -191,13 +191,13 @@ class VedjustVedSearch extends VedjustVed
 
         $query->andFilterWhere(['like', 'num_ved', $this->num_ved])
             // ->andFilterWhere(['like', 's.name', $this->status_id])
-            ->andFilterWhere(['like', 'a.kuvd', $this->kuvd_affairs])
-            ->andFilterWhere(['like', 'a.ref_num', $this->ref_num_affairs])
+            // ->andFilterWhere(['like', 'a.kuvd', $this->kuvd_affairs])
+            // ->andFilterWhere(['like', 'a.ref_num', $this->ref_num_affairs])
             // ->andFilterWhere(['like', 'uc.email', $this->user_created_id])
-            ->andFilterWhere(['like', 'au.name', $this->archive_unit_id])
-            ->andFilterWhere(['like', 'v.comment', $this->comment])
-            ->andFilterWhere(['like', 'adr.name', $this->address_id])
-            ->andFilterWhere(['like', 'ua.email', $this->user_accepted_id]);
+            // ->andFilterWhere(['like', 'au.name', $this->archive_unit_id])
+            // ->andFilterWhere(['like', 'ua.email', $this->user_accepted_id])
+            ->andFilterWhere(['ilike', 'v.comment', $this->comment])
+            ->andFilterWhere(['ilike', 'adr.name', $this->address_id]);
 
         return $dataProvider;
     }
