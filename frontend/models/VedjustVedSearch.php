@@ -46,8 +46,10 @@ class VedjustVedSearch extends VedjustVed
     {
         if (!empty($params["VedjustVedSearch"]["strict"])) {
             $symbolStrict = '=';
+            $symbolStrict2 = '=';
         } else {
-            $symbolStrict = 'ILIKE';
+            $symbolStrict = 'LIKE';
+            $symbolStrict2 = 'ILIKE';
         }
 
         if (!empty($params["VedjustVedSearch"]["search_num_ved"])) {
@@ -74,7 +76,6 @@ class VedjustVedSearch extends VedjustVed
             $query = VedjustVed::find()
                 ->alias('v')
                 ->distinct(['v.id'])
-                // ->innerJoin('user us', 'us.id = v.user_created_id')
                 ->where(
                     ['and',
                         ['or',
@@ -85,14 +86,14 @@ class VedjustVedSearch extends VedjustVed
                             ],
                         ],
                         ['or',
-                            [$symbolStrict, 'a.ref_num', $refNumKuvdCmt],
+                            [$symbolStrict2, 'a.ref_num', $refNumKuvdCmt],
                             [$symbolStrict, 'a.kuvd', $refNumKuvdCmt],
                             [$symbolStrict, 'a.comment', $refNumKuvdCmt],
                             [$symbolStrict, 'v.comment', $refNumKuvdCmt],
                         ],
                     ],
                 );
-            $query->joinWith('affairs a');
+            $query->innerJoinWith('affairs a');
         } else {
             //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
             //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
@@ -167,7 +168,7 @@ class VedjustVedSearch extends VedjustVed
 
         // $query->joinWith('affairs a');
         // $query->joinWith('status s');
-        $query->joinWith('userCreated uc');
+        $query->innerJoinWith('userCreated uc');
         // $query->joinWith('userAccepted ua');
         // $query->joinWith('archiveUnit au');
         $query->joinWith('address adr');

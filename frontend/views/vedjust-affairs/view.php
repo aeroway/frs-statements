@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $listIssuance = '';
 
                     foreach($model->issuance as $value) {
-                        $listIssuance .= '<b>Заявитель:</b> ' . $value->name . '. <b>Регистратор:</b> ' . $value->userCreated->full_name . '<br>';
+                        $listIssuance .= '<b>Заявитель:</b> ' . $value->name . '. <b>Сотрудник:</b> ' . $value->userCreated->full_name . '. <b>Дата:</b> ' . $value->date_issue . '<br>';
                     }
 
                     return $listIssuance;

@@ -35,15 +35,24 @@ class StatusController extends Controller
         $reader = ReaderEntityFactory::createReaderFromFile($pathExcel);
         $reader->open($pathExcel);
         $modelStatus = new Status();
+        $searchHead = false;
 
         foreach ($reader->getSheetIterator() as $sheet) {
             foreach ($sheet->getRowIterator() as $row) {
                 $cells = $row->getCells();
 
+                if (!empty($cells[3]) && $cells[3] == 'Номер обращения' && $cells[5] == 'Номер внешней системы' && $cells[23] == 'Статус') {
+                    $searchHead = true;
+                }
+
                 if (!empty($cells[3]) && $cells[3] != 'Номер обращения' && $cells[3]->getValue() && strpos($cells[3], "Other") === false) {
-                    $newEntries[] = [trim($cells[3]->getValue()), trim($cells[5]->getValue()), empty($cells[19]->getValue()) ? NULL : trim($cells[19]->getValue())];
+                    $newEntries[] = [trim($cells[3]->getValue()), trim($cells[5]->getValue()), empty($cells[23]->getValue()) ? NULL : trim($cells[23]->getValue())];
                 }
             }
+        }
+
+        if (!$searchHead) {
+            die('Head false');
         }
 
         Yii::$app->db2->createCommand()->truncateTable('status_sys_temp')->execute();
