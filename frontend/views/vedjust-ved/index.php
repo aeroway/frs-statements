@@ -21,7 +21,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php echo $this->render('_searchNumVed', ['model' => $searchModel]); ?>
-    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?= $this->render('_searchRefNumAffairs', ['model' => $searchModel]); ?>
+    <?= $this->render('_searchCommentVedAffairs', ['model' => $searchModel]); ?>
 
     <p>
         <?php if (!Yii::$app->user->can('addAudit') && !Yii::$app->user->can('limitAudit')): ?>

@@ -249,11 +249,20 @@ $this->params['breadcrumbs'][] = 'Дела';
         {
             if (!empty(Yii::$app->session['VedjustVedSearch'])) {
                 foreach (Yii::$app->session['VedjustVedSearch'] as $value) {
-                    if (!empty($value['search_ref_num_kuvd_comment'])) {
-                        $wordKuvd = addcslashes($value["search_ref_num_kuvd_comment"], '/');
-                        $patternKuvd = "/($wordKuvd)+/iu";
+                    if (!empty($value['search_ref_num_affairs'])) {
+                        $searchRefNumAffairs = addcslashes($value["search_ref_num_affairs"], '/');
+                        $patternSearchRefNumAffairs = "/($searchRefNumAffairs)+/iu";
 
-                        if (preg_match($patternKuvd, $model->kuvd) || preg_match($patternKuvd, $model->ref_num) || preg_match($patternKuvd, $model->comment)) {
+                        if (preg_match($patternSearchRefNumAffairs, $model->kuvd) || preg_match($patternSearchRefNumAffairs, $model->ref_num)) {
+                            return ['class' => 'info'];
+                        }
+                    }
+
+                    if (!empty($value['search_comment_ved_affairs'])) {
+                        $searchCommentVedAffairs = addcslashes($value["search_comment_ved_affairs"], '/');
+                        $patternSearchCommentVedAffairs = "/($searchCommentVedAffairs)+/iu";
+
+                        if (preg_match($patternSearchCommentVedAffairs, $model->comment)) {
                             return ['class' => 'info'];
                         }
                     }

@@ -15,14 +15,22 @@ class VedjustVedSearch extends VedjustVed
     /**
      * @inheritdoc
      */
-    public $kuvd_affairs, $ref_num_affairs, $search_all, $search_ref_num_kuvd_comment, $search_num_ved, $strict;
+    // public $kuvd_affairs, $ref_num_affairs, $search_all;
+    public $search_num_ved;
+    public $isStrictSearchRefNumAffairs;
+    public $isStrictSearchCommentVedAffairs;
+    public $search_ref_num_affairs;
+    public $search_comment_ved_affairs;
 
     public function rules()
     {
         return [
-            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip', 'ext_reg', 'target', 'search_all', 'search_num_ved', 'strict'], 'integer'],
+            [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip'
+                , 'ext_reg', 'target', 'search_all', 'search_num_ved',
+                'isStrictSearchRefNumAffairs', 'isStrictSearchCommentVedAffairs'], 'integer'],
             [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 
-                'user_accepted_id', 'archive_unit_id', 'comment', 'address_id', 'ref_num_affairs', 'search_ref_num_kuvd_comment'], 'safe'],
+                'user_accepted_id', 'archive_unit_id', 'comment', 'address_id', 'ref_num_affairs',
+                'search_comment_ved_affairs', 'search_ref_num_affairs'], 'safe'],
         ];
     }
 
@@ -44,12 +52,11 @@ class VedjustVedSearch extends VedjustVed
      */
     public function search($params)
     {
-        if (!empty($params["VedjustVedSearch"]["strict"])) {
+        if (!empty($params["VedjustVedSearch"]["isStrictSearchRefNumAffairs"]) ||
+            !empty($params["VedjustVedSearch"]["isStrictSearchCommentVedAffairs"])) {
             $symbolStrict = '=';
-            $symbolStrict2 = '=';
         } else {
-            $symbolStrict = 'LIKE';
-            $symbolStrict2 = 'ILIKE';
+            $symbolStrict = 'ILIKE';
         }
 
         if (!empty($params["VedjustVedSearch"]["search_num_ved"])) {
@@ -71,8 +78,8 @@ class VedjustVedSearch extends VedjustVed
                         ],
                     ],
                 );
-        } elseif (!empty($params["VedjustVedSearch"]["search_ref_num_kuvd_comment"])) {
-            $refNumKuvdCmt = $params["VedjustVedSearch"]["search_ref_num_kuvd_comment"];
+        } elseif (!empty($params["VedjustVedSearch"]["search_comment_ved_affairs"])) {
+            $commentVedAffairs = $params["VedjustVedSearch"]["search_comment_ved_affairs"];
             $query = VedjustVed::find()
                 ->alias('v')
                 ->distinct(['v.id'])
@@ -86,10 +93,29 @@ class VedjustVedSearch extends VedjustVed
                             ],
                         ],
                         ['or',
-                            [$symbolStrict2, 'a.ref_num', $refNumKuvdCmt],
-                            [$symbolStrict, 'a.kuvd', $refNumKuvdCmt],
-                            [$symbolStrict, 'a.comment', $refNumKuvdCmt],
-                            [$symbolStrict, 'v.comment', $refNumKuvdCmt],
+                            [$symbolStrict, 'a.comment', $commentVedAffairs],
+                            [$symbolStrict, 'v.comment', $commentVedAffairs],
+                        ],
+                    ],
+                );
+            $query->innerJoinWith('affairs a');
+        } elseif (!empty($params["VedjustVedSearch"]["search_ref_num_affairs"])) {
+            $refNumAffairs = $params["VedjustVedSearch"]["search_ref_num_affairs"];
+            $query = VedjustVed::find()
+                ->alias('v')
+                ->distinct(['v.id'])
+                ->where(
+                    ['and',
+                        ['or',
+                            ['<>', 'v.status_id', 1],
+                            ['and',
+                                ['=', 'v.status_id', 1],
+                                ['=', 'uc.address_id', Yii::$app->user->identity->address_id],
+                            ],
+                        ],
+                        ['or',
+                            [$symbolStrict, 'a.ref_num', $refNumAffairs],
+                            [$symbolStrict, 'a.kuvd', $refNumAffairs],
                         ],
                     ],
                 );
@@ -113,7 +139,6 @@ class VedjustVedSearch extends VedjustVed
                 $query = VedjustVed::find()
                     ->alias('v')
                     ->distinct(['v.id'])
-                    ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
                     ->where(
                         ['or',
                             ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
@@ -124,7 +149,6 @@ class VedjustVedSearch extends VedjustVed
                 $query = VedjustVed::find()
                     ->alias('v')
                     ->distinct(['v.id'])
-                    ->leftJoin('user u_ac', 'u_ac.subdivision_id = v.subdivision_id')
                     ->where(
                         ['and',
                             ['or',
@@ -166,11 +190,7 @@ class VedjustVedSearch extends VedjustVed
             return $dataProvider;
         }
 
-        // $query->joinWith('affairs a');
-        // $query->joinWith('status s');
         $query->innerJoinWith('userCreated uc');
-        // $query->joinWith('userAccepted ua');
-        // $query->joinWith('archiveUnit au');
         $query->joinWith('address adr');
 
         // grid filtering conditions
@@ -191,14 +211,8 @@ class VedjustVedSearch extends VedjustVed
         ]);
 
         $query->andFilterWhere(['like', 'num_ved', $this->num_ved])
-            // ->andFilterWhere(['like', 's.name', $this->status_id])
-            // ->andFilterWhere(['like', 'a.kuvd', $this->kuvd_affairs])
-            // ->andFilterWhere(['like', 'a.ref_num', $this->ref_num_affairs])
-            // ->andFilterWhere(['like', 'uc.email', $this->user_created_id])
-            // ->andFilterWhere(['like', 'au.name', $this->archive_unit_id])
-            // ->andFilterWhere(['like', 'ua.email', $this->user_accepted_id])
-            ->andFilterWhere(['ilike', 'v.comment', $this->comment])
-            ->andFilterWhere(['ilike', 'adr.name', $this->address_id]);
+            ->andFilterWhere(['like', 'v.comment', $this->comment])
+            ->andFilterWhere(['like', 'adr.name', $this->address_id]);
 
         return $dataProvider;
     }
