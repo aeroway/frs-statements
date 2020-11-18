@@ -60,6 +60,9 @@ class VedjustAffairsController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $model = new VedjustAffairs();
         $modelVed = VedjustVed::findOne($id);
+        VedjustAffairs::$checkAffairsIssuance = $model->getCheckAffairsIssuance($modelVed->id);
+        VedjustAffairs::$vedStatusId = $modelVed->status_id;
+        VedjustAffairs::$isCheckBoxDisabled = $model->isCheckBoxDisabled($modelVed);
 
         if ($modelVed === NULL) {
             return $this->goHome();
@@ -248,7 +251,7 @@ class VedjustAffairsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->isCheckBoxDisabled($model->ved)) {
+        if (VedjustAffairs::$isCheckBoxDisabled) {
             return 0;
         } else {
             if (!$model->status) {
@@ -263,7 +266,7 @@ class VedjustAffairsController extends Controller
                 $model->user_accepted_id = NULL;
             }
 
-            if ($model->update() !== false) {
+            if ($model->save(false) !== false) {
                 return 1;
             } else {
                 return 0;
@@ -276,7 +279,7 @@ class VedjustAffairsController extends Controller
         $modelVed = $this->findModelVed($id);
         $model = new VedjustAffairs();
 
-        if ($model->isCheckBoxDisabled($modelVed)) {
+        if (VedjustAffairs::$isCheckBoxDisabled) {
             return 0;
         } else {
             if (!$model->status) {

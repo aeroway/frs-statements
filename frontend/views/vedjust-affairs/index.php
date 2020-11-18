@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = 'Дела';
 
     <p>
     <?php
-    if ($modelVed->status_id === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id) {
+    if (VedjustAffairs::$vedStatusId === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id) {
         echo Html::a('Добавить дело', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']) . ' ';
     }
     ?>
@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = 'Дела';
         echo Html::a('', ['check-affairs-barcode', 'id' => $modelVed->id], ['class' => 'btn btn-info glyphicon glyphicon-barcode', 'title' => 'Продтвердить получение дела по штрих-коду']) . ' ';
     }
 
-    if ($modelVed->status_id === 3 || $modelVed->status_id === 4) {
+    if (VedjustAffairs::$vedStatusId === 3 || VedjustAffairs::$vedStatusId === 4) {
         echo Html::a('', ['vedjust-ved/createcopy', 'id' => $modelVed->id], ['class' => 'btn btn-warning glyphicon glyphicon-plus', 'title' => 'Создать с копированием']);
     }
 
@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = 'Дела';
         <?= Html::a('Принято', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . $modelVed->id . ');']); ?>
     <?php endif; ?>
 
-    <?= ($modelVed->status_id != 1) ? Html::a('<img src="/images/icons/pdf-32x32.png">', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => '', 'title' => 'Экспорт в PDF']) : ''; ?>
+    <?= (VedjustAffairs::$vedStatusId != 1) ? Html::a('<img src="/images/icons/pdf-32x32.png">', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => '', 'title' => 'Экспорт в PDF']) : ''; ?>
 
     <?php
     if (
@@ -118,7 +118,7 @@ $this->params['breadcrumbs'][] = 'Дела';
         [
             'delete' => function($url, $model, $key)
             {
-                if($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id)
+                if(VedjustAffairs::$vedStatusId === 1 && $model->user_created_id === Yii::$app->user->identity->id)
                 {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/delete','id' => $model['id']]);
 
@@ -150,12 +150,12 @@ $this->params['breadcrumbs'][] = 'Дела';
             },
             'issuance' => function($url, $model, $key)
             {
-                $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $model->id])->asArray()->one()["num"];
+                // $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $model->id])->asArray()->one()["num"];
 
-                if(($model->ved->status_id === 5 || $model->ved->status_id === 6)
+                if((VedjustAffairs::$vedStatusId === 5 || VedjustAffairs::$vedStatusId === 6)
                     && $model->status === 1
                     // && $numIssuance !== $model->p_count
-                    && $model->getCheckAffairsIssuance($model->ved_id)
+                    && VedjustAffairs::$checkAffairsIssuance
                     && Yii::$app->user->can('issuance'))
                 {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/issuance', 'id' => $model['id']]);
@@ -170,8 +170,22 @@ $this->params['breadcrumbs'][] = 'Дела';
                             ]);
                 }
             },
+            'applicants' => function($url, $model, $key) {
+                $applicants = $model->getApplicants();
+
+                if (!empty($applicants)) {
+                    return Html::a('<span class="glyphicon glyphicon-envelope"></span>', 'javascript:void(0);', 
+                    [
+                        'title' => Yii::t('yii', $applicants),
+                        'aria-label' => Yii::t('yii', $applicants),
+                        'data-pjax' => '1',
+                        // 'onclick' => 'modalAffairIssuanceCreate(this);',
+                        // 'value' => $customurl,
+                    ]);
+                }
+            }
         ],
-        'template' => '{update} {delete} {issuance} {view}',
+        'template' => '{update} {delete} {issuance} {view} {applicants}',
     ];
     ?>
 
@@ -269,7 +283,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                 }
             }
 
-            if ($model->ved->status_id >= 3 && $model->status == 0) return ['class' => 'danger'];
+            if (VedjustAffairs::$vedStatusId >= 3 && $model->status == 0) return ['class' => 'danger'];
         },
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
@@ -311,7 +325,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                     ]),
                 'contentOptions' => ['class' => 'kv-row-select'],
                 'content' => function($model, $key) {
-                    if ($model->ved->status_id === 2 && !Yii::$app->user->can('addAudit'))
+                    if (VedjustAffairs::$vedStatusId === 2 && !Yii::$app->user->can('addAudit'))
                     {
                         return Html::checkbox("status$key",
                             isset($model->status) && !($model->status === 0) ? true : false,
@@ -320,7 +334,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                                 'id' => 'status' . $key,
                                 'value' => $key,
                                 'onclick' => 'changeStatusAffairs(this.value);',
-                                'disabled' => $model->isCheckBoxDisabled($model->ved),
+                                'disabled' => VedjustAffairs::$isCheckBoxDisabled,
                             ]
                         );
                     }

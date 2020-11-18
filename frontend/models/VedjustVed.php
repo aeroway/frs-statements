@@ -4,6 +4,7 @@ namespace frontend\models;
 
 use Yii;
 use kartik\mpdf\Pdf;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "ved".
@@ -38,7 +39,7 @@ use kartik\mpdf\Pdf;
  */
 class VedjustVed extends \yii\db\ActiveRecord
 {
-    public $search_all, $file, $pkpvd_xlsx;
+    public $search_all, $file, $pkpvd_xlsx, $pkpvd_xlsx_notice;
 
     /**
      * @inheritdoc
@@ -68,7 +69,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustArea::className(), 'targetAttribute' => ['area_id' => 'id']],
             [['target'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['target' => 'id']],
             [['file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'csv'],
-            [['pkpvd_xlsx'], 'file', 'skipOnEmpty' => true, 'extensions' => 'xlsx'],
+            [['pkpvd_xlsx', 'pkpvd_xlsx_notice'], 'file', 'skipOnEmpty' => true, 'extensions' => 'xlsx'],
         ];
     }
 
@@ -105,6 +106,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             'search_all' => 'Поиск по краю (МФЦ, Росреестр, Палата)',
             'file' => 'Файл выгрузки КУВД из ФГИС ЕГРН',
             'pkpvd_xlsx' => 'Файл PKPVD сопроводительный реестр',
+            'pkpvd_xlsx_notice' => 'Файл PKPVD список обращений',
         ];
     }
 
@@ -290,6 +292,154 @@ class VedjustVed extends \yii\db\ActiveRecord
         }
 
         return false;
+    }
+
+    public function importPkpvd($model)
+    {
+        $model->file = UploadedFile::getInstance($model, 'file');
+        $model->pkpvd_xlsx = UploadedFile::getInstance($model, 'pkpvd_xlsx');
+        $model->pkpvd_xlsx_notice = UploadedFile::getInstance($model, 'pkpvd_xlsx_notice');
+        $importSuccess = false;
+
+        if ($model->file) {
+            if ($this->batchImportAffairs($model)) {
+                $importSuccess = true;
+            }
+        }
+
+        if ($model->pkpvd_xlsx) {
+            if ($this->importPkpvdXlsx($model)) {
+                $importSuccess = true;
+            }
+        }
+
+        if ($model->pkpvd_xlsx_notice) {
+            if ($this->importPkpvdXlsxNotice($model)) {
+                $importSuccess = true;
+            }
+        }
+
+        return $importSuccess;
+    }
+
+    private function batchImportAffairs($model) {
+        $file_import = 'uploads/' . 'ved-import.csv'; //date('YmdHis') . '-' . $model->file->name;
+        $model->file->saveAs($file_import);
+        $handle = fopen($file_import, 'r');
+
+        if ($handle) {
+            while (($line = fgetcsv($handle, 0, ";")) != FALSE) {
+                $bulkInsertArray[] = [
+                    'ref_num' => $this->convertToUTF8($line[0]),
+                    'kuvd' => $this->convertToUTF8(preg_replace('/[^0-9\/, ]{5}/i', '', $line[4])),
+                    'date_create' => date('Y-m-d H:i:s'),
+                    'user_created_id' => Yii::$app->user->identity->id,
+                    'create_ip' => ip2long(Yii::$app->request->userIP),
+                    'ved_id' => $model->id,
+                ];
+            }
+            unset($bulkInsertArray[0]);
+
+            fclose($handle);
+
+            Yii::$app->db->createCommand()->batchInsert('affairs', 
+                ['ref_num', 'kuvd', 'date_create', 'user_created_id', 'create_ip', 'ved_id'],
+                $bulkInsertArray
+            )->execute();
+        }
+    }
+
+    private function importPkpvdXlsx($model) {
+        $file_import = 'uploads/' . 'import-pkpvd.xlsx';
+
+        $model->pkpvd_xlsx->saveAs($file_import);
+        $handle = fopen($file_import, 'r');
+
+        if ($handle) {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_import);
+            $worksheet = $spreadsheet->getActiveSheet()->toArray();
+            $bulkInsertArray = array();
+
+            foreach ($worksheet as $value) {
+                if ($value[9] != NULL || $value[10] != NULL) {
+                    $bulkInsertArray[] = [
+                        'ref_num' => $value[6],
+                        'kuvd' => $value[10],
+                        'comment' => $value[9],
+                        'date_create' => date('Y-m-d H:i:s'),
+                        'user_created_id' => Yii::$app->user->identity->id,
+                        'create_ip' => ip2long(Yii::$app->request->userIP),
+                        'ved_id' => $model->id,
+                    ];
+                }
+                
+            }
+
+            if ($bulkInsertArray[0]["ref_num"] == 'Внутренний номер обращения' 
+                    && $bulkInsertArray[0]["kuvd"] == 'Номера КУВД/КУВИ'
+                    && $bulkInsertArray[0]["comment"] == 'Номер пакета') {
+                $result = true;
+            } else {
+                $result = false;
+            }
+
+            unset($bulkInsertArray[0]);
+        }
+
+        fclose($handle);
+
+        Yii::$app->db->createCommand()->batchInsert('affairs', 
+            ['ref_num', 'kuvd', 'comment', 'date_create', 'user_created_id', 'create_ip', 'ved_id'],
+            $bulkInsertArray
+        )->execute();
+
+        return $result;
+    }
+
+    private function importPkpvdXlsxNotice($model) {
+        $file_import = 'uploads/' . 'import-pkpvd-notice.xlsx';
+
+        $model->pkpvd_xlsx_notice->saveAs($file_import);
+        $handle = fopen($file_import, 'r');
+
+        if ($handle) {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_import);
+            $worksheet = $spreadsheet->getActiveSheet()->toArray();
+            $dataInsert = array();
+
+            foreach ($worksheet as $value) {
+                if ($value[7] != NULL) {
+                    $dataInsert[] = [
+                        'ref_num' => $value[7],
+                        'package_num' => $value[8],
+                        'kuvd' => $value[10],
+                        'applicants' => $value[13],
+                        'date_create' => date('Y-m-d H:i:s'),
+                        'user_created_id' => Yii::$app->user->identity->id,
+                        'create_ip' => ip2long(Yii::$app->request->userIP),
+                    ];
+                }
+            }
+
+            if ($dataInsert[0]["ref_num"] == 'Внутренний номер обращения'
+                    && $dataInsert[0]["kuvd"] == 'Номера КУВД/КУВИ'
+                    && $dataInsert[0]["package_num"] == 'Номер пакета'
+            ) {
+                $result = true;
+            } else {
+                $result = false;
+            }
+
+            unset($dataInsert[0]);
+        }
+
+        fclose($handle);
+
+        $column = ['ref_num', 'package_num', 'kuvd', 'applicants', 'date_create', 'user_created_id', 'create_ip'];
+        $modelInsertHelper = new InsertHelper();
+        $modelInsertHelper->insertUpdate('mfc_notice', $column, $dataInsert);
+
+        return $result;
     }
 
     /**

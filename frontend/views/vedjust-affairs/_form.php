@@ -15,15 +15,6 @@ use frontend\models\VedjustVed;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?php
-    if(strpos(Yii::$app->request->pathInfo, 'create'))
-    {
-        echo $form->field($model, 'date_create')->hiddenInput(['value' => date('Y-m-d H:i:s')])->label(false);
-        echo $form->field($model, 'user_created_id')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false);
-        echo $form->field($model, 'create_ip')->hiddenInput(['value' => ip2long(Yii::$app->request->userIP)])->label(false);
-    }
-    ?>
-
     <?php if(strpos(Yii::$app->request->pathInfo, 'update')) : ?>
         <?php if ($model->ved->status_id === 1 && $model->user_created_id === Yii::$app->user->identity->id) : ?>
             <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus']); ?>
@@ -32,11 +23,17 @@ use frontend\models\VedjustVed;
     <?php endif; ?>
 
     <?php if(strpos(Yii::$app->request->pathInfo, 'create')) : ?>
-        <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus', 'onChange' => 'changeRefnumValue();']) ?>
-        <?= $form->field($model, 'kuvd')->textInput(['onChange' => 'changeKuvdValue();']) ?>
+        <?= $form->field($model, 'date_create')->hiddenInput(['value' => date('Y-m-d H:i:s')])->label(false); ?>
+        <?= $form->field($model, 'user_created_id')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false); ?>
+        <?= $form->field($model, 'create_ip')->hiddenInput(['value' => ip2long(Yii::$app->request->userIP)])->label(false); ?>
     <?php endif; ?>
 
-    <?= $form->field($model, 'comment')->textArea(['placeholder' => 'Комментарий'])->label(false); ?>
+    <?php if(strpos(Yii::$app->request->pathInfo, 'create')) : ?>
+        <?= $form->field($model, 'ref_num')->textInput(['autofocus' => 'autofocus', 'onChange' => 'changeRefnumValue();', 'placeholder' => 'MFC-XXXX/' . date("Y") . '-XXXXX']) ?>
+        <?= $form->field($model, 'kuvd')->textInput(['onChange' => 'changeKuvdValue();', 'placeholder' => 'КУВД-XXX/' . date("Y") . '-XXXX ИЛИ 23/XXX/XXX/XXX/' . date("Y") . '-XXXX']) ?>
+    <?php endif; ?>
+
+    <?= $form->field($model, 'comment')->textArea(['placeholder' => 'Комментарий или номер пакета'])->label(false); ?>
 
     <?php
     if(strpos(Yii::$app->request->pathInfo, 'create')) {
@@ -52,7 +49,6 @@ use frontend\models\VedjustVed;
                     ],
                 ]);
         }
-        // echo $form->field($model, 'p_count')->textInput(['type' => 'number', 'min' => '1', 'step' => '1', 'value' => 1]);
     } else {
         echo $form->field($model, 'ved_id')->hiddenInput(['value' => $model->ved_id])->label(false);
     }

@@ -9,7 +9,7 @@ class Status extends Model
 {
     public function batchInsert($table, $columns, $newEntries) {
         if (!empty($newEntries)) {
-            $newEntries = array_chunk($newEntries, 10);
+            $newEntries = array_chunk($newEntries, 50);
 
             for ($i = 0; $i < count($newEntries); $i++) { 
                 Yii::$app->db2->createCommand()->batchInsert($table, $columns, $newEntries[$i])->execute();

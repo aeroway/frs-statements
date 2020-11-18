@@ -27,6 +27,9 @@ class VedjustAffairs extends \yii\db\ActiveRecord
 {
     public static $numIssuance;
     public $barcode;
+    public static $checkAffairsIssuance;
+    public static $vedStatusId;
+    public static $isCheckBoxDisabled;
 
     /**
      * @inheritdoc
@@ -117,9 +120,11 @@ class VedjustAffairs extends \yii\db\ActiveRecord
 
     public function getCountIssuance()
     {
-        $numIssuance = VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $this->id])->asArray()->one()["num"];
+        if ($this->status === 1 && (VedjustAffairs::$vedStatusId === 5 || VedjustAffairs::$vedStatusId === 6)) {
+            return VedjustIssuance::find()->select(['count(*) num'])->where(['affairs_id' => $this->id])->asArray()->one()["num"];
+        }
 
-        return $numIssuance;
+        return 0;
     }
 
     public function checkPermitAffairsBarcode($modelVed)
@@ -164,6 +169,23 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             && !Yii::$app->user->can('addAudit')
             && $modelVed->user_created_id !== Yii::$app->user->identity->id
             && $modelVed->address_id == Yii::$app->user->identity->address_id;
+    }
+
+    public function getApplicants()
+    {
+        if (empty($this->ref_num)) {
+            return '';
+        }
+
+        $mfcNotice = MfcNotice::find()->select(['applicants'])->where(['ref_num' => $this->ref_num])->asArray()->one();
+
+        if (empty($mfcNotice["applicants"])) {
+            return '';
+        }
+
+        preg_match_all('/[+0-9]+/', $mfcNotice["applicants"], $matches);
+
+        return implode(", ", $matches[0]);
     }
 
     /**

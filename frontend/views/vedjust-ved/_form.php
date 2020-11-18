@@ -136,6 +136,7 @@ use yii\bootstrap\ActiveForm;
     <?php if (empty($copy)): ?>
         <?php // echo $form->field($model, 'file')->fileInput(); ?>
         <?= $form->field($model, 'pkpvd_xlsx')->fileInput(); ?>
+        <?php // $form->field($model, 'pkpvd_xlsx_notice')->fileInput(); ?>
     <?php endif; ?>
 
     <div class="form-group">
