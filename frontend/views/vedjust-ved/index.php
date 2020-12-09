@@ -39,6 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::a(NULL, 'javascript:void(0);', ['class' => 'btn btn-info glyphicon glyphicon-resize-full', 'onclick' => 'setArchive(1);', 'title' => 'Показать все']); ?>
         <?php endif; ?>
 
+        <?= Html::a(NULL, ['import-pkpvd-xlsx-notice'], ['class' => 'btn btn-success glyphicon glyphicon-upload', 'title' => 'Импорт списка обращений']); ?>
+
         <?= Html::a(NULL, ['reset'], ['class' => 'btn btn-warning glyphicon glyphicon-refresh', 'title' => 'Сброс фильтров']); ?>
 
         <?php if(Yii::$app->user->can('confirmExtDocs') || Yii::$app->user->can('addAudit') || Yii::$app->user->can('limitAudit')): ?>

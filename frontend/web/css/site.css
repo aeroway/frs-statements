@@ -122,3 +122,7 @@ a.desc:after {
 .selected {
     background-color: #cce5ff !important;
 }
+
+.alert {
+    display: inline-block;
+}

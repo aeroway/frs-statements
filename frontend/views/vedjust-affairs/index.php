@@ -51,7 +51,7 @@ $this->params['breadcrumbs'][] = 'Дела';
 
     <?php
     if ($model->checkPermitAffairsBarcode($modelVed)) {
-        echo Html::a('', ['check-affairs-barcode', 'id' => $modelVed->id], ['class' => 'btn btn-info glyphicon glyphicon-barcode', 'title' => 'Продтвердить получение дела по штрих-коду']) . ' ';
+        echo Html::a('', ['check-affairs-barcode', 'id' => $modelVed->id], ['class' => 'btn btn-warning glyphicon glyphicon-barcode', 'title' => 'Продтвердить получение дела по штрих-коду']) . ' ';
     }
 
     if (VedjustAffairs::$vedStatusId === 3 || VedjustAffairs::$vedStatusId === 4) {
@@ -116,13 +116,23 @@ $this->params['breadcrumbs'][] = 'Дела';
         'class' => 'yii\grid\ActionColumn',
         'buttons' =>
         [
+            'view' => function($url, $model, $key) {
+                $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/view', 'id' => $model['id']]);
+
+                return Html::a('<span class="btn-xs btn-info glyphicon glyphicon-eye-open"></span>', $customurl, 
+                    [
+                        'title' => Yii::t('yii', 'View'),
+                        'aria-label' => Yii::t('yii', 'View'),
+                        'data-pjax' => '0',
+                    ]);
+            },
             'delete' => function($url, $model, $key)
             {
                 if(VedjustAffairs::$vedStatusId === 1 && $model->user_created_id === Yii::$app->user->identity->id)
                 {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/delete','id' => $model['id']]);
 
-                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', $customurl, 
+                    return Html::a('<span class="btn-xs btn-danger glyphicon glyphicon-trash"></span>', $customurl, 
                             [
                                 'title' => Yii::t('yii', 'Delete'),
                                 'aria-label' => Yii::t('yii', 'Delete'),
@@ -140,7 +150,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                 // {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/update','id' => $model['id']]);
 
-                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $customurl, 
+                    return Html::a('<span class="btn-xs btn-warning glyphicon glyphicon-pencil"></span>', $customurl, 
                             [
                                 'title' => Yii::t('yii', 'Update'),
                                 'aria-label' => Yii::t('yii', 'Update'),
@@ -160,7 +170,7 @@ $this->params['breadcrumbs'][] = 'Дела';
                 {
                     $customurl = Yii::$app->getUrlManager()->createUrl(['vedjust-affairs/issuance', 'id' => $model['id']]);
 
-                    return Html::a('<span class="glyphicon glyphicon-user"></span>', 'javascript:void(0);', 
+                    return Html::a('<span class="btn-xs btn-info glyphicon glyphicon-user"></span>', 'javascript:void(0);', 
                             [
                                 'title' => Yii::t('yii', 'Выдать дело'),
                                 'aria-label' => Yii::t('yii', 'Выдать дело'),
@@ -174,7 +184,17 @@ $this->params['breadcrumbs'][] = 'Дела';
                 $applicants = $model->getApplicants();
 
                 if (!empty($applicants)) {
-                    return Html::a('<span class="glyphicon glyphicon-envelope"></span>', 'javascript:void(0);', 
+                    $styleStatusSend = 'btn-xs btn-info';
+
+                    if ($model->send_sms === 1) {
+                        $styleStatusSend = 'btn-xs btn-success';
+                    }
+
+                    if ($model->send_sms === 0) {
+                        $styleStatusSend = 'btn-xs btn-danger';
+                    }
+
+                    return Html::a('<span class="glyphicon glyphicon-envelope ' . $styleStatusSend . '"></span>', 'javascript:void(0);', 
                     [
                         'title' => Yii::t('yii', $applicants),
                         'aria-label' => Yii::t('yii', $applicants),

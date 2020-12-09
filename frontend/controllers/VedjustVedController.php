@@ -43,6 +43,7 @@ class VedjustVedController extends Controller
                             'reset', // reset filters
                             'fill-area', // get list of districts
                             'createcopy', // create a duplicate of ved and affairs
+                            'import-pkpvd-xlsx-notice',
                         ],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
@@ -92,13 +93,14 @@ class VedjustVedController extends Controller
     public function actionIndex()
     {
         $searchModel = new VedjustVedSearch();
-
         $params = Yii::$app->request->queryParams;
 
         if (count($params) <= 0) {
             $params = Yii::$app->session['VedjustVedSearch'];
-            if(isset(Yii::$app->session['VedjustVedSearch']['page']))
+
+            if(isset(Yii::$app->session['VedjustVedSearch']['page'])) {
                 $_GET['page'] = Yii::$app->session['VedjustVedSearch']['page'];
+            }
         } else {
             Yii::$app->session['VedjustVedSearch'] = $params;
         }
@@ -189,6 +191,23 @@ class VedjustVedController extends Controller
         }
 
         return $this->render('create', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionImportPkpvdXlsxNotice()
+    {
+        $model = new VedjustVed();
+
+        if ($model->load(Yii::$app->request->post()) && $model->pkpvd_xlsx_notice !== NULL) {
+            if ($model->importPkpvd($model)) {
+                Yii::$app->session->setFlash('successImportPkpvdXlsxNotice', "Файл успешно импортирован");
+            } else {
+                Yii::$app->session->setFlash('errorImportPkpvdXlsxNotice', "Что-то пошло не так");
+            }
+        }
+
+        return $this->render('import-pkpvd-xlsx-notice', [
             'model' => $model,
         ]);
     }
@@ -320,6 +339,8 @@ class VedjustVedController extends Controller
         $model->user_accepted_id = Yii::$app->user->identity->id;
 
         if ($model->update() !== false) {
+            $model->sendSms();
+
             return 1;
         } else {
             return 0;

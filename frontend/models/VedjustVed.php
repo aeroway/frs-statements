@@ -372,7 +372,6 @@ class VedjustVed extends \yii\db\ActiveRecord
                         'ved_id' => $model->id,
                     ];
                 }
-                
             }
 
             if ($bulkInsertArray[0]["ref_num"] == 'Внутренний номер обращения' 
@@ -412,8 +411,8 @@ class VedjustVed extends \yii\db\ActiveRecord
                     $dataInsert[] = [
                         'ref_num' => $value[7],
                         'package_num' => $value[8],
-                        'kuvd' => $value[10],
-                        'applicants' => $value[13],
+                        'kuvd' => empty($value[10]) ? '' : $value[10],
+                        'applicants' => empty($value[13]) ? '' : $value[13],
                         'date_create' => date('Y-m-d H:i:s'),
                         'user_created_id' => Yii::$app->user->identity->id,
                         'create_ip' => ip2long(Yii::$app->request->userIP),
@@ -427,7 +426,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             ) {
                 $result = true;
             } else {
-                $result = false;
+                return false;
             }
 
             unset($dataInsert[0]);
@@ -440,6 +439,30 @@ class VedjustVed extends \yii\db\ActiveRecord
         $modelInsertHelper->insertUpdate('mfc_notice', $column, $dataInsert);
 
         return $result;
+    }
+
+    public function sendSms()
+    {
+        if ($this->target === 1 && $this->verified === 1 && empty($this->send_sms)) {
+            foreach ($this->affairs as $key => $affairs) {
+                if ($affairs["status"]) {
+                    $applicants = explode(" ", $this->affairs[$key]->getApplicants());
+
+                    foreach ($applicants as $applicant) {
+                        if (!empty($applicant)) {
+                            $text =  'Пакет ' . $affairs["ref_num"] . ' готов к выдаче, ' . Yii::$app->params['contactMfc'];
+                            $content = Yii::$app->params['smsMessage'] . '&text=' . urlencode($text) . '&to=' . urlencode($applicant);
+    
+                            if (file_get_contents($content)) {
+                                VedjustAffairs::updateAll(['send_sms' => 1], ['=', 'id', $affairs["id"]]);
+                            } else {
+                                VedjustAffairs::updateAll(['send_sms' => 0], ['=', 'id', $affairs["id"]]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
