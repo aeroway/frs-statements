@@ -59,3 +59,4 @@ class VedjustAffairsV extends \yii\db\ActiveRecord
     {
         return $this->hasOne(VedjustVed::className(), ['id' => 'ved_id']);
     }
+}
