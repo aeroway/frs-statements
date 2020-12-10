@@ -496,6 +496,14 @@ class VedjustVed extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getAffairsV()
+    {
+        return $this->hasMany(VedjustAffairsV::className(), ['ved_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getStatus()
     {
         return $this->hasOne(VedjustStatus::className(), ['id' => 'status_id']);

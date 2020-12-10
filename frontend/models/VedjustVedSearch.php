@@ -55,8 +55,10 @@ class VedjustVedSearch extends VedjustVed
         if (!empty($params["VedjustVedSearch"]["isStrictSearchRefNumAffairs"]) ||
             !empty($params["VedjustVedSearch"]["isStrictSearchCommentVedAffairs"])) {
             $symbolStrict = '=';
+            $symbolStrict2 = '=';
         } else {
             $symbolStrict = 'ILIKE';
+            $symbolStrict2 = 'LIKE';
         }
 
         if (!empty($params["VedjustVedSearch"]["search_num_ved"])) {
@@ -114,12 +116,12 @@ class VedjustVedSearch extends VedjustVed
                             ],
                         ],
                         ['or',
-                            [$symbolStrict, 'a.ref_num', $refNumAffairs],
-                            [$symbolStrict, 'a.kuvd', $refNumAffairs],
+                            [$symbolStrict2, 'a.ref_num', strtoupper($refNumAffairs)],
+                            [$symbolStrict2, 'a.kuvd', strtoupper($refNumAffairs)],
                         ],
                     ],
                 );
-            $query->innerJoinWith('affairs a');
+            $query->innerJoinWith('affairsV a');
         } else {
             //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
             //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
