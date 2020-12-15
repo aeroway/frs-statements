@@ -443,9 +443,9 @@ class VedjustVed extends \yii\db\ActiveRecord
 
     public function sendSms()
     {
-        if ($this->target === 1 && $this->verified === 1 && empty($this->send_sms)) {
+        if ($this->target === 1 && $this->verified === 1) {
             foreach ($this->affairs as $key => $affairs) {
-                if ($affairs["status"]) {
+                if ($affairs["status"] && empty($affairs["send_sms"])) {
                     $applicants = explode(" ", $this->affairs[$key]->getApplicants());
 
                     foreach ($applicants as $applicant) {
@@ -453,7 +453,7 @@ class VedjustVed extends \yii\db\ActiveRecord
                             $text =  'Пакет ' . $affairs["ref_num"] . ' готов к выдаче, ' . Yii::$app->params['contactMfc'];
                             $content = Yii::$app->params['smsMessage'] . '&text=' . urlencode($text) . '&to=' . urlencode($applicant);
     
-                            if (file_get_contents($content)) {
+                            if (@file_get_contents($content)) {
                                 VedjustAffairs::updateAll(['send_sms' => 1], ['=', 'id', $affairs["id"]]);
                             } else {
                                 VedjustAffairs::updateAll(['send_sms' => 0], ['=', 'id', $affairs["id"]]);
