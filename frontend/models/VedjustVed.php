@@ -447,19 +447,48 @@ class VedjustVed extends \yii\db\ActiveRecord
             foreach ($this->affairs as $key => $affairs) {
                 if ($affairs["status"] && empty($affairs["send_sms"])) {
                     $applicants = explode(" ", $this->affairs[$key]->getApplicants());
+                    $this->sendSmsApplicants($applicants, $affairs);
+                }
+            }
+        }
+    }
 
-                    foreach ($applicants as $applicant) {
-                        if (!empty($applicant)) {
-                            $text =  'Пакет ' . $affairs["ref_num"] . ' готов к выдаче, ' . Yii::$app->params['contactMfc'];
-                            $content = Yii::$app->params['smsMessage'] . '&text=' . urlencode($text) . '&to=' . urlencode($applicant);
-    
-                            if (@file_get_contents($content)) {
-                                VedjustAffairs::updateAll(['send_sms' => 1], ['=', 'id', $affairs["id"]]);
-                            } else {
-                                VedjustAffairs::updateAll(['send_sms' => 0], ['=', 'id', $affairs["id"]]);
-                            }
-                        }
-                    }
+    public function resendSms()
+    {
+        $model = VedjustAffairs::find()
+            ->alias("a")
+            ->select(['a.id', 'a.ref_num'])
+            ->innerJoin('ved v', 'v.id = a.ved_id')
+            ->innerJoin('mfc_notice mn', 'mn.ref_num = a.ref_num')
+            ->where(['and',
+                ['>=', 'v.status_id', 3],
+                ['v.target' => 1],
+                ['a.status' => 1],
+                ['IS', 'p_count', NULL],
+                ['or',
+                    ['a.send_sms' => 0],
+                    ['IS', 'a.send_sms', NULL]
+                ],
+            ])
+            ->all();
+
+        foreach ($model as $key => $affairs) {
+            $applicants = explode(" ", $model[$key]->getApplicants());
+            $this->sendSmsApplicants($applicants, $affairs);
+        }
+    }
+
+    private function sendSmsApplicants($applicants, $affairs)
+    {
+        foreach ($applicants as $applicant) {
+            if (!empty($applicant)) {
+                $text =  'Пакет ' . $affairs["ref_num"] . ' готов к выдаче, ' . Yii::$app->params['contactMfc'];
+                $content = Yii::$app->params['smsMessage'] . '&text=' . urlencode($text) . '&to=' . urlencode($applicant);
+
+                if (@file_get_contents($content)) {
+                    VedjustAffairs::updateAll(['send_sms' => 1], ['=', 'id', $affairs["id"]]);
+                } else {
+                    VedjustAffairs::updateAll(['send_sms' => 0], ['=', 'id', $affairs["id"]]);
                 }
             }
         }

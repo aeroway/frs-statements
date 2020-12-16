@@ -44,6 +44,7 @@ class VedjustVedController extends Controller
                             'fill-area', // get list of districts
                             'createcopy', // create a duplicate of ved and affairs
                             'import-pkpvd-xlsx-notice',
+                            'resending-sms',
                         ],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
@@ -345,6 +346,12 @@ class VedjustVedController extends Controller
         } else {
             return 0;
         }
+    }
+
+    public function actionResendingSms()
+    {
+        $model = new VedjustVed();
+        $model->resendSms();
     }
 
     // Button action "Сформировать"
