@@ -114,6 +114,7 @@ $this->params['breadcrumbs'][] = 'Дела';
     $buttons =
     [
         'class' => 'yii\grid\ActionColumn',
+        'contentOptions' => ['style'=>'width: 96px;'],
         'buttons' =>
         [
             'view' => function($url, $model, $key) {
