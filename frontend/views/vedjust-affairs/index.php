@@ -114,7 +114,7 @@ $this->params['breadcrumbs'][] = 'Дела';
     $buttons =
     [
         'class' => 'yii\grid\ActionColumn',
-        'contentOptions' => ['style'=>'width: 96px;'],
+        'contentOptions' => ['style'=>'width: 98px;'],
         'buttons' =>
         [
             'view' => function($url, $model, $key) {
@@ -331,7 +331,9 @@ $this->params['breadcrumbs'][] = 'Дела';
             // 'status',
             [
                 'label' => 'Выдано',
-                'value' => 'countIssuance',
+                'value' => function($model) {
+                    return $model->getCountIssuance();
+                },
             ],
             [
                 'header' =>
