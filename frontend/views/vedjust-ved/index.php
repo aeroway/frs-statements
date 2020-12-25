@@ -138,7 +138,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'attribute' => 'user_created_id',
             'value' => function($data) {
-                return $data->userCreated->username;
+                return $data->userCreated->full_name;
             },
         ],
         // [
@@ -150,7 +150,7 @@ $this->params['breadcrumbs'][] = $this->title;
         // ],
         [
             'attribute' => 'user_accepted_id',
-            'value' => 'userAccepted.username',
+            'value' => 'userAccepted.full_name',
         ],
         [
             'attribute' => 'date_reception',
