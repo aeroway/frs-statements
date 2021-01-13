@@ -127,7 +127,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'id',
         [
             'attribute' => 'date_create',
-            'format' =>  ['date', 'php:d M Y h:i:s'],
+            'format' =>  ['date', 'php:d M Y'],
         ],
         [
             'attribute' => 'status_id',

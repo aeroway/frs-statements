@@ -465,7 +465,7 @@ class VedjustVed extends \yii\db\ActiveRecord
                 ['v.target' => 1],
                 ['a.status' => 1],
                 ['IS', 'p_count', NULL],
-                ['LIKE', 'mn.applicants', '%+%'],
+                ['LIKE', 'mn.applicants', '+'],
                 ['or',
                     ['a.send_sms' => 0],
                     ['IS', 'a.send_sms', NULL]

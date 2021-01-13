@@ -183,7 +183,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             return '';
         }
 
-        preg_match_all('/[0-9]+/', $mfcNotice["applicants"], $matches);
+        preg_match_all('/[0-9]{6,}+/', $mfcNotice["applicants"], $matches);
 
         return implode(" ", $matches[0]);
     }
