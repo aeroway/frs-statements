@@ -45,6 +45,8 @@ class VedjustAffairs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            ['ref_num', 'match', 'pattern' => '/^[A-Z0-9\/-]+$/', 'message' => '{attribute} должен содержать только латиницу ЗАГЛАВНЫЕ буквы, цифры, "-" знак тире и "/" слэш!'],
+            ['kuvd', 'match', 'pattern' => '/^[А-Я0-9\/-]+$/', 'message' => '{attribute} должен содержать только кириллицу ЗАГЛАВНЫЕ буквы, цифры, "-" знак тире и "/" слэш!'],
             ['ref_num', 'either', 'skipOnEmpty' => false, 'params' => ['other' => 'kuvd']],
             [['kuvd', 'ref_num'], 'unique', 'targetAttribute' => ['kuvd', 'ref_num', 'ved_id']],
             [['kuvd', 'ref_num', 'barcode'], 'string', 'max' => 40],
