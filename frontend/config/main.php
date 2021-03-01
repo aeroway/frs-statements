@@ -47,7 +47,7 @@ return [
             'defaultTimeZone' => 'Europe/Moscow',
             'nullDisplay' => '',
             'dateFormat' => 'dd.MM.yyyy',
-            'datetimeFormat' => 'd-M-Y H:i:s',
+            'datetimeFormat' => 'dd.MM.yyyy HH:mm:ss',
             'decimalSeparator' => '.',
             'thousandSeparator' => '',
             'currencyCode' => 'RUR',

@@ -20,7 +20,7 @@ use frontend\models\VedjustVed;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($modelIssuance, 'date_issue')->hiddenInput(['value' => date('Y-m-d H:i:s')])->label(false); ?>
+    <?= $form->field($modelIssuance, 'date_issue')->hiddenInput(['value' => Yii::$app->formatter->asDatetime('now')])->label(false); ?>
     <?= $form->field($modelIssuance, 'user_created_id')->hiddenInput(['value' => Yii::$app->user->identity->id])->label(false); ?>
     <?= $form->field($modelIssuance, 'create_ip')->hiddenInput(['value' => ip2long(Yii::$app->request->userIP)])->label(false); ?>
     <?= $form->field($modelIssuance, 'affairs_id')->hiddenInput(['value' => $idVed])->label(false); ?>
