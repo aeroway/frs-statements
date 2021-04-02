@@ -98,6 +98,7 @@ class VedjustVedController extends Controller
 
         if (count($params) <= 0) {
             $params = Yii::$app->session['VedjustVedSearch'];
+            $searchModel->isStrictSearchRefNumAffairs = 1;
 
             if(isset(Yii::$app->session['VedjustVedSearch']['page'])) {
                 $_GET['page'] = Yii::$app->session['VedjustVedSearch']['page'];

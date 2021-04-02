@@ -45,7 +45,7 @@ class StatusController extends Controller
                     $searchHead = true;
                 }
 
-                if (!empty($cells[3]) && $cells[3] != 'Номер обращения' && $cells[3]->getValue() && strpos($cells[3], "Other") === false) {
+                if (!empty($cells[3]) && $cells[3] != 'Номер обращения' && $cells[3]->getValue() && strpos($cells[3], "Other") === false && !empty($cells[23])) {
                     $newEntries[] = [trim($cells[3]->getValue()), trim($cells[5]->getValue()), empty($cells[23]->getValue()) ? NULL : trim($cells[23]->getValue())];
                 }
             }
@@ -72,6 +72,44 @@ class StatusController extends Controller
         $modelStatus->batchInsert('status_sys', ['req_num', 'ext_sys_num', 'status'], $difference);
 
         $reader->close();
+    }
+
+    public function actionFileLoad() {
+        $email = $this->emailRead();
+        $content = file_get_contents($email["url"]);
+        file_put_contents(\Yii::$app->basePath . '/uploads/' . $email["subject"] . '.zip', $content);
+        // $this->actionUpload();
+        // $command = "cd " . \Yii::$app->basePath . '/..' . " && php yii status/email-delete";
+        // exec($command);
+        $this->actionEmailDelete();
+    }
+
+    public function actionEmailDelete() {
+        $email = $this->emailRead();
+        imap_delete($email["imap"], $email["num"]);
+        imap_expunge($email["imap"]);
+        imap_close($email["imap"]);
+    }
+
+    private function emailRead() {
+        $imap = imap_open(Yii::$app->params['host'], Yii::$app->params['email'], Yii::$app->params['password']);
+        $mails_id = imap_search($imap, 'UNSEEN');
+
+        foreach ($mails_id as $num) {
+            $body = imap_body($imap, $num);
+            $body = quoted_printable_decode($body);
+            $posUrlStart = stripos($body, 'https://query');
+            $posSubjectStart = stripos($body, 'EGRN_VP_INCCA');
+
+            if ($posUrlStart !== false && $posSubjectStart !== false) {
+                $posUrlStop = (stripos($body, '"', $posUrlStart)) - $posUrlStart;
+                $posSubjectStop = (stripos($body, ' ', $posSubjectStart)) - $posSubjectStart;
+                $url = substr($body, $posUrlStart, $posUrlStop);
+                $subject = substr($body, $posSubjectStart, $posSubjectStop);
+
+                return ["imap" => $imap, "num" => $num, "url" => $url, "subject" => $subject];
+            }
+        }
     }
 }
 ?>
