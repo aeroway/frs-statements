@@ -341,7 +341,7 @@ class VedjustVedController extends Controller
         $model->user_accepted_id = Yii::$app->user->identity->id;
 
         if ($model->update() !== false) {
-            $model->sendSms();
+            // $model->sendSms();
 
             return 1;
         } else {
@@ -352,7 +352,7 @@ class VedjustVedController extends Controller
     public function actionResendingSms()
     {
         $model = new VedjustVed();
-        $model->resendSms();
+        // $model->resendSms();
     }
 
     // Button action "Сформировать"
