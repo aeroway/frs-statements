@@ -78,9 +78,7 @@ class StatusController extends Controller
         $email = $this->emailRead();
         $content = file_get_contents($email["url"]);
         file_put_contents(\Yii::$app->basePath . '/uploads/' . $email["subject"] . '.zip', $content);
-        // $this->actionUpload();
-        // $command = "cd " . \Yii::$app->basePath . '/..' . " && php yii status/email-delete";
-        // exec($command);
+        $this->actionUpload();
         $this->actionEmailDelete();
     }
 
@@ -89,6 +87,22 @@ class StatusController extends Controller
         imap_delete($email["imap"], $email["num"]);
         imap_expunge($email["imap"]);
         imap_close($email["imap"]);
+    }
+
+    public function actionClearFolderUploads() {
+        $files = glob(\Yii::$app->basePath . '/uploads/*');
+
+        foreach($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+    public function actionClear() {
+        sleep(3600);
+        $this->actionClearFolderUploads();
+        $this->actionEmailDelete();
     }
 
     private function emailRead() {

@@ -97,6 +97,33 @@ class SignupForm extends Model
             $user->generateAuthKey();
 
             if ($user->save()) {
+
+                $authAssignment = new AuthAssignment();
+                $authAssignment->user_id = $user->id;
+                $authAssignment->created_at = time();
+
+                if ($user->agency_id == 1) {
+                    $authAssignment->item_name = 'mfc';
+                } elseif ($user->agency_id == 2) {
+                    $authAssignment->item_name = 'zkp';
+                } elseif ($user->agency_id == 3) {
+                    $authAssignment->item_name = 'rosreestr';
+                }
+
+                $authAssignment->save();
+
+                $authAssignment = new AuthAssignment();
+                $authAssignment->item_name = 'issuance';
+                $authAssignment->user_id = $user->id;
+                $authAssignment->created_at = time();
+                $authAssignment->save();
+
+                $authAssignment = new AuthAssignment();
+                $authAssignment->item_name = 'archive';
+                $authAssignment->user_id = $user->id;
+                $authAssignment->created_at = time();
+                $authAssignment->save();
+
                 return $user;
             }
         }
