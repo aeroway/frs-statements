@@ -13,6 +13,13 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
+    <?php if(Yii::$app->session->hasFlash('deny')): ?>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <?php echo Yii::$app->session->getFlash('deny'); ?>
+        </div>
+    <?php endif;?>
+
     <p>Пожалуйста, заполните следующие поля для входа:</p>
 
     <div class="row">

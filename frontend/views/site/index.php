@@ -10,6 +10,12 @@ $this->title = 'Ведомости';
         <h1>Ведомости</h1>
 
         <p class="lead">Начните обрабатывать ведомости правоустанавливающих документов.</p>
+        <?php if(Yii::$app->session->hasFlash('deny')): ?>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <?php echo Yii::$app->session->getFlash('deny'); ?>
+        </div>
+        <?php endif;?>
 
         <p><a class="btn btn-lg btn-success" href="/vedjust-ved/index">Приступить к обработке</a></p>
     </div>
@@ -29,18 +35,6 @@ $this->title = 'Ведомости';
                 <p><a href="doc/instruction-ved.docx">Скачать руководство</a>.</p>
                 <p>После регистрации необходимо отправить список пользователей с необходимыми полномочиями на почту, указанную в руководстве.</p>
             </div>
-            <!--
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
-            </div>
-            -->
         </div>
     </div>
 

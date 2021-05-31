@@ -38,6 +38,10 @@ class VedjustAffairsController extends Controller
                         'roles' => ['addAudit', 'limitAudit'],
                     ],
                 ],
+                'denyCallback' => function ($rule, $action) {
+                    Yii::$app->session->setFlash('deny', "Необходимо подтверждение учётной записи, либо расширение полномочий через администратора системы.");
+                    Yii::$app->response->redirect(['/site/login']);
+                }
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),

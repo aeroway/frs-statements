@@ -35,7 +35,8 @@ class VedjustArchiveController extends Controller
                     ],
                 ],
                 'denyCallback' => function ($rule, $action) {
-                    throw new ForbiddenHttpException('Необходимо подтверждение учётной записи, либо расширение полномочий через администратора системы.');
+                    Yii::$app->session->setFlash('deny', "Необходимо подтверждение учётной записи, либо расширение полномочий через администратора системы.");
+                    Yii::$app->response->redirect(['/site/login']);
                 }
             ],
             'verbs' => [

@@ -46,7 +46,7 @@ class StatusController extends Controller
                 }
 
                 if (!empty($cells[3]) && $cells[3] != 'Номер обращения' && $cells[3]->getValue() && strpos($cells[3], "Other") === false && !empty($cells[23])) {
-                    $newEntries[] = [trim($cells[3]->getValue()), trim($cells[5]->getValue()), empty($cells[23]->getValue()) ? NULL : trim($cells[23]->getValue())];
+                    $newEntries[] = [trim($cells[3]->getValue()), trim($cells[5]->getValue()), empty($cells[23]->getValue()) ? 'В работе' : trim($cells[23]->getValue())];
                 }
             }
         }
