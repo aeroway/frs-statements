@@ -40,7 +40,7 @@ class User extends \yii\db\ActiveRecord
         return [
             [['username', 'auth_key', 'password_hash', 'email', 'full_name', 'position', 'created_at', 'updated_at'], 'required'],
             [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'full_name', 'position', 'phone'], 'string'],
-            [['status', 'created_at', 'updated_at', 'subdivision_id', 'agency_id', 'subject_id'], 'integer'],
+            [['status', 'created_at', 'updated_at', 'subdivision_id', 'agency_id', 'subject_id', 'address_id'], 'integer'],
             [['subdivision_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubdivision::className(), 'targetAttribute' => ['subdivision_id' => 'id']],
             [['agency_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustAgency::className(), 'targetAttribute' => ['agency_id' => 'id']],
             [['subject_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustSubject::className(), 'targetAttribute' => ['subject_id' => 'id']],

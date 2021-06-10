@@ -1,7 +1,7 @@
 <?php
-
 /* @var $this yii\web\View */
-
+use yii\helpers\Html;
+use yii\helpers\Url;
 $this->title = 'Ведомости';
 ?>
 <div class="site-index">
@@ -24,11 +24,12 @@ $this->title = 'Ведомости';
         <div class="row">
             <div class="col-lg-4">
                 <h4>Вы вошли как:</h4>
-                <p class=""><?= !Yii::$app->user->isGuest ?  'ФИО: ' . Yii::$app->user->identity->full_name : '.'; ?></p>
-                <p class=""><?= !Yii::$app->user->isGuest ?  'Должность: ' . Yii::$app->user->identity->position : '.'; ?></p>
-                <p class=""><?= !Yii::$app->user->isGuest ?  'Субъект: ' . Yii::$app->user->identity->subject->name : '.'; ?></p>
-                <p class=""><?= !Yii::$app->user->isGuest ?  'Орган: ' . Yii::$app->user->identity->agency->name : '.'; ?></p>
-                <p class=""><?= !Yii::$app->user->isGuest ?  'Отдел: ' . Yii::$app->user->identity->subdivision->name : '.'; ?></p>
+                <p class=""><?= !Yii::$app->user->isGuest ? 'ФИО: ' . Yii::$app->user->identity->full_name : '.'; ?></p>
+                <p class=""><?= !Yii::$app->user->isGuest ? 'Должность: ' . Yii::$app->user->identity->position : '.'; ?></p>
+                <p class=""><?= !Yii::$app->user->isGuest ? 'Субъект: ' . Yii::$app->user->identity->subject->name : '.'; ?></p>
+                <p class=""><?= !Yii::$app->user->isGuest ? 'Орган: ' . Yii::$app->user->identity->agency->name : '.'; ?></p>
+                <p class=""><?= !Yii::$app->user->isGuest ? 'Отдел: ' . Yii::$app->user->identity->subdivision->name : '.'; ?></p>
+                <p class=""><?= !Yii::$app->user->isGuest ? 'Адрес: ' . Html::a(Yii::$app->user->identity->address->name, Url::to(['/user/update-address', 'id' => Yii::$app->user->identity->id]), ['title' => 'Редактировать адрес']) : ''; ?></p>
             </div>
             <div class="col-lg-4">
                 <h4>Инструкция</h4>
