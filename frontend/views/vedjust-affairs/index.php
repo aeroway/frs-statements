@@ -108,6 +108,12 @@ $this->params['breadcrumbs'][] = 'Дела';
         <?= Html::a('Поместить в архивохранилище', Url::to('/vedjust-storage/create?ved=' . $modelVed->id), ['class' => 'btn btn-success']); ?>
     <?php endif; ?>
 
+    <?php if ($modelVed->checkPermitChangesuspense()) : ?>
+        <?= Html::a('Приостановлено', 'javascript:void(0);', ['class' => 'btn btn-danger', 'onclick' => 'changeSuspense(' . $modelVed->id . ", 7" . ');']); ?>
+        <?= Html::a('Отказ в снятии с приостановки', 'javascript:void(0);', ['class' => 'btn btn-danger', 'onclick' => 'changeSuspense(' . $modelVed->id . ", 8" . ');']); ?>
+        <?= Html::a('Отказано', 'javascript:void(0);', ['class' => 'btn btn-danger', 'onclick' => 'changeSuspense(' . $modelVed->id . ", 9" . ');']); ?>
+    <?php endif; ?>
+
     </p>
 
     <?php
@@ -432,6 +438,21 @@ function changeVerified(value, btn) {
         success: function(data) { 
             if (data == 0) {
                 alert('Ошибка обработки.');
+            }
+            location.reload();
+        }
+    });
+}
+
+function changeSuspense(value, btn) {
+    $.ajax(
+    {
+        type: 'GET',
+        url: '/vedjust-ved/changesuspense',
+        data: 'id=' + value + '&button=' + btn,
+        success: function(data) { 
+            if (data == 0) {
+                alert('Ошибка обработки приостановки.');
             }
             location.reload();
         }

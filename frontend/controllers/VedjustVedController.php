@@ -38,6 +38,7 @@ class VedjustVedController extends Controller
                             'changestatus', // formed docs
                             'changestatusreturn', // return status step back
                             'changeverified', // accepted docs
+                            'changesuspense', // accepted suspense
                             'createvedpdf', // create pdf
                             'setarchive', // show archive docs
                             'reset', // reset filters
@@ -344,6 +345,35 @@ class VedjustVedController extends Controller
         if ($model->update() !== false) {
             // $model->sendSms();
 
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    // Action buttons 'Приостановка'
+    public function actionChangesuspense($id, $button)
+    {
+        $model = $this->findModel($id);
+
+        if (!$model->checkPermitChangesuspense()) {
+            return 0;
+        }
+
+        if ($button == 7) {
+            $model->status_id = 7;
+        } elseif ($button == 8) {
+            $model->status_id = 8;
+        } elseif ($button == 9) {
+            $model->status_id = 9;
+        } else {
+            return 0;
+        }
+
+        // $model->date_reception = date('Y-m-d H:i:s');
+        // $model->user_accepted_id = Yii::$app->user->identity->id;
+
+        if ($model->update() !== false) {
             return 1;
         } else {
             return 0;

@@ -495,6 +495,14 @@ class VedjustVed extends \yii\db\ActiveRecord
         }
     }
 
+    public function checkPermitChangesuspense() {
+        if (Yii::$app->user->identity->agency_id === 3 && ($this->status_id === 3 || $this->status_id === 4)) {
+            return 1;
+        }
+
+        return 0;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
