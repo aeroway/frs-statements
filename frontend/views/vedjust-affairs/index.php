@@ -290,11 +290,20 @@ $this->params['breadcrumbs'][] = 'Дела';
         {
             if (!empty(Yii::$app->session['VedjustVedSearch'])) {
                 foreach (Yii::$app->session['VedjustVedSearch'] as $value) {
-                    if (!empty($value['search_ref_num_affairs'])) {
-                        $searchRefNumAffairs = addcslashes($value["search_ref_num_affairs"], '/');
-                        $patternSearchRefNumAffairs = "/($searchRefNumAffairs)+/iu";
+                    if (!empty($value['search_ref_num'])) {
+                        $searchRefNum = addcslashes($value["search_ref_num"], '/');
+                        $patternSearchRefNum = "/($searchRefNum)+/iu";
 
-                        if (preg_match($patternSearchRefNumAffairs, $model->kuvd) || preg_match($patternSearchRefNumAffairs, $model->ref_num)) {
+                        if (preg_match($patternSearchRefNum, $model->ref_num)) {
+                            return ['class' => 'info'];
+                        }
+                    }
+
+                    if (!empty($value['search_affairs'])) {
+                        $searchAffairs = addcslashes($value["search_affairs"], '/');
+                        $patternSearchAffairs = "/($searchAffairs)+/iu";
+
+                        if (preg_match($patternSearchAffairs, $model->kuvd)) {
                             return ['class' => 'info'];
                         }
                     }

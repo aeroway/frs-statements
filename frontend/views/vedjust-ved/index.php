@@ -22,7 +22,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <?php echo $this->render('_searchNumVed', ['model' => $searchModel]); ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-    <?= $this->render('_searchRefNumAffairs', ['model' => $searchModel]); ?>
+    <?php // $this->render('_searchRefNumAffairs', ['model' => $searchModel]); ?>
+    <?= $this->render('_searchRefNum', ['model' => $searchModel]); ?>
+    <?= $this->render('_searchAffairs', ['model' => $searchModel]); ?>
     <?= $this->render('_searchCommentVedAffairs', ['model' => $searchModel]); ?>
 
     <p>

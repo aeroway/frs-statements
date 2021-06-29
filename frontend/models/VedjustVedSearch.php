@@ -22,15 +22,20 @@ class VedjustVedSearch extends VedjustVed
     public $search_ref_num_affairs;
     public $search_comment_ved_affairs;
 
+    public $isStrictSearchRefNum;
+    public $isStrictSearchAffairs;
+    public $search_ref_num;
+    public $search_affairs;
+
     public function rules()
     {
         return [
             [['id', 'user_formed_id', 'verified', 'create_ip', 'formed_ip', 'accepted_ip'
                 , 'ext_reg', 'target', 'search_all', 'search_num_ved',
-                'isStrictSearchRefNumAffairs', 'isStrictSearchCommentVedAffairs'], 'integer'],
+                'isStrictSearchRefNumAffairs', 'isStrictSearchCommentVedAffairs', 'isStrictSearchRefNum', 'isStrictSearchAffairs'], 'integer'],
             [['date_create', 'num_ved', 'date_reception', 'date_formed', 'kuvd_affairs', 'status_id', 'user_created_id', 
                 'user_accepted_id', 'archive_unit_id', 'comment', 'address_id', 'ref_num_affairs',
-                'search_comment_ved_affairs', 'search_ref_num_affairs'], 'safe'],
+                'search_comment_ved_affairs', 'search_ref_num_affairs', 'search_ref_num', 'search_affairs'], 'safe'],
         ];
     }
 
@@ -52,7 +57,9 @@ class VedjustVedSearch extends VedjustVed
      */
     public function search($params)
     {
-        if (!empty($params["VedjustVedSearch"]["isStrictSearchRefNumAffairs"]) ||
+        if (!empty($params["VedjustVedSearch"]["isStrictSearchRefNum"]) ||
+            !empty($params["VedjustVedSearch"]["isStrictSearchAffairs"]) ||
+            !empty($params["VedjustVedSearch"]["isStrictSearchRefNumAffairs"]) ||
             !empty($params["VedjustVedSearch"]["isStrictSearchCommentVedAffairs"])) {
             $symbolStrict = '=';
             $symbolStrict2 = '=';
@@ -122,6 +129,42 @@ class VedjustVedSearch extends VedjustVed
                     ],
                 );
             $query->innerJoinWith('affairsV a');
+        } elseif (!empty($params["VedjustVedSearch"]["search_ref_num"])) {
+            $refNumAffairs = $params["VedjustVedSearch"]["search_ref_num"];
+            $query = VedjustVed::find()
+                ->alias('v')
+                ->distinct(['v.id'])
+                ->where(
+                    ['and',
+                        ['or',
+                            ['<>', 'v.status_id', 1],
+                            ['and',
+                                ['=', 'v.status_id', 1],
+                                ['=', 'uc.address_id', Yii::$app->user->identity->address_id],
+                            ],
+                        ],
+                        [$symbolStrict2, 'a.ref_num', strtoupper($refNumAffairs)],
+                    ],
+                );
+            $query->innerJoinWith('affairsV a');
+        } elseif (!empty($params["VedjustVedSearch"]["search_affairs"])) {
+            $refNumAffairs = $params["VedjustVedSearch"]["search_affairs"];
+            $query = VedjustVed::find()
+                ->alias('v')
+                ->distinct(['v.id'])
+                ->where(
+                    ['and',
+                        ['or',
+                            ['<>', 'v.status_id', 1],
+                            ['and',
+                                ['=', 'v.status_id', 1],
+                                ['=', 'uc.address_id', Yii::$app->user->identity->address_id],
+                            ],
+                        ],
+                        [$symbolStrict2, 'a.kuvd', strtoupper($refNumAffairs)],
+                    ],
+                );
+            $query->innerJoinWith('affairsV a');
         } else {
             //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
             //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
@@ -154,8 +197,8 @@ class VedjustVedSearch extends VedjustVed
                     ->where(
                         ['and',
                             ['or',
-                                ['>=', 'date_reception', date('Y-m-d', strtotime("-10 days"))],
-                                ['and', ['IS', 'date_reception', NULL], ['>=', 'date_formed', date('Y-m-d', strtotime("-10 days"))]],
+                                ['>=', 'date_reception', date('Y-m-d', strtotime("-3 days"))],
+                                ['and', ['IS', 'date_reception', NULL], ['>=', 'date_formed', date('Y-m-d', strtotime("-3 days"))]],
                                 ['=', 'v.status_id', 1],
                             ],
                             ['or',
@@ -213,7 +256,7 @@ class VedjustVedSearch extends VedjustVed
         ]);
 
         $query->andFilterWhere(['like', 'num_ved', $this->num_ved])
-            ->andFilterWhere(['like', 'v.comment', $this->comment])
+            ->andFilterWhere(['ilike', 'v.comment', $this->comment])
             ->andFilterWhere(['like', 'adr.name', $this->address_id]);
 
         return $dataProvider;
