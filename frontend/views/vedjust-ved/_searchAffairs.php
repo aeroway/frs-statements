@@ -28,7 +28,7 @@ use yii\widgets\ActiveForm;
                     . Html::submitButton('<span class="glyphicon glyphicon-search"></span>', ['class' => 'btn btn-info', 'title' => 'Поиск']) .
                 '</div>
             </span></div>',
-        ])->textInput(['placeholder' => 'ТОЛЬКО по колонке № КУВД']); 
+        ])->textInput(['placeholder' => 'Поиск по колонке № КУВД']); 
     ?>
 
     <?php ActiveForm::end(); ?>

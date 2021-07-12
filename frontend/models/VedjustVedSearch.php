@@ -169,15 +169,9 @@ class VedjustVedSearch extends VedjustVed
             //по умолчанию пользователь должен видеть только те записи, которые созданы его отделом или направлены в его отдел
             //исключение для кадастровой палаты - по умолчанию могут видеть все ведомости по своему органу
             if (Yii::$app->user->identity->agency_id == 2) {
-                $userSd = User::find()
-                    ->alias('us')
-                    ->select(['us.id'])
-                    ->where(['=', 'us.agency_id', Yii::$app->user->identity->agency_id]);
+                $userSd = ['=', 'uc.subdivision_id', Yii::$app->user->identity->agency_id];
             } else {
-                $userSd = User::find()
-                    ->alias('us')
-                    ->select(['us.id'])
-                    ->where(['=', 'us.subdivision_id', Yii::$app->user->identity->subdivision_id]);
+                $userSd = ['=', 'uc.subdivision_id', Yii::$app->user->identity->subdivision_id];
             }
 
             if (Yii::$app->getRequest()->getCookies()->getValue('archive')) {
@@ -186,7 +180,7 @@ class VedjustVedSearch extends VedjustVed
                     ->distinct(['v.id'])
                     ->where(
                         ['or',
-                            ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
+                            $userSd, // Ведомости всех коллег пользователя
                             ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
                         ]
                     );
@@ -202,7 +196,7 @@ class VedjustVedSearch extends VedjustVed
                                 ['=', 'v.status_id', 1],
                             ],
                             ['or',
-                                ['in', 'v.user_created_id', $userSd], // Ведомости всех коллег пользователя
+                                $userSd, // Ведомости всех коллег пользователя
                                 ['and', ['<>', 'v.status_id', 1], ['=', 'v.subdivision_id', Yii::$app->user->identity->subdivision_id]], // Ведомости направленные в отдел пользователя
                             ],
                         ]
