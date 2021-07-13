@@ -7,6 +7,7 @@ use yii\widgets\ActiveForm;
 /* @var $model frontend\models\VedjustVedSearch */
 /* @var $form yii\widgets\ActiveForm */
 
+$isStrictSearchRefNum = $model->isStrictSearchRefNum;
 ?>
 
 <div class="vedjust-ved-search-ref-num">
@@ -20,10 +21,10 @@ use yii\widgets\ActiveForm;
             'template' => '<div class="input-group col-xs-5">{input}<span class="input-group-btn">' .
                 '<div id="vedjustvedsearch-strict-search-ref-num" role="radiogroup">
                     <span data-toggle="buttons">
-                        <label title="Поиск похожей записи" class="btn btn-default' . (!$model->isStrictSearchRefNum ? ' active' : '') . '">
+                        <label title="Поиск похожей записи" class="btn btn-default' . (!$isStrictSearchRefNum ? ' active' : '') . '">
                             <input type="radio" name="VedjustVedSearch[isStrictSearchRefNum]" value="0">Прим.</label>
-                        <label title="Поиск по строгому соответствию" class="btn btn-default' . ($model->isStrictSearchRefNum ? ' active' : '') . '">
-                            <input type="radio" name="VedjustVedSearch[isStrictSearchRefNum]" value="1"' . ($model->isStrictSearchRefNum ? ' checked' : '') . '>Точный</label>
+                        <label title="Поиск по строгому соответствию" class="btn btn-default' . ($isStrictSearchRefNum ? ' active' : '') . '">
+                            <input type="radio" name="VedjustVedSearch[isStrictSearchRefNum]" value="1"' . ($isStrictSearchRefNum ? ' checked' : '') . '>Точный</label>
                     </span>'
                     . Html::submitButton('<span class="glyphicon glyphicon-search"></span>', ['class' => 'btn btn-info', 'title' => 'Поиск']) .
                 '</div>

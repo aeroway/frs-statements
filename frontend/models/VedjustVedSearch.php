@@ -22,8 +22,8 @@ class VedjustVedSearch extends VedjustVed
     public $search_ref_num_affairs;
     public $search_comment_ved_affairs;
 
-    public $isStrictSearchRefNum;
-    public $isStrictSearchAffairs;
+    public $isStrictSearchRefNum = 1;
+    public $isStrictSearchAffairs = 1;
     public $search_ref_num;
     public $search_affairs;
 
