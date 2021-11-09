@@ -17,7 +17,22 @@ use yii\bootstrap\Modal;
 $this->params['breadcrumbs'][] = ['label' => 'Ведомости', 'url' => ['vedjust-ved/index']];
 $this->title = 'Ведомость №' . $idVed;
 $this->params['breadcrumbs'][] = 'Дела';
+$this->registerJs(' 
+    $(document).ready(function(){
+        $(\'#mdel\').click(function(){
+            let idAffairs = $(\'#w4\').yiiGridView(\'getSelectedRows\');
+            $.ajax({
+                type: \'POST\',
+                url : \'delete-multiple\',
+                data : {idAffairs: idAffairs, idVed: ' . $idVed . '},
+                success : function() {
+                $(this).closest(\'tr\').remove();
+                }
+            });
+        });
+    });', \yii\web\View::POS_READY)
 ?>
+
 <div class="vedjust-affairs-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -39,11 +54,10 @@ $this->params['breadcrumbs'][] = 'Дела';
     <?php endif; ?>
 
     <p>
-    <?php
-    if (VedjustAffairs::$vedStatusId === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id) {
-        echo Html::a('Добавить дело', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']) . ' ';
-    }
-    ?>
+    <?php if (VedjustAffairs::$vedStatusId === 1 && $modelVed->user_created_id === Yii::$app->user->identity->id) : ?>
+        <?= Html::a('Добавить', ['create', 'id' => $modelVed->id], ['class' => 'btn btn-success']); ?>
+        <?= Html::submitButton('Удалить', ['class' => 'btn btn-danger', 'id' => 'mdel']); ?>
+    <?php endif; ?>
 
     <?php if ($modelVed->checkPermitformed($modelVed)) : ?>
         <?= Html::a('Сформировать', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeStatusVed(' . $modelVed->id . ');']); ?>
@@ -323,6 +337,7 @@ $this->params['breadcrumbs'][] = 'Дела';
         },
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'yii\grid\CheckboxColumn'],
 
             [
                 'attribute' => 'ref_num',

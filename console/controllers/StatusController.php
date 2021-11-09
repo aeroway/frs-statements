@@ -75,8 +75,15 @@ class StatusController extends Controller
     }
 
     public function actionFileLoad() {
+        $contextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ),
+        );
+
         $email = $this->emailRead();
-        $content = file_get_contents($email["url"]);
+        $content = file_get_contents($email["url"], false, stream_context_create($contextOptions));
         file_put_contents(\Yii::$app->basePath . '/uploads/' . $email["subject"] . '.zip', $content);
         $this->actionUpload();
         $this->actionEmailDelete();

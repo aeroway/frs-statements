@@ -29,7 +29,7 @@ class VedjustAffairsController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'changestatusall', 'issuance', 'view', 'check-affairs-barcode'],
+                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'changestatusall', 'issuance', 'view', 'check-affairs-barcode', 'delete-multiple'],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
                     [
@@ -47,6 +47,7 @@ class VedjustAffairsController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                    'delete-multiple' => ['POST'],
                     'changestatus' => ['GET'],
                     'changestatusall' => ['GET'],
                 ],
@@ -250,6 +251,27 @@ class VedjustAffairsController extends Controller
         return $this->redirect(['index', 'id' => $model->ved_id]);
     }
 
+    public function actionDeleteMultiple()
+    {
+        $idAffairs = Yii::$app->request->post('idAffairs');
+        $idVed = Yii::$app->request->post('idVed');
+
+        if (!empty($idAffairs)) {
+            $model = $this->findModel($idAffairs);
+
+            if ($model->ved->status_id !== 1 || $model->user_created_id !== Yii::$app->user->identity->id) {
+                throw new ForbiddenHttpException('Вы не можете получить доступ к этой странице.');
+            }
+
+            foreach ($idAffairs as $value) {
+                $model = $this->findModel($value);
+                $model->delete();
+            }
+        }
+
+        return $this->redirect(['vedjust-affairs/index', 'id' => $idVed]);
+    }
+
     // Check box
     public function actionChangestatus($id, $status)
     {
@@ -299,7 +321,6 @@ class VedjustAffairsController extends Controller
             return 1;
         }
     }
-
 
     /**
      * Finds the VedjustAffairs model based on its primary key value.
