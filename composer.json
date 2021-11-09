@@ -27,7 +27,7 @@
         "wbraganca/yii2-dynamicform": "v2.0.*",
         "symfony/dom-crawler": "v2.8.*",
         "symfony/css-selector": "v2.8.*",
-        "phpoffice/phpspreadsheet": "v1.13.*",
+        "phpoffice/phpspreadsheet": "v1.16.*",
         "box/spout": "v3.1.*"
     },
     "require-dev": {
