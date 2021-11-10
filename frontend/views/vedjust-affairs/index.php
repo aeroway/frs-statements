@@ -367,13 +367,12 @@ $this->registerJs('
             ],
             [
                 'header' =>
-                    Html::checkbox('selection_all', false,
+                    Html::checkbox('verify-affairs-check-all', false,
                     [
-                        'class' => 'select-on-check-all',
+                        'class' => 'verify-affairs-check-all',
                         'value' => 1,
-                        'id' => 'kv-row-checkbox',
-                        'onclick' => '$(".kv-row-checkbox").prop("checked", $(this).is(":checked"));
-                                      selectionAll('.$modelVed->id.');',
+                        'id' => 'verify-affair-checkbox',
+                        'onclick' => '$(".verify-affair-checkbox").prop("checked", $(this).is(":checked")); selectionAll('.$modelVed->id.');',
                         'disabled' => true,
                     ]),
                 'contentOptions' => ['class' => 'kv-row-select'],
@@ -383,7 +382,7 @@ $this->registerJs('
                         return Html::checkbox("status$key",
                             isset($model->status) && !($model->status === 0) ? true : false,
                             [
-                                'class' => 'kv-row-checkbox',
+                                'class' => 'verify-affair-checkbox',
                                 'id' => 'status' . $key,
                                 'value' => $key,
                                 'onclick' => 'changeStatusAffairs(this.value);',
@@ -415,8 +414,8 @@ $this->registerJs('
 </div>
 
 <script>
-if (document.getElementsByClassName("kv-row-checkbox").length !== 0 && !document.getElementsByClassName("kv-row-checkbox")[0].disabled) {
-    var element = document.getElementsByClassName("select-on-check-all");
+if (document.getElementsByClassName("verify-affair-checkbox").length !== 0 && !document.getElementsByClassName("verify-affair-checkbox")[0].disabled) {
+    var element = document.getElementsByClassName("verify-affairs-check-all");
     // удалить "выбрать все", если отсутствуют чекбокс на каждом деле
     // element[0].parentNode.removeChild(element[0]);
     element[0].disabled = false;
@@ -424,7 +423,7 @@ if (document.getElementsByClassName("kv-row-checkbox").length !== 0 && !document
 
 // выбрать все записи
 function selectionAll(value) {
-    var checkStatus = document.getElementById("kv-row-checkbox").checked;
+    var checkStatus = document.getElementById("verify-affair-checkbox").checked;
 
     $.ajax(
     {
