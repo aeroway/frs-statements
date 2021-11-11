@@ -35,9 +35,8 @@ class VedjustVedController extends Controller
                         'actions' =>
                         [
                             'index', 'delete', 'create', 'view', 'update', // standard actions
-                            'changestatus', // formed docs
+                            'changestatus',
                             'changestatusreturn', // return status step back
-                            'changeverified', // accepted docs
                             'changesuspense', // accepted suspense
                             'createvedpdf', // create pdf
                             'setarchive', // show archive docs
@@ -315,41 +314,6 @@ class VedjustVedController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }
-
-    // Action buttons 'Принято'
-    public function actionChangeverified($id)
-    {
-        $model = $this->findModel($id);
-
-        $count0 = VedjustAffairs::find()
-                    ->where(['and', ['ved_id' => $id], ['status' => 0]])
-                    ->count();
-
-        $count1 = VedjustAffairs::find()
-                    ->where(['and', ['ved_id' => $id], ['status' => 1]])
-                    ->count();
-
-        if($count0 == 0) {
-            $model->status_id = 3;
-        } elseif(($count0 > 0) && ($count1 > 0)) {
-            $model->status_id = 4;
-        } else {
-            return 0;
-        }
-
-        $model->verified = 1;
-        $model->date_reception = date('Y-m-d H:i:s');
-        $model->accepted_ip = ip2long(Yii::$app->request->userIP);
-        $model->user_accepted_id = Yii::$app->user->identity->id;
-
-        if ($model->update() !== false) {
-            // $model->sendSms();
-
-            return 1;
-        } else {
-            return 0;
-        }
     }
 
     // Action buttons 'Приостановка'

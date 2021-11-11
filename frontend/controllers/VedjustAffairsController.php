@@ -29,7 +29,7 @@ class VedjustAffairsController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'create', 'delete', 'update', 'changestatus', 'changestatusall', 'issuance', 'view', 'check-affairs-barcode', 'delete-multiple'],
+                        'actions' => ['index', 'create', 'delete', 'update', 'issuance', 'view', 'check-affairs-barcode', 'delete-multiple', 'verify-multiple'],
                         'roles' => ['editMfc', 'editZkp', 'editRosreestr', 'confirmExtDocs', 'editArchive'],
                     ],
                     [
@@ -48,8 +48,7 @@ class VedjustAffairsController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'delete-multiple' => ['POST'],
-                    'changestatus' => ['GET'],
-                    'changestatusall' => ['GET'],
+                    'verify-multiple' => ['POST'],
                 ],
             ],
         ];
@@ -73,7 +72,7 @@ class VedjustAffairsController extends Controller
             return $this->goHome();
         }
 
-        $dataProvider->pagination->pageSize = 200;
+        $dataProvider->pagination->pageSize = 500;
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -272,54 +271,56 @@ class VedjustAffairsController extends Controller
         return $this->redirect(['vedjust-affairs/index', 'id' => $idVed]);
     }
 
-    // Check box
-    public function actionChangestatus($id, $status)
+    public function actionVerifyMultiple()
     {
-        $model = $this->findModel($id);
+        $idAffairs = Yii::$app->request->post('idAffairs');
+        $idVed = Yii::$app->request->post('idVed');
 
         if (VedjustAffairs::$isCheckBoxDisabled) {
             return 0;
-        } else {
-            if (!$model->status) {
+        }
+
+        if (!empty($idAffairs)) {
+            foreach ($idAffairs as $value) {
+                $model = $this->findModel($value);
                 $model->status = 1;
                 $model->date_status = date('Y-m-d H:i:s');
                 $model->accepted_ip = ip2long(Yii::$app->request->userIP);
                 $model->user_accepted_id = Yii::$app->user->identity->id;
-            } else {
-                $model->status = 0;
-                $model->date_status = NULL;
-                $model->accepted_ip = NULL;
-                $model->user_accepted_id = NULL;
+                $model->save(false);
             }
 
-            if ($model->save(false) !== false) {
+            $modelVed = $this->findModelVed($idVed);
+
+            $count0 = VedjustAffairs::find()
+                        ->where(['and', ['ved_id' => $idVed], ['status' => 0]])
+                        ->count();
+    
+            $count1 = VedjustAffairs::find()
+                        ->where(['and', ['ved_id' => $idVed], ['status' => 1]])
+                        ->count();
+    
+            if($count0 == 0) {
+                $modelVed->status_id = 3;
+            } elseif(($count0 > 0) && ($count1 > 0)) {
+                $modelVed->status_id = 4;
+            } else {
+                return 0;
+            }
+    
+            $modelVed->verified = 1;
+            $modelVed->date_reception = date('Y-m-d H:i:s');
+            $modelVed->accepted_ip = ip2long(Yii::$app->request->userIP);
+            $modelVed->user_accepted_id = Yii::$app->user->identity->id;
+    
+            if ($modelVed->save() !== false) {
                 return 1;
             } else {
                 return 0;
             }
         }
-    }
 
-    public function actionChangestatusall($id, $status)
-    {
-        $modelVed = $this->findModelVed($id);
-        $model = new VedjustAffairs();
-
-        if (VedjustAffairs::$isCheckBoxDisabled) {
-            return 0;
-        } else {
-            if (!$model->status) {
-                VedjustAffairs::updateAll([
-                    'status' => 1,
-                    'date_status' => date('Y-m-d H:i:s'),
-                    'accepted_ip' => ip2long(Yii::$app->request->userIP),
-                    'user_accepted_id' => Yii::$app->user->identity->id,
-                ],
-                ['=', 'ved_id', $id]);
-            }
-
-            return 1;
-        }
+        return $this->redirect(['vedjust-affairs/index', 'id' => $idVed]);
     }
 
     /**

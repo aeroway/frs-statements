@@ -30,7 +30,24 @@ $this->registerJs('
                 }
             });
         });
-    });', \yii\web\View::POS_READY)
+    });', \yii\web\View::POS_READY);
+$this->registerJs('
+    $(document).ready(function(){
+        $(\'#verified\').click(function(){
+            let idAffairs = $(\'#w4\').yiiGridView(\'getSelectedRows\');
+            $.ajax({
+                type: \'POST\',
+                url : \'verify-multiple\',
+                data : {idAffairs: idAffairs, idVed: ' . $idVed . '},
+                success : function(data) {
+                    if (data == 0) {
+                        alert(\'Некорректно.\');
+                    }
+                    location.reload();
+                }
+            });
+        });
+    });', \yii\web\View::POS_READY);
 ?>
 
 <div class="vedjust-affairs-index">
@@ -94,7 +111,7 @@ $this->registerJs('
     ?>
 
     <?php if ($model->isVedNotVerified($modelVed)) : ?>
-        <?= Html::a('Принято', 'javascript:void(0);', ['class' => 'btn btn-success', 'onclick' => 'changeVerified(' . $modelVed->id . ');']); ?>
+        <?= Html::a('Принято', 'javascript:void(0);', ['class' => 'btn btn-success', 'id' => 'verified']); ?>
     <?php endif; ?>
 
     <?= (VedjustAffairs::$vedStatusId != 1) ? Html::a('<img src="/images/icons/pdf-32x32.png">', ['vedjust-ved/createvedpdf', 'id' => $modelVed->id], ['class' => '', 'title' => 'Экспорт в PDF']) : ''; ?>
@@ -337,8 +354,6 @@ $this->registerJs('
         },
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            ['class' => 'yii\grid\CheckboxColumn'],
-
             [
                 'attribute' => 'ref_num',
                 'contentOptions' => ['style'=>'width: 200px;'],
@@ -366,35 +381,8 @@ $this->registerJs('
                 },
             ],
             [
-                'header' =>
-                    Html::checkbox('verify-affairs-check-all', false,
-                    [
-                        'class' => 'verify-affairs-check-all',
-                        'value' => 1,
-                        'id' => 'verify-affair-checkbox',
-                        'onclick' => '$(".verify-affair-checkbox").prop("checked", $(this).is(":checked")); selectionAll('.$modelVed->id.');',
-                        'disabled' => true,
-                    ]),
-                'contentOptions' => ['class' => 'kv-row-select'],
-                'content' => function($model, $key) {
-                    if (VedjustAffairs::$vedStatusId === 2 && !Yii::$app->user->can('addAudit'))
-                    {
-                        return Html::checkbox("status$key",
-                            isset($model->status) && !($model->status === 0) ? true : false,
-                            [
-                                'class' => 'verify-affair-checkbox',
-                                'id' => 'status' . $key,
-                                'value' => $key,
-                                'onclick' => 'changeStatusAffairs(this.value);',
-                                'disabled' => VedjustAffairs::$isCheckBoxDisabled,
-                            ]
-                        );
-                    }
-                },
-                'hAlign' => 'center',
-                'vAlign' => 'middle',
-                'hiddenFromExport' => true,
-                'mergeHeader' => true,
+                'class' => 'yii\grid\CheckboxColumn',
+                'contentOptions' => ['style'=>'width: 30px;'],
             ],
             // [
             //     'class' => '\kartik\grid\CheckboxColumn',
@@ -419,52 +407,6 @@ if (document.getElementsByClassName("verify-affair-checkbox").length !== 0 && !d
     // удалить "выбрать все", если отсутствуют чекбокс на каждом деле
     // element[0].parentNode.removeChild(element[0]);
     element[0].disabled = false;
-}
-
-// выбрать все записи
-function selectionAll(value) {
-    var checkStatus = document.getElementById("verify-affair-checkbox").checked;
-
-    $.ajax(
-    {
-        type: 'GET',
-        url: '/vedjust-affairs/changestatusall',
-        data: 'id=' + value + '&status=' + +checkStatus,
-        success: function(data) { 
-            if (data == 0) alert('Ошибка обработки.');
-            location.reload();
-        }
-    });
-}
-
-function changeStatusAffairs(value) {
-    var checkStatus = document.getElementById("status" + value).checked;
-
-    $.ajax(
-    {
-        type: 'GET',
-        url: '/vedjust-affairs/changestatus',
-        data: 'id=' + value + '&status=' + +checkStatus,
-        success: function(data) { 
-            if (data == 0) alert('Ошибка обработки.');
-        }
-    });
-
-}
-
-function changeVerified(value, btn) {
-    $.ajax(
-    {
-        type: 'GET',
-        url: '/vedjust-ved/changeverified',
-        data: 'id=' + value + '&button=' + btn,
-        success: function(data) { 
-            if (data == 0) {
-                alert('Ошибка обработки.');
-            }
-            location.reload();
-        }
-    });
 }
 
 function changeSuspense(value, btn) {
