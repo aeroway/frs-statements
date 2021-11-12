@@ -245,6 +245,22 @@ $this->registerJs('
         ],
         'template' => '{update} {delete} {issuance} {view} {applicants}',
     ];
+
+    if ($modelVed->status_id > 2) {
+        $verifedColumn = [];
+    } else {
+        $verifedColumn = [
+            'class' => '\kartik\grid\CheckboxColumn', 
+            'rowHighlight' => false,
+            'checkboxOptions' => function($model) {
+                if($model->status) {
+                    return ['disabled' => true];
+                } else {
+                    return [];
+                }
+            },
+        ];
+    }
     ?>
 
     <?php
@@ -380,21 +396,7 @@ $this->registerJs('
                     return $model->getCountIssuance();
                 },
             ],
-            [
-                'class' => 'yii\grid\CheckboxColumn',
-                'contentOptions' => ['style'=>'width: 30px;'],
-            ],
-            // [
-            //     'class' => '\kartik\grid\CheckboxColumn',
-            //     'checkboxOptions' => function($model) {
-            //         if($model->status) {
-            //             return ['disabled' => true];
-            //         } else {
-            //             return [];
-            //         }
-            //     },
-            // ],
-
+            $verifedColumn,
             $buttons,
         ],
     ]);

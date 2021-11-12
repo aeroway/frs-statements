@@ -281,14 +281,15 @@ class VedjustAffairsController extends Controller
         }
 
         if (!empty($idAffairs)) {
-            foreach ($idAffairs as $value) {
-                $model = $this->findModel($value);
-                $model->status = 1;
-                $model->date_status = date('Y-m-d H:i:s');
-                $model->accepted_ip = ip2long(Yii::$app->request->userIP);
-                $model->user_accepted_id = Yii::$app->user->identity->id;
-                $model->save(false);
-            }
+            VedjustAffairs::updateAll(
+                [
+                    'status' => 1, 
+                    'date_status' => date('Y-m-d H:i:s'), 
+                    'accepted_ip' => ip2long(Yii::$app->request->userIP), 
+                    'user_accepted_id' => Yii::$app->user->identity->id
+                ],
+                ['IN', 'id', $idAffairs]
+            );
 
             $modelVed = $this->findModelVed($idVed);
 
