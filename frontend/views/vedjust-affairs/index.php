@@ -246,7 +246,9 @@ $this->registerJs('
         'template' => '{update} {delete} {issuance} {view} {applicants}',
     ];
 
-    if ($modelVed->status_id > 2) {
+    if ($modelVed->status_id > 2 ||
+            ($modelVed->status_id === 1 && $modelVed->user_created_id !== Yii::$app->user->identity->id) ||
+            ($modelVed->status_id === 2 && $modelVed->target != Yii::$app->user->identity->agency_id)) {
         $verifedColumn = [];
     } else {
         $verifedColumn = [
@@ -254,7 +256,7 @@ $this->registerJs('
             'rowHighlight' => false,
             'checkboxOptions' => function($model) {
                 if($model->status) {
-                    return ['disabled' => true];
+                    return ['disabled' => true, 'checked' => 'checked'];
                 } else {
                     return [];
                 }

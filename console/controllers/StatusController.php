@@ -83,8 +83,13 @@ class StatusController extends Controller
         );
 
         $email = $this->emailRead();
+
+        $email["url"] = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $email["url"]);
+        $email["url"] = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $email["url"]);
+
         $content = file_get_contents($email["url"], false, stream_context_create($contextOptions));
         file_put_contents(\Yii::$app->basePath . '/uploads/' . $email["subject"] . '.zip', $content);
+
         $this->actionUpload();
         $this->actionEmailDelete();
     }
@@ -113,22 +118,34 @@ class StatusController extends Controller
     }
 
     private function emailRead() {
-        $imap = imap_open(Yii::$app->params['host'], Yii::$app->params['email'], Yii::$app->params['password']);
-        $mails_id = imap_search($imap, 'UNSEEN');
+        $inbox = imap_open(Yii::$app->params['host'], Yii::$app->params['email'], Yii::$app->params['password']);
+        $emails = imap_search($inbox, 'UNSEEN');
 
-        foreach ($mails_id as $num) {
-            $body = imap_body($imap, $num);
-            $body = quoted_printable_decode($body);
-            $posUrlStart = stripos($body, 'https://query');
-            $posSubjectStart = stripos($body, 'EGRN_VP_INCCA');
+        if ($emails) {
+            $output = '';
+            rsort($emails);
 
-            if ($posUrlStart !== false && $posSubjectStart !== false) {
-                $posUrlStop = (stripos($body, '"', $posUrlStart)) - $posUrlStart;
-                $posSubjectStop = (stripos($body, ' ', $posSubjectStart)) - $posSubjectStart;
-                $url = substr($body, $posUrlStart, $posUrlStop);
-                $subject = substr($body, $posSubjectStart, $posSubjectStop);
+            foreach ($emails as $email_number) {
+                $overview = imap_fetch_overview($inbox,$email_number, 0);
+                $structure = imap_fetchstructure($inbox, $email_number);
+                $message = imap_body($inbox, $email_number);
 
-                return ["imap" => $imap, "num" => $num, "url" => $url, "subject" => $subject];
+                $posMessageStart = stripos($message, 'base64') + 10;
+                $posMessageStop = (stripos($message, '=', $posMessageStart)) - ($posMessageStart - 1);
+                $message = base64_decode(substr($message, $posMessageStart, $posMessageStop));
+
+
+                $posUrlStart = stripos($message, 'https://query');
+                $posSubjectStart = stripos($message, 'EGRN_VP_INCCA');
+
+                if ($posUrlStart !== false && $posSubjectStart !== false) {
+                    $posUrlStop = (stripos($message, '>', $posUrlStart)) - $posUrlStart;
+                    $posSubjectStop = (stripos($message, ' ', $posSubjectStart)) - $posSubjectStart;
+                    $url = substr($message, $posUrlStart, $posUrlStop);
+                    $subject = substr($message, $posSubjectStart, $posSubjectStop);
+
+                    return ["imap" => $inbox, "num" => $email_number, "url" => $url, "subject" => $subject];
+                }
             }
         }
     }
