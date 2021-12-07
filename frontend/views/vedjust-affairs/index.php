@@ -34,6 +34,19 @@ $this->registerJs('
 $this->registerJs('
     $(document).ready(function(){
         $(\'#verified\').click(function(){
+            let selectionInputs = document.querySelectorAll(\'input[name="selection[]"]\'); 
+            let selectionInputsEmpty = [].filter.call( selectionInputs, function( el ) {
+               return !el.checked;
+            });
+            if (selectionInputs.length == selectionInputsEmpty.length) {
+                alert("Не выбрано ни одного дела!");
+                location.reload();
+            }
+            if (selectionInputsEmpty.length != 0 && selectionInputs.length > selectionInputsEmpty.length) {
+                if (!window.confirm("Ведомость будет принята частично.")) {
+                    return location.reload();
+                }
+            }
             let idAffairs = $(\'#w4\').yiiGridView(\'getSelectedRows\');
             $.ajax({
                 type: \'POST\',
