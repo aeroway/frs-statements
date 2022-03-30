@@ -194,7 +194,7 @@ class VedjustVed extends \yii\db\ActiveRecord
             " . $vedComment . "
         </div>
         <div>
-        <table border='1' cellpadding='3' width='100%' cellspacing='0'>
+        <table border='1' cellpadding='4' width='100%' cellspacing='0'>
             <tr>
                 <td>№</td>
                 <td>№ обращения</td>
