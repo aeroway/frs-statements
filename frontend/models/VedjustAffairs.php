@@ -50,6 +50,7 @@ class VedjustAffairs extends \yii\db\ActiveRecord
             ['ref_num', 'either', 'skipOnEmpty' => false, 'params' => ['other' => 'kuvd']],
             [['kuvd', 'ref_num'], 'unique', 'targetAttribute' => ['kuvd', 'ref_num', 'ved_id']],
             [['kuvd', 'ref_num', 'barcode'], 'string', 'max' => 35],
+            [['kuvd', 'ref_num', 'comment'], 'trim'],
             [['comment'], 'string', 'max' => 512],
             [['date_create', 'date_status'], 'safe'],
             [['ved_id', 'status', 'user_created_id', 'user_accepted_id', 'create_ip', 'accepted_ip', 'p_count'], 'integer'],

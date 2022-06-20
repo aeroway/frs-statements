@@ -57,6 +57,7 @@ class VedjustVed extends \yii\db\ActiveRecord
         return [
             [['target', 'subdivision_id', 'address_id', 'archive_unit_id'], 'required'],
             [['date_create', 'date_reception', 'date_formed'], 'safe'],
+            [['comment'], 'trim'],
             [['num_ved', 'comment'], 'string'],
             [['status_id', 'user_formed_id', 'user_created_id', 'user_accepted_id', 'verified', 'target', 'create_ip', 'formed_ip', 'accepted_ip', 'archive_unit_id', 'subdivision_id', 'address_id', 'ext_reg', 'ext_reg_created', 'area_id', 'search_all'], 'integer'],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => VedjustStatus::className(), 'targetAttribute' => ['status_id' => 'id']],
